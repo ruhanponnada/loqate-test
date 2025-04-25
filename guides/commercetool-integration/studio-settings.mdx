@@ -1,0 +1,145 @@
+---
+title: "Commercetools Integration Studio Settings"
+description: ""
+sidebarTitle: "Commercetools Integration Studio Settings"
+---
+
+The following Loqate products are available in the Loqate commercetools integration:
+
+- [Address Capture](#address-capture)
+- [Address Verify](#address-verify)
+- [Email Validation](#email-validation)
+- [Phone Validation](#phone-validation)
+
+For each product we've listed out relevant documentation, broken down the integration flow, and provided supported configuration options.
+
+## Address Capture
+
+| Link         | URL                                                                                                       |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
+| API Docs     | [Loqate Address Capture API Documentation](/apis/address-capture/)                                        |
+| Product Docs | [Loqate Address Capture Product Documentation](https://www.loqate.com/resources/support/address-capture/) |
+
+Address Capture suggests possible addresses based on user input.
+
+The integration works as follows:
+
+Calls to the [Find](/apis/address-capture/interactive-find-v1.1/) endpoint are made continuously until an address of type `Address` is found
+If the type is `Container`, the system continues making calls to the Find endpoint
+Once an address of type `Address` is found, the Retrieve endpoint is called to capture the full address details
+
+## IP to Country
+
+The IP to Country feature determines the user’s country based on their IP address. The country field is auto-populated with the result.
+
+**Supported configuration options:**
+
+- `LOQATE_IP_TO_COUNTRY_ENABLED` - toggle for IP to country functionality on or off
+- `LOQATE_ADDRESS_LOOKUP_CHECKOUT` - toggle for address lookup during checkout
+- `LOQATE_ADDRESS_LOOKUP_MY_ACCOUNT` - toggle for address lookup on the "My Account" page
+- `CHECKOUT_ADDRESS_REQUEST_LIMIT` - debounce time for address capture requests
+- `RESTRICTED_COUNTRIES` - list of restricted country ISO2 codes to exclude from address capture suggestions
+
+**Integration areas:**
+
+- Checkout
+- My Account
+
+## Address Verify
+
+| Link         | URL                                                                                                             |
+| ------------ | --------------------------------------------------------------------------------------------------------------- |
+| API Docs     | [Loqate Address Verify API Documentation](/apis/address-verify/)                                                |
+| Product Docs | [Loqate Address Verify Product Documentation](product-support/address-verify/)                                  |
+| AVC          | [Loqate Address Verify Codes Documentation](https://www.loqate.com/resources/support/address-verify/avc-codes/) |
+
+Address Verifiy evaluates the validity of the user-inputted address upon form submission. The system validates the address using fields like country, city, postal code, and street address. Based on Address Verify's response, the address is scored as either `Good`, `Questionable`, or `Invalid` using the provided `Address Verification Code`.
+
+1. **Good Address:** no issues detected
+2. **Questionable Address:** the user is prompted to accept a corrected address suggested by Address Verify. The user can either edit the address manually or proceed with the initial input
+3. **Invalid Address:** a suggestion is provided to update the address. The user can either update or proceed with the original input
+
+**Supported configuration options:**
+
+- `LOQATE_ADDRESS_VERIFICATION_CHECKOUT` - toggle for address verification during checkout
+- `LOQATE_ADDRESS_VERIFICATION_MY_ACCOUNT` - toggle for address verification on the "My Account" page
+- `LOQATE_AVC` - minimum matchscore threshold for an address to be considered Good
+
+**Integration areas:**
+
+- Checkout
+- My Account
+
+## Email Validation
+
+| Link         | URL                                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------- |
+| API Docs     | [Loqate Email Validation API Documentation](/apis/email-validation/)                                        |
+| Product Docs | [Loqate Email Validation Product Documentation](https://www.loqate.com/resources/support/email-validation/) |
+
+Email Validation verifies the user's email address during input, ensuring the format is correct and that the address is valid.
+
+**Supported configuration options:**
+
+- `LOQATE_EMAIL_VALIDATION_CHECKOUT` - toggle for email validation during checkout
+- `LOQATE_EMAIL_VALIDATION_MY_ACCOUNT` - toggle for email validation on the "My Account" page
+- `LOQATE_EMAIL_VALIDATION_REGISTRATION` - toggle for email validation during registration
+- `LOQATE_EMAIL_VALIDATION_TIMEOUT_MILLISECONDS` - timeout duration for email validation requests
+- `LOQATE_INCLUDE_VALID_CATCHALL_EMAILS` - determines whether Valid_CatchAll email validation responses are considered valid. See the Email Validation API documentation for more information on Valid_CatchAll behaviour (specifically the ResponseCode response field)
+
+**Integration areas:**
+
+- Checkout
+- My Account
+- Registration
+
+## Phone Validation
+
+| Link         | URL                                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------- |
+| API Docs     | [Loqate Phone Validation API Documentation](/apis/phone-validation/)                                        |
+| Product Docs | [Loqate Phone Validation Product Documentation](https://www.loqate.com/resources/support/phone-validation/) |
+
+Phone Validation checks the correctness of the user-inputted phone number, ensuring the number is properly formatted and valid.
+
+**Supported configuration options:**
+
+- `LOQATE_PHONE_VALIDATION_CHECKOUT` - toggle for phone validation during checkout
+- `LOQATE_PHONE_VALIDATION_MY_ACCOUNT` - toggle for phone validation on the "My Account" page
+- `LOQATE_PHONE_VALIDATION_REGISTRATION` - toggle for phone validation during registration
+- `LOQATE_INCLUDE_MAYBE_PHONE_NUMBERS` - determines whether the Maybe phone number validation state is treated as valid. See the Phone Validation API documentation for more information on Maybe behaviour (specifically the IsValid response field)
+
+**Integration areas:**
+
+- Checkout
+- My Account
+- Registration
+
+## Navigation
+
+<CardGroup>
+    <Card
+        title="The Loqate commercetools Integration: Overview"
+        href="/guides/commercetool-integration/feature-overview/"
+        icon="book"
+    >
+        Learn the basics of the integration.
+    </Card>
+
+    <Card
+        title="The Loqate commercetools Integration: Setup Guide"
+        href="/guides/commercetool-integration/setup-guide/"
+        icon="book"
+    >
+        Follow these steps to get started.
+    </Card>
+
+    <Card
+        title="The Loqate commercetools Integration: Studio Settings"
+        href="/guides/commercetool-integration/studio-settings/"
+        icon="code"
+    >
+        Configure the Loqate plugin in the commercetools Studio.
+    </Card>
+
+</CardGroup>

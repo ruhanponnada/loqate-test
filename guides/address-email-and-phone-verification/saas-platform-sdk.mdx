@@ -1,0 +1,412 @@
+---
+title: "SaaS Platform: SDK"
+---
+
+import { CustomInfo } from "/snippets/CustomInfo.mdx";
+
+### Quickstart
+
+The following example will import our css and js files and initialise an
+instance of the address lookup control.
+
+<CustomInfo image="/images/ed6f099c-tool.svg" imageSize="50px">
+  You will need to use references to your own fields in order to tell the
+  control where to bind to.
+</CustomInfo>
+
+```javascript
+<link rel="stylesheet" type="text/css" href="https://assets.loqate.com/capture-sdk/v0/capture-sdk.css" />
+<script type="module">
+  import { Capture, FieldMode } from "https://assets.loqate.com/capture-sdk/v0/capture-sdk.js";
+  let fields = [
+    { element: "#search", field: "" },
+    { element: "#company", field: "company", mode: FieldMode.DEFAULT | FieldMode.PRESERVE },
+    { element: "#line1", field: "line1" },
+    { element: "#line2", field: "line2", mode: FieldMode.POPULATE },
+    { element: "#city", field: "city", mode: FieldMode.POPULATE },
+    { element: "#state", field: "province", mode: FieldMode.POPULATE },
+    { element: "#postcode", field: "postalCode" },
+    { element: "#country", field: "countryName", mode: FieldMode.COUNTRY }
+  ];
+  let capture = new Capture(fields, {
+    key: "bafe2b83-d37b-4d5d-92ad-f3f4c57a3621"
+  });
+  capture.listen("populate", (address, varients) => {
+    console.log(address, varients, "populate")
+  })
+</script>
+```
+
+### Initialisation
+
+When you instantiate a new **Capture** object you will get a reference to an
+object commonly referred to as the **control** object.
+
+```javascript
+let control = new Capture(fields, options);
+```
+
+The constructor takes two arguments, **fields** and **options**.
+
+The **fields** argument lets the control know what fields it should use for a
+search term, and what data to put where when an address is selected by the user.
+
+The **options** argument allows you to set a variety of options to specify how
+the control will behave. The only required option is 'key', which should be a
+string representation of your api key.
+
+```javascript
+"bafe2b83-d37b-4d5d-92ad-f3f4c57a3621";
+```
+
+The resulting control object provides all methods and properties to customise
+the address capture experience.
+
+**Note:** You will typically have one of the these objects for each of your
+address forms, so it is important to give them individual references or store
+them in a list.
+
+```javascript
+let billingControl = new Capture(billingFields, billingOptions);
+let shippingControl = new Capture(shippingFields, shippingOptions);
+```
+
+Before calling methods on the control you should listen for the **load** event
+to ensure the control is ready.
+
+```javascript
+let control = new Capture(fields, options);
+
+control.listen("load", function () {
+  control.setCountry("CAN");
+});
+```
+
+### Mapping your fields
+
+The address capture control needs to know which elements of the address should
+be put into each of your fields. It also needs to know which fields should be
+used for searching and which field (if any) contains the country. This
+information is provided in a standard format, which is an array of objects that
+have an **element**, **field** and optional **mode** property.
+
+```javascript
+let fields = [
+  { element: "#search", field: "" },
+  {
+    element: "#company",
+    field: "company",
+    mode: FieldMode.DEFAULT | FieldMode.PRESERVE,
+  },
+  { element: "#line1", field: "line1" },
+  { element: "#line2", field: "line2", mode: FieldMode.POPULATE },
+  { element: "#city", field: "city", mode: FieldMode.POPULATE },
+  { element: "#state", field: "province", mode: FieldMode.POPULATE },
+  { element: "#postcode", field: "postalCode" },
+  { element: "#country", field: "countryName", mode: FieldMode.COUNTRY },
+];
+```
+
+#### The code explained
+
+- **element** is a query selector string for your field, or the input element
+  itself.
+
+- **field** is the name of the address element that should be put into this
+  field. For a list of the available fields see the Capture Interactive
+  Retrieve. The field can also take the form of a format string, which is
+  detailed in the next section.
+
+- **mode** will tell the control how this field should be used. There are four
+  options which can be set or combined together. The default setting is
+  **SEARCH** and **POPULATE**. Field modes are declared in the **FieldMode**
+  enum. It is a bitset field and modes can be combined using the JavaScript
+  bitwise OR operator (|)
+
+  - **SEARCH** will enable autocomplete searching from the field. When the user
+    clicks into this field the control will be shown and, as they type,
+    suggestions will appear.
+  - **POPULATE** will cause the control to set the field value based on the
+    address that the user selected. This mode is almost always used but, in the
+    event that you wish to handle the population of fields yourself, you can
+    ignore it.
+  - **COUNTRY** will cause the control to display the country list when the user
+    selects the field. The control will also attempt to read the value of this
+    field when it loads and set the country to search in.
+  - **PRESERVE** is used to prevent the control from overwriting fields which
+    might have already been populated by the user, prior to searching for their
+    address. A good use case for this is company name. If the field already has
+    a value the control will not overwrite it, but if the field is currently
+    blank it will be populated.
+
+View all available fields
+
+The following fields are available for mapping to output fields:
+
+|                  |                                                                                                                                                                                     |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| department       | The 'department' part of the address.                                                                                                                                               |
+| company          | The 'company' part of the address.                                                                                                                                                  |
+| subBuilding      | The 'subBuilding' part of the address.                                                                                                                                              |
+| buildingNumber   | The building number of the address.                                                                                                                                                 |
+| buildingName     | The building name of the address.                                                                                                                                                   |
+| secondaryStreet  | The 'secondaryStreet' part of the address.                                                                                                                                          |
+| street           | The 'street' part of the address.                                                                                                                                                   |
+| block            | The 'block' part of the address.                                                                                                                                                    |
+| neighbourhood    | The 'neighbourhood' part of the address.                                                                                                                                            |
+| district         | The 'district' part of the address.                                                                                                                                                 |
+| city             | The 'city' part of the address.                                                                                                                                                     |
+| line1            | A formatted first line of the address. The line 1-5 properties attempt to format an address into usable lines. Depending on the length of the address the later lines may be empty. |
+| line2            | A formatted second line of the address.                                                                                                                                             |
+| line3            | A formatted third line of the address.                                                                                                                                              |
+| line4            | A formatted fourth line of the address.                                                                                                                                             |
+| line5            | A formatted fifth line of the address.                                                                                                                                              |
+| adminAreaName    | The 'adminAreaName' part of the address.                                                                                                                                            |
+| adminAreaCode    | The 'adminAreaCode' part of the address.                                                                                                                                            |
+| province         | The 'province' part of the address.                                                                                                                                                 |
+| provinceName     | The 'provinceName' part of the address.                                                                                                                                             |
+| provinceCode     | The 'provinceCode' part of the address.                                                                                                                                             |
+| postalCode       | The 'postalCode' part of the address.                                                                                                                                               |
+| countryName      | The 'countryName' part of the address.                                                                                                                                              |
+| countryIso2      | The two character ISO representation of the address country.                                                                                                                        |
+| countryIso3      | The three character ISO representation of the address country.                                                                                                                      |
+| countryIsoNumber | The numerical ISO representation of the address country.                                                                                                                            |
+| poBoxNumber      | The PO Box Number part of the address.                                                                                                                                              |
+| label            | A formatted label for the address.                                                                                                                                                  |
+
+### Advanced field formats
+
+To define complex or custom field values, the control makes use of template
+strings. The template strings work by replacing field values from the selected
+address, based on field names which are enclosed in curly brackets, for example
+"**\{postalCode}**".
+
+```javascript
+let fields = [{ element: "#postcode", field: "{postalCode}" }];
+```
+
+Any regular text or HTML can be included in the template strings around the
+field values, such as "**\<b>\{line1}\</b>, \{line2}**".
+
+```javascript
+let fields = [{ element: "#lin1and2", field: "{line1}, {line2}" }];
+```
+
+Conditional formatting can be added by enclosing the field, and any additional
+text which is conditional on the field having a value, in a second set of curly
+brackets. If the template string was "**\{line1}\{, \{line2}}**" then the comma
+would not appear unless the selected address had a second address line.
+
+```javascript
+let fields = [{ element: "#line1And2IfItExists", field: "{line1}{, {line2}}" }];
+```
+
+Finally, field values will always appear in title case, but can easily be
+capitalised by adding an exclamation mark (!) at the end of the field name, like
+this "**\{city!}**".
+
+```javascript
+let fields = [{ element: "#capitalisedCity", field: "{city!}" }];
+```
+
+### Setting options
+
+The second parameter that is required by the address control is a configuration
+object. This is used to set options and customise how the control behaves. The
+only required option is the API key that you will be using to access the web
+services.
+
+```javascript
+let options = {
+  key: "bafe2b83-d37b-4d5d-92ad-f3f4c57a3621",
+};
+```
+
+Further options can be set by adding more information to the configuration
+object. To create a control that limits addresses to the United States and
+Canada, but set the country based upon the users IP address, you would define
+the following object:
+
+```javascript
+let options = {
+  key: "bafe2b83-d37b-4d5d-92ad-f3f4c57a3621",
+  countries: {
+    codesList: "USA,CAN",
+  },
+};
+```
+
+### Limiting the search to specific countries
+
+Capture+ is designed to be a truly international address verification and
+standardisation solution, and will by default allow you to search through all of
+the countries that we cover.
+
+However, you can limit the countries that Capture+ will search by adding search
+settings into your options object.
+
+For example, to create a control that was limited to the United States and
+Canada, but set the country based upon the users IP address, you would define
+the following object:
+
+```javascript
+let options = {
+  key: "bafe2b83-d37b-4d5d-92ad-f3f4c57a3621",
+  countries: {
+    codesList: "USA,CAN",
+  },
+};
+```
+
+### Translation
+
+Both the control and web service API support a variety of language cultures. The
+language is automatically detected from the user's web browser but we also
+provide a **culture** option and **setCulture** method. The culture is based on
+2-character code (e.g. “en”, “fr”) or culture name (e.g. “en_GB”, “en_US”,
+“fr_FR”, “fr_CA”).
+
+```javascript
+let options = {
+  key: "bafe2b83-d37b-4d5d-92ad-f3f4c57a3621",
+  culture: "fr",
+};
+```
+
+### Events and listeners
+
+The address capture library implements a simple events model which will allow
+you to listen out for when certain things happen. To listen for an event use the
+**listen** method with the event name and a function to run when that event
+occurs. Events can sometimes pass additional details through parameters.
+
+```javascript
+control.listen("populate", function (address, variations) {
+  document.getElementById("myCustomField").value = address.PostalCode;
+});
+```
+
+<Accordion
+title="View all available events"
+>
+  The following events can be listened for on the control object.
+
+| Event       | What it means                                                                                                                                                                                                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| show        | The control is now visible on the page.                                                                                                                                                                                                          |
+| hide        | The control has been hidden.                                                                                                                                                                                                                     |
+| search      | The user is searching. You can modify the searchTerm and lastId of the search object (parameter 1) at this stage.                                                                                                                                |
+| results     | Results have been returned from the find service. You can modify the list of suggestions returned (parameter 1) and access the extended attributes object (parameter 2) including properties such as ContainerCount.                             |
+| noresults   | No matching results were returned from the find service.                                                                                                                                                                                         |
+| display     | The suggestions have been shown to the user.                                                                                                                                                                                                     |
+| select      | The user has selected a suggestion. The chosen suggestion can be accessed (parameter 1).                                                                                                                                                         |
+| prepopulate | The full address has been returned from the retrieve service. The address object (parameter 1) can be accessed and modified before fields are populated, as well as full list of language variations (parameter 2) for the address.              |
+| populate    | The address fields have been populated. This is the most common event to listen for, and will allow you to populate your own fields with your own logic using the address object (parameter 1) and the list of address variations (parameter 2). |
+| country     | The country has been changed. The selected country object (parameter 1) with iso2, iso3 and name properties is passed through.                                                                                                                   |
+| manual      | When the manualEntry option is passed through and the user selects the option to enter their address manually this event will fire.                                                                                                              |
+| error       | An error has occured. The error message (parameter 1) is passed through. Typically errors are not shown to the user, but can be handled manually here if needed.                                                                                 |
+
+</Accordion>
+
+### Retrieving co-ordinate data
+
+To get coordinates you will need to map **\{latitude}** and **\{longitude}** to
+fields:
+
+```javascript
+let fields = [
+  { element: "#latitude", field: "latitude" },
+  { element: "#longitude", field: "longitude" },
+];
+```
+
+Royal Mail PAF contains **postcode** level coordinate information. AddressBase
+and the following countries that are covered by TomTom, provide
+**premise-level** coordinates: Andorra, Austria, Azerbaijan, Belarus, Belgium,
+Brazil, Brunei, Canada, Croatia, Czechia, Denmark, Estonia, Finland, France,
+Germany, Hong Kong, Hungary, Iceland, India, Indonesia, Ireland, Italy, Jordan,
+Kuwait, Lithuania, Luxembourg, Macao, Malaysia, Mexico, Netherlands, Norway,
+Philippines, Poland, Portugal, Russia, San Marino, Singapore, Slovakia,
+Slovenia, Spain, Switzerland, Taiwan, Thailand, Türkiye, Ukraine, United Arab
+Emirates, United Kingdom, United States, Vietnam.
+
+### Common customisations
+
+#### Adding a manual entry item:
+
+You can add an item which will appear at the bottom of the list at the end of a
+search, and will allow the user to enter their address without autocomplete.
+When the user selects the item, the **manual** event will be fired and control
+will be disabled while they enter their address. This can be done by setting the
+**manualEntryItem** option to **true** or calling the **addManualEntryItem**
+method.
+
+#### Hiding and showing the control:
+
+To manually hide the control it is best to call the **control.destroy** method.
+This will remove the control from the page and stop it listening to any events.
+You can reload the control at any time by calling the **control.load** method.
+
+### Optimising your address form
+
+There are a few things that can make a form easier to work with:
+
+- Create input fields which are appropriate for the data type, we would
+  recommend that you have:
+
+  - Between 2 and 5 text input boxes for the address lines. Address structures
+    around the world will vary, so make your main address input flexible enough
+    for anyone to enter their details.
+  - Separate text input fields for the city and postal code.
+  - Either text inputs or select lists for the state/province and country.
+    Address Verification can work well with select lists, but make sure you use
+    a recognised name for the text value, and codes for the option id. We make
+    use of the ISO 3166 standard country names and regions.
+
+- Make sure each of your fields has a unique id. An id which is related to the
+  information you are expecting to capture will be helpful, for example:
+  “line1”, “line2”, “city”, “state”, “postcode”, “country”. You can prefix or
+  suffix each id to distinguish between different address forms, e.g.
+  “billing_line1”, “shipping_line1”
+
+- Let the user know what kind of information you want from them. Make use of
+  HTML label elements and input placeholder attributes.
+
+- Do not force too much validation upon the user. Address Verification will help
+  them avoid mistakes as they enter their address, but you can still allow them
+  to modify it and add extra detail where necessary.
+
+### Troubleshooting
+
+If the address capture control is not working, there a few things to check:
+
+#### The control is loading before the fields have been rendered
+
+The control will wait until the DOM has finished loading before it initialises,
+but still this can sometimes be before your address fields have been added to
+the page. Check out the dynamic pages section of this guide for solutions to
+this issue.
+
+#### There is an error somewhere on the page
+
+Most modern web browsers will come with built in developer tools. On most
+systems this is accessed by pressing **F12**. Check the console section of your
+developer tools for any error information which should help with diagnosing the
+issue.
+
+#### Account or key settings
+
+Make sure that you are using the correct key in your code. If there any issues
+with your account or key settings you should receive an email from us
+automatically.
+
+### Dynamic pages
+
+The control will bind to your mapped fields as soon as it is initialised. This
+becomes more tricky when working with dynamic pages and asynchronous postbacks.
+If you need to rebind your control you can call **reload** on the control
+object. The control will them re-bind to the currently available fields.
+
+```javascript
+<script type="text/javascript">control.reload();</script>
+```

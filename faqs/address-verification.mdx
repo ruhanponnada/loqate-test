@@ -1,0 +1,96 @@
+---
+title: "Address Verification"
+---
+
+<AccordionGroup>
+  <Accordion
+  title="How can Address Verify help me understand if an address is good or not?"
+  >
+
+    Every time Address Verify returns a valid result, it produces an AVC - an Address Verification Code. This codes provides you with various pieces of information, including (but not limited to):
+
+    * To what level of granularity the address could be verified (i.e. broadly to Administrative Area or Locality, or more closely to Thoroughfare, Premise or Delivery Point)
+    * How well the input data has been able to be parsed (i.e. whether it was possible to split the provided address into its component parts)
+    * How accurately the postal code was able to be verified
+    * A 'Matchscore', which indicates how much the provided address has changed during the verification process
+
+    NOTE: you can read more about the AVC in our [Address Verification Code documentation](/report-codes/address-verification-code/). It's also worth knowing being aware that the data for different countries can be verified to varying levels of granularity (i.e. some countries can be validated all the way down to Delivery Point, while others might only be validated to a broad Administrative Area level). You can find out more about this on our [Country Data Coverage page](/data-coverage/introduction/).
+
+    The information provided by the AVC therefore helps you to understand the quality of address, and inform your decision making when considering how to use that address.
+
+  </Accordion>
+  <Accordion
+  title="How do Address Capture and Address Verify work together? Why use one when you have the other?"
+  >
+    The Address Capture and Address Verify products offer different routes to the same end result - a fully verified address - but they can also be used in tandem. A great example of this is in the use case of an online customer journey, such as in the ecommerce or gaming industries, where implementing both Capture and Verify ensures all addresses are valid whether they're searched for or manually input.
+
+    In thisexample, here's how the two products would interact on a delivery address form:
+
+    * If a customer chooses their address from the type-ahead selection in the address field, you know that the address will be valid as it was selected from a list of verified addresses provided by Capture
+    * If a customer edits an address provided by Capture, or manually enters an address, Verify then processes that address and matches it against our reference data to provide a cleaned-up record
+      * Using the AVC provided in the Verify response (see above) you can make a decision about what to do next, i.e. accept the verified address, or revert to the manually inputted address
+
+    If you currently use only Capture or Verify but are interested in understanding more about how they can help your business together, please get in touch with your account manager or the [Loqate support team](https://www.loqate.com/en-gb/contact/customer-support/#form).
+
+  </Accordion>
+  <Accordion
+  title="Address Verify cloud vs on-premise deployments, which is right for me?"
+  >
+    There are two main ways in which you can use Address Verify:
+
+    * As anon-premiseinstallation
+    * Hosted in the public cloud
+
+    Which option you choose depends on your specific needs. We'll go through each of them here...
+
+    **On-premise**
+
+    Verify is available as an on-premise install for Windows, UNIX, and Linux, running on a modern Kubernetes deployment. This option allows you to fully host the Verify API and data within your environment, with no part of the address verification process requiring the internet.
+
+    If you have the business need to keep you and your customers’ data within your own environment, then an on-premise installation may be the right option. This is a popular option with fintech and Big Data businesses,government agencies, and industries where the highest level of data privacy is required.
+
+    **Public cloud**
+
+    Hosted and maintained by Loqate, and accessed via a REST API, the public cloud version of Verify is always updated with the latest data, giving you the most up to date results.
+
+    Accessing Verify this way allows you to focus on address verification results, taking the stress out of updating, hosting, optimizing, and maintaining the infrastructure needed to handle a Verify deployment. We provide monthly updates for our data and API, giving you the ability to cleanse your address data, worldwide, using one simpleendpoint.
+
+    If you don't require an on-premise installation, a Public cloud installation is likely to be the most suitable option.
+
+    NOTE: For customers with very specific, specialised requirements, we also offer a private cloud option where we host your own instance of the Verify API and data. Your account manager can provide details on thisoption if required.
+
+  </Accordion>
+  <Accordion
+  title="Which fields should I pass my address into to ensure the best match rate?"
+  >
+
+    Address Verify can accept address details entered in a variety of different ways, while still being able to return accurate results. The best fields to use in the input will largely depend on the address information you have available, but we most often see address data formatted in two ways:
+
+    * **The complete address in a single field:&#xA0;**&#x69;n this case, you can pass the whole address in the Address1 field
+    * **Address data divided into multiple fields:** in this instance you may have some specific data (such as city and postal code) which can be passed in specific fields, and some that contains mixed information (house/building number plus street, etc.) which can be passed together to be parsed, matched, corrected, standardised and formatted
+
+    Either method will return good results, and testing different methods with your own data will help to optimise your results, however we recommend the second method as the best option.
+
+    You can find example calls in the [Verify API documentation](/apis/address-verify/international-batch-cleanse/), which demonstrate how data can be structured for input.
+
+  </Accordion>
+  <Accordion
+  title="Should I use the AVC or AQI?"
+  >
+
+    Alongside the Address Verification Code, or AVC (see 'How can Address Verify help me understand if an address is good or not?' answer), Address Verify also returns a code called the Address Quality Index (AQI), and at face value it can look as though both of these codes provide the same information. There are, however, notable differences between the AVC and the AQI, and the information they provide. Here are some quick descriptions of the two codes and what they're intended to be used for:
+
+    * **AVC:** a proprietary response code which includes information associated with the parsing and matching of the address record. You can use this to identify the level to which an address has been verified.
+    * **AQI:** a pre-defined, simplified code which provides a high-level view of the quality of an address. This is intended to offer a view of overall address quality, but not to be used as a metric for deciding whether to accept an address which has been processed via Verify.
+
+    You can find descriptions of both codes at [report codes](/report-codes/).
+
+    When you want to decide what action to take after receiving a response from Verify, the best approach is usually to understand the following points in combination:
+
+    * The level to which an address has been validated
+    * How much the inputted address had to be manipulated in order to convert it into the outputted address
+
+    Bearing that in mind, in most cases we recommend using the AVC as this gives you all of that required information.
+
+  </Accordion>
+</AccordionGroup>

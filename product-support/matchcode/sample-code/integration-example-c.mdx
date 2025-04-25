@@ -1,0 +1,1350 @@
+---
+title: "Integration Example C#"
+---
+
+### IdM Global Services Integration Example Account
+
+Ensure you have an account setup. You will need the Username, Password and WSDL location.
+
+If you are unsure of any of the details you can contact the helpdesk for more information on: 01244 657321
+
+### Importing the Webservice in Visual Studio
+
+Adding a web reference to visual studio which will create all the webservice objects. It will also set the endpoint so it doesn't have to be set manually (it is possible to set this manually if required).
+
+### Visual Studio 2013 Professional Edition (C#)
+
+Creating a basic Windows Forms Application (called IdMGlobalServicesIntegration in the examples below).
+
+Right-click the project and select Add Service Reference.
+
+<Frame>
+  <img
+    src="/images/csharp-selectaddservicereference.webp"
+    alt="Select Add Service Reference"
+  />
+</Frame>
+
+Click Advanced.
+
+<Frame>
+  <img src="/images/selectadvanced.webp" alt="Select Advanced" />
+</Frame>
+
+Click Add Web Reference...
+
+<Frame>
+  <img
+    src="/images/selectaddwebreference.webp"
+    alt="Select Add Web Reference"
+  />
+</Frame>
+
+Enter the WSDL url into the URL box and click the green arrow. The WSDL url is:
+
+```java
+using System;
+
+using IdMGlobalServicesIntegration.uk.co.gb.idmp;
+
+namespace IdMGlobalServicesIntegration.services.impl
+{
+    /**
+     ** Class for handling the IdM authentication process
+     */
+    public class AuthenticationDetails : IAuthenticationDetails
+    {
+        #region Data
+        private String m_username;
+        private String m_authenticationToken;
+        private DateTime m_authenticationTime;
+        private DateTime m_sessionExpiryTime;
+        private bool m_valid;
+        #endregion
+
+        #region Constructor
+        public AuthenticationDetails()
+        {
+            this.m_username = String.Empty;
+            this.m_authenticationToken = String.Empty;
+            this.m_authenticationTime = DateTime.MinValue;
+            this.m_sessionExpiryTime = DateTime.MinValue;
+            this.m_valid = false;
+        }
+        public AuthenticationDetails(AuthenticateUserResponse response)
+        {
+            this.m_username = response.fullUsername;
+            this.m_authenticationToken = response.authenticationToken;
+            this.m_authenticationTime = response.authenticationTime.Value;
+            this.m_sessionExpiryTime = response.sessionExpiryTime.Value;
+            this.m_valid = true;
+        }
+        #endregion
+
+        #region Properties
+        public String Username
+        {
+            get { return this.m_username; }
+        }
+        public String AuthenticationToken
+        {
+            get { return this.m_authenticationToken; }
+        }
+        public DateTime AuthenticationTime
+        {
+            get { return this.m_authenticationTime; }
+        }
+        public DateTime SessionExpiryTime
+        {
+            get { return this.m_sessionExpiryTime; }
+        }
+        public Boolean isValid
+        {
+            get
+            {
+                DateTime now = DateTime.Now;
+                if (this.m_sessionExpiryTime == null || now > this.m_sessionExpiryTime)
+                {
+                    this.m_valid = false;
+                }
+                return this.m_valid;
+            }
+        }
+        #endregion
+
+        #region Public methods
+        public void refreshAuthenticationDetails(SecurityHeaderResponse securityHeader)
+        {
+            this.m_authenticationToken = securityHeader.authenticationToken;
+            this.m_authenticationTime = securityHeader.authenticationTime.Value;
+            this.m_sessionExpiryTime = securityHeader.sessionExpiryTime.Value;
+            this.m_valid = true;
+        }
+        public void invalidate()
+        {
+            this.m_valid = false;
+        }
+        #endregion
+    }
+}
+```
+
+See the next section on Managing Credentials for authentication improvements.
+
+#### Managing Credentials
+
+We can allow the user to set the Username, Password and ProfileGuid by adding more components to the UI. We do not really want to be hard coding the Password into the application for security reasons. We can now add a method to set the security details and re-authenticate when a lookup is executed.
+
+We can add another clause to the isValid() method in the AuthenticationDetails so we can change the username and password and invalidate the session forcing the lookup call to re-authenticate with a new username and password.
+
+The following properties will allow the Username, Password and ProfileGuid to be updated safely. Whenever the appropriate setter is used, it also calls
+
+```
+m_authenticationDetails.invalidate();
+```
+
+which will trigger the application to re-authenticate on the next address lookup.
+
+```java
+public string Username {
+    {
+        get { return m_username; }
+        set { m_username = value; m_authenticationDetails.invalidate(); }
+    }
+    public string Password
+    {
+        private get { return m_password; }
+        set { m_password = value; m_authenticationDetails.invalidate(); }
+    }
+    public string ProfileGuid
+    {
+        get { return m_profileGuid; }
+        set { this.m_profileGuid = value; m_authenticationDetails.invalidate(); }
+    }
+}
+```
+
+The passwords getter has been made private for security purposes. The isValid() method now checks the boolean valid is false as shown below:
+
+```java
+if (this.authenticationTime == null || now > this.authenticationTime || !this.valid)
+{
+    m_valid = false;
+}
+```
+
+There is a new class variable valid as shown below, it has a default value of true as when this class is constructed a successful authentication has occurred so it will always be true unless the invalidate() method is called:
+
+```java
+private Boolean m_valid = true;
+```
+
+The invalidate method just simply sets valid to false:
+
+```java
+public void invalidate()
+{
+    this.m_valid = false;
+}
+```
+
+#### Error Handling
+
+There are many ways of handling errors. This example has a text box it uses primarily for showing errors (which we don't really cover).
+
+You could if you wanted you could just use:
+
+```
+MessageBox.Show(exception.StackTrace);
+```
+
+This would populate and show a message box with the exception included.
+
+The code can throw different types of exceptions for example:
+
+```java
+catch (SoapException exception)
+{
+    txtMessages.Text = exception.Detail.Value;
+}
+// Fill the errors text box with any error messages.
+catch (Exception exception)
+{
+    txtMessages.Text = exception.Message;
+    txtMessages.Text += "\r\n" + exception.Source;
+}
+```
+
+The bonus to doing this is SoapException has a different method (exception.Detail.Value) if the exception is a validation exception this will allow us to get the actual cause and display it back to the user.
+
+We use Exception when we want to catch anything that has not been handled by our previous catch statements.
+
+#### Handling a Proxy
+
+Most businesses operate behind a proxy server which in some cases can stop a program from being able to send SOAP requests. This example briefly covers a basic way of handling proxy server authentication you will need some extra components on the UI (unless you want to hard code the proxy details).
+
+| Component | Name             |
+| --------- | ---------------- |
+| TextBox   | txtProxyUsername |
+| TextBox   | txtProxyPassword |
+| TextBox   | txtProxyServer   |
+| TextBox   | txtProxyPort     |
+| Button    | btnProxyApply    |
+
+First off we can attempt to detect the proxy server automatically in the forms constructor as demonstrated below:
+
+```java
+// Get the system proxy.
+IWebProxy proxy = WebRequest.GetSystemWebProxy();
+// If the system proxy exists.
+if (proxy != null)
+{
+    // Get the proxy server details.
+    WebRequest.DefaultWebProxy = proxy;
+    txtProxyServer.Text = proxy.GetProxy(new Uri(globalService.Endpoint)).Host;
+    txtProxyPort.Text = proxy.GetProxy(new Uri(globalService.Endpoint)).Port.ToString();
+}
+```
+
+If a proxy exists the code will automatically fill out the server address and port number.
+
+Now we add the code to the apply button as shown:
+
+```java
+/**
+ * Calls the set proxy method and handles any errors.
+ */
+private void btnProxyApply_Click(object sender, EventArgs e)
+{
+    txtMessages.Text = String.Empty;
+    try
+    {
+        this.SetProxySettings();
+    }
+    catch (Exception exception)
+    {
+        txtMessages.Text = exception.Message;
+    }
+}
+```
+
+Which in turn calls the setProxySettings() method as shown below:
+
+```java
+// This will attempt to set the proxy details.
+private void SetProxySettings()
+{
+    /**
+     * A possible exception could be thrown here if the user supplies text in the port number.
+     * The above method is in a try catch so the message will be caught and presented in the error textbox.
+     * Providing no errors are thrown this will set the address and port of the proxy server.
+     */
+    WebProxy proxy = new WebProxy(txtProxyServer.Text, Convert.ToInt32(txtProxyPort.Text));
+    // Set the username and password.
+    proxy.Credentials = new NetworkCredential(txtProxyUsername.Text, txtProxyPassword.Text);
+    // Set the default proxy.
+    WebRequest.DefaultWebProxy = proxy;
+}
+```
+
+The proxy server is created and then overwrites the default system proxy.
+
+#### Calling ExecuteCapture
+
+The code snippet method highlights the main tasks to be performed to call the web service. Firstly the code retrieves the security header for the request with a valid authentication token. The code will then call the web service with the request passed into the method. Before passing back the response it will refresh the users authenticationToken for use on the next request.
+
+```java
+/**
+ * Performs a capture seach
+ * ExecuteCaptureResponse contains the response
+ */
+private ExecuteCaptureResponse executeCapture(ExecuteCaptureRequest request)
+{
+    // Object containing security information - i.e. Access token / Username
+    request.securityHeader = this.getSecurityHeader();
+
+    // Call the Web Service
+    ExecuteCaptureResponse response = this.GlobalServicesWebservice.ExecuteCapture(request);
+
+
+    // Recycle the authentication token from the response.
+    this.AuthenticationDetails.refreshAuthenticationDetails(response.securityHeader);
+
+    return response;
+}
+```
+
+#### Integrating Telephone
+
+The following sample code shows the additional integration of the Global Telephone service.
+
+A second tabPage has been added to the tabControl to organise the simple Telephone lookup.
+
+You can get the latest source from the zip file at the bottom of this document.
+
+In order to call the Web Service the ExecuteCaptureRequest request object must be created containing the input data for a Mobile and Landline lookup. The table below summarises the objects required:
+
+| Object                          | Description                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------- |
+| ExecuteCaptureRequest           | The top level request object containing the data for the web service method     |
+| ProfileRequestCapture           | Contains the IdM profile data                                                   |
+| ProfileRequestCaptureData       | Contains the input data for both address and telephone data                     |
+| `List<IdmDataCaptureTelephone>` | Contains a list of telephone numbers and their type (LANDLINE, MOBILE, UNKNOWN) |
+| IdmRequestOptions               | Contains options required for the ALU                                           |
+
+The following code demonstrates setting up the request data that is passed into the code above:
+
+```java
+public ExecuteCaptureResponse TelephoneValidation(
+    String mobile, String landline)
+{
+    // create the options
+    var requestOptions = new IdmRequestOptions
+    {
+        addressSearchLevel = EnumAddressLevel.PREMISE,
+        casing = EnumCasing.MIXED,
+        maxReturn = 100,
+        offset = 0,
+        addressEnvelopeFormat = "A3TCP"
+    };
+
+    // Create a place holder for the telephone numbers
+    List<IdmDataCaptureTelephone> listOfTelephones = new List<IdmDataCaptureTelephone>();
+
+// Add the mobile telephone number to the list
+if (!String.IsNullOrEmpty(mobile))
+{
+    IdmDataCaptureTelephone mobileIdm = new IdmDataCaptureTelephone()
+    {
+        number = mobile,
+        // Where possible specify the telephone type (DEFAULT = UNKNOWN)
+        type = EnumTelephone.MOBILE
+    };
+    listOfTelephones.Add(mobileIdm);
+}
+
+// Add the landline telephone number to the list
+if (!String.IsNullOrEmpty(landline))
+{
+    IdmDataCaptureTelephone landlineIdm = new IdmDataCaptureTelephone()
+    {
+        number = landline,
+        type = EnumTelephone.LANDLINE
+    };
+listOfTelephones.Add(landlineIdm);
+}
+
+// create the profile request capture data
+var profileRequestCaptureData = new ProfileRequestCaptureData()
+{
+    telephone = listOfTelephones.ToArray(),
+    options = requestOptions
+};
+
+// create the profile request capture
+var profileRequestCapture = new ProfileRequestCapture()
+{
+    // Set the Profile you wish to call (the profile dictates which services are used)
+    profileGuid = this.ProfileGuid,
+    configurationId = 1,
+    // Customer Reference is stamped on the audit trail for each query
+    customerReference = "SampleCode",
+    requestData = profileRequestCaptureData
+};
+
+
+// create the top level request object
+var request = new ExecuteCaptureRequest()
+{
+    profileRequest = profileRequestCapture
+};
+
+
+// Call the service and return the web service response
+ExecuteCaptureResponse executeCaptureResponse = this.executeCapture(request);
+
+// return
+return executeCaptureResponse;
+}
+```
+
+The method above checks to see if the landline or mobile are null before adding a new `IdmDataCaptureTelephone` to the request. In this case we are specifying the type of number entered by adding the EnumTelephone.MOBILE to the `IdmDataCaptureTelephone` object. There is an extra option which is EnumTelephone.UNKNOWN. in this case the service will attempt to work out whether the number is landline or telephone and check the appropriate service.
+
+The last part of the method assigns the objects we created at the start to there respective relations. Note that listOfTelephones.ToArray() automatically converts our list to an array which is what is required by the webservice.
+
+**Handling the Web Service Return (ExecuteCaptureResponse) for Telephone lookup**
+
+Once you have successfully called the web service and retrieve a valid response you can start to handle the results. The following code provides a high level overview of processing the results:
+
+```java
+private void btnGlobalTelephoneValidate_Click(object sender, EventArgs e)
+{
+    using (Waiter hourGlass = new Waiter(this))
+    {
+        ExecuteCaptureResponse response = null;
+        txtMessages.Text = String.Empty;
+
+        // Attempt to do a lookup.
+        try
+        {
+            this.GlobalServicesWS.ProfileGuid = txtProfileMatchcodeGlobalTelephone.Text;
+            response = this.GlobalServicesWS.TelephoneValidation(txtGTMobile.Text, txtGTLandline.Text);
+        }
+        catch (SoapException exception)
+        {
+            txtMessages.Text = exception.Detail.Value;
+        }
+        // Fill the errors text box with any error messages.
+        catch (Exception exception)
+        {
+            txtMessages.Text = exception.Message;
+            txtMessages.Text += "\r\n" + exception.Source;
+        }
+        this.DisplayValidateResponse(response, this.tvGTResults);
+    }
+}
+
+private void DisplayValidateResponse(ExecuteCaptureResponse response, TreeView tvResults)
+{
+    // Clear the TreeView so we can add new Items.
+    tvResults.Nodes.Clear();
+    // Check and make sure the response is not null.
+    if ((response != null) &&
+        (response.profileResponse != null) &&
+        (response.profileResponse.profileResponseDetails != null) &&
+        (response.profileResponse.profileResponseDetails.Length > 0))
+    {
+        // For each address returned from the webservice.
+        foreach (ProfileResponseDetails profileResponseDetails in response.profileResponse.profileResponseDetails)
+        {
+            if ((null != profileResponseDetails.validateResponse) &&
+                (null != profileResponseDetails.validateResponse.response) &&
+                (profileResponseDetails.validateResponse.response.Length > 0))
+            {
+                foreach (ValidateResponseData validateResponseData in profileResponseDetails.validateResponse.response)
+                {
+                    TreeNode tnResponse = new TreeNode(validateResponseData.input);
+                    tvResults.Nodes.Add(tnResponse);
+                    TreeNode tnStatus = new TreeNode(validateResponseData.status.ToString());
+                    tnResponse.Nodes.Add(tnStatus);
+                    if ((null != validateResponseData.validationCodes) &&
+                        (null != validateResponseData.validationCodes.item) &&
+                        (validateResponseData.validationCodes.item.Length > 0))
+                    {
+                        foreach (IdmDataItem idmDataItem in validateResponseData.validationCodes.item)
+                        {
+                            TreeNode tnItem = new TreeNode(idmDataItem.key + "=" + idmDataItem.value);
+                            tnResponse.Nodes.Add(tnItem);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Integrating Bank Account
+
+The following sample code shows the additional integration of the Bank Account validation service.
+
+A tab control has been added to the page to organise the simple Bank Account lookup.
+
+You can get the latest source from the zip file at the bottom of this document.
+
+In order to call the Web Service the ExecuteCaptureRequest request object must be created containing the input data for a Sortcode and Account number lookup. The table below summarises the objects required:
+
+| Object                                                                                                                         | Description                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| ExecuteCaptureRequest                                                                                                          | The top level request object containing the data for the web service method |
+| [ProfileRequestCapture](/product-support/matchcode/general-information/idm-data-structures/#profile-request-apture/)           | Contains the IdM profile data                                               |
+| [ProfileRequestCaptureData](/product-support/matchcode/general-information/idm-data-structures/#profile-request-capture-data/) | Contains the input data for both address and telephone data                 |
+| [`List<IdMDataCaptureBank>`](/product-support/matchcode/general-information/idm-data-structures/#idm-data-capture-bank/)       | Contains an array of bank sortcode and account number                       |
+| [IdmRequestOptions](/product-support/matchcode/general-information/idm-data-structures/#idm-request-options/)                  | Contains options required for the ALU                                       |
+
+The following code demonstrates setting up the request data that is passed into the code above:
+
+```java
+public ExecuteCaptureResponse BankAccountValidation(
+    String sortCode,
+    String accountNumber)
+{
+    {
+    // create the options
+    var requestOptions = new IdmRequestOptions
+    {
+        addressSearchLevel = EnumAddressLevel.PREMISE,
+        casing = EnumCasing.MIXED,
+        maxReturn = 100,
+        offset = 0,
+        addressEnvelopeFormat = "A3TCP"
+    };
+
+    List<IdMDataCaptureBank> listOfIdMDataCaptureBank = new List<IdMDataCaptureBank>();
+    var bankData = new IdMDataCaptureBank()
+    {
+        sortcode = sortCode,
+        accountNumber = accountNumber
+    };
+    listOfIdMDataCaptureBank.Add(bankData);
+
+    // create the profile request capture data
+    var profileRequestCaptureData = new ProfileRequestCaptureData()
+    {
+        bank = listOfIdMDataCaptureBank.ToArray(),
+        options = requestOptions
+    };
+
+    // create the profile request capture
+    var profileRequestCapture = new ProfileRequestCapture()
+    {
+        // Set the Profile you wish to call (the profile dictates which services are used)
+        profileGuid = this.ProfileGuid,
+        configurationId = 1,
+        // Customer Reference is stamped on the audit trail for each query
+        customerReference = "SampleCode",
+        requestData = profileRequestCaptureData
+    };
+
+
+    // create the top level request object
+    var request = new ExecuteCaptureRequest()
+    {
+        profileRequest = profileRequestCapture
+    };
+
+
+    // Call the service and return the web service response
+    ExecuteCaptureResponse executeCaptureResponse = this.executeCapture(request);
+
+    // return
+    return executeCaptureResponse;
+    }
+}
+
+```
+
+**Handling the Web Service Return (ExecuteCaptureResponse) for Bank Account lookup**
+
+Once you have successfully called the web service and retrieve a valid response you can start to handle the results. The following code provides a high level overview of processing the results:
+
+```java
+private void btnBankAccountValidate_Click(object sender, EventArgs e)
+{
+    using (Waiter hourGlass = new Waiter(this))
+    {
+        ExecuteCaptureResponse response = null;
+        txtMessages.Text = String.Empty;
+
+        // Attempt to do a lookup.
+        try
+        {
+            this.GlobalServicesWS.ProfileGuid = txtProfileBankValidation.Text;
+            response = this.GlobalServicesWS.BankAccountValidation(txtBankSortCode.Text, txtBankAccountNumber.Text);
+        }
+        catch (SoapException exception)
+        {
+            txtMessages.Text = exception.Detail.Value;
+        }
+        // Fill the errors text box with any error messages.
+        catch (Exception exception)
+        {
+            txtMessages.Text = exception.Message;
+            txtMessages.Text += "\r\n" + exception.Source;
+        }
+
+        this.DisplayValidateResponse(response, this.tvBankResults);
+    }
+}
+```
+
+#### Integrating Matchcode Premium
+
+The following sample code shows the additional integration of the MatchcodePremium service.
+
+A tab control has been added to the page to organise the MatchcodePremium lookup.
+
+You can get the latest source from the zip file at the bottom of this document.
+
+In order to call the Web Service the ExecuteCaptureRequest request object must be created containing the input data for MatchcodePremium lookup. The table below summarises the objects required:
+
+| Object                      | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| ExecuteCaptureRequest       | The top level request object containing the data for the web service method |
+| ProfileRequestCapture       | Contains the IdM profile data                                               |
+| ProfileRequestCaptureData   | Contains the input data for name, address and email                         |
+| IdmDataCapturePerson        | Contains names for a person                                                 |
+| idmDataArrayOfCapturePerson | Contains an array for persons at an address                                 |
+| IdmDataSearchAddress        | Contains address (building and postcode)                                    |
+| `List<IdmDataItem>`         | Contains an array of key/value data items number                            |
+| IdmRequestOptions           | Contains options required for the request                                   |
+
+The following code demonstrates setting up the request data that is passed into the code above:
+
+```java
+public ExecuteCaptureResponse LookupMatchcodePremium(
+    String firstName, String lastname, String building, String postcode,
+    String emailAddress,
+    bool requestConsented, bool flowTypeAppend, int consentedTotal, String consentedType,
+    int socialTotal, String socialType)
+{
+    // create the options
+    var requestOptions = new IdmRequestOptions
+    {
+        addressSearchLevel = EnumAddressLevel.PREMISE,
+        casing = EnumCasing.MIXED,
+        maxReturn = 100,
+        offset = 0,
+        addressEnvelopeFormat = "A3TCP"
+    };
+
+    // create the person
+    List<IdmDataCapturePerson> listOfPerson = new List<IdmDataCapturePerson>();
+    var person = new IdmDataCapturePerson()
+    {
+        firstname = firstName,
+        lastname = lastname
+    };
+    listOfPerson.Add(person);
+    // convert to IdM array type
+    var idmDataArrayOfCapturePerson = new IdmDataArrayOfCapturePerson() {
+        person = listOfPerson.ToArray()
+    };
+
+
+    // create the address
+    var searchAddress = new IdmDataSearchAddress() {
+        persons = idmDataArrayOfCapturePerson,
+        building = building,
+        postCode = postcode,
+    };
+
+    // create the additional items
+    List<IdmDataItem> listOfAdditionalItem = new List<IdmDataItem>();
+    listOfAdditionalItem.Add(new IdmDataItem()
+    {
+        key = "CONSENTED",
+        value = (requestConsented ? "Yes" : "No")
+    });
+    listOfAdditionalItem.Add(new IdmDataItem()
+    {
+        key = "FLOW_TYPE",
+        value = (flowTypeAppend ? "APPEND" : "SOCIAL")
+    });
+    listOfAdditionalItem.Add(new IdmDataItem()
+    {
+        key = "CONSENTED_TOTAL",
+        value = consentedTotal.ToString()
+    });
+    listOfAdditionalItem.Add(new IdmDataItem()
+    {
+        key = "CONSENTED_TYPE",
+        value = consentedType
+    });
+    listOfAdditionalItem.Add(new IdmDataItem()
+    {
+        key = "SOCIAL_REQUEST_ACTION",
+        value = socialType
+    });
+    IdmDataItem socialTotalItem = new IdmDataItem()
+    {
+        key = "SOCIAL_EMAIL_TOTAL",
+        value = socialTotal.ToString()
+    };
+
+    // Create emails
+    List<String> listOfEmail = new List<string>();
+    if(!String.IsNullOrEmpty(emailAddress))
+    {
+        listOfEmail.Add(emailAddress);
+    }
+
+    // create the profile request capture data
+    var profileRequestCaptureData = new ProfileRequestCaptureData()
+    {
+        address = searchAddress,
+        options = requestOptions,
+        email = listOfEmail.ToArray(),
+        additionalData = new IdmDataArrayAdditionalData()
+        {
+            item = listOfAdditionalItem.ToArray()
+        },
+    };
+    // create the profile request capture
+    var profileRequestCapture = new ProfileRequestCapture()
+    {
+        // Set the Profile you wish to call (the profile dictates which services are used)
+        profileGuid = this.ProfileGuid,
+        configurationId = 1,
+        // Customer Reference is stamped on the audit trail for each query
+        customerReference = "SampleCode",
+        requestData = profileRequestCaptureData
+    };
+
+
+    // create the top level request object
+    ExecuteCaptureRequest request = new ExecuteCaptureRequest()
+    {
+        profileRequest = profileRequestCapture
+    };
+
+
+    // Call the service and return the web service response
+    ExecuteCaptureResponse executeCaptureResponse = this.executeCapture(request);
+
+    // return
+    return executeCaptureResponse;
+}
+```
+
+**Handling the Web Service Return (ExecuteCaptureResponse) for MatchcodePremium lookup**
+Once you have successfully called the web service and retrieve a valid response you can start to handle the results. The following code provides a high level overview of processing the results:
+
+```java
+private void btnPremiumLookup_Click(object sender, EventArgs e)
+{
+    using (Waiter hourGlass = new Waiter(this))
+    {
+        ExecuteCaptureResponse response = null;
+        txtMessages.Text = String.Empty;
+
+        // Attempt to do a lookup.
+        try
+        {
+            this.GlobalServicesWS.ProfileGuid = txtProfileMatchcodePremium.Text;
+            response = this.GlobalServicesWS.LookupMatchcodePremium(
+                txtPremFirstName.Text, txtPremLastName.Text,
+                txtPremBuilding.Text, txtPremPostcode.Text,
+                txtPremEmail.Text,
+                chkPremConsented.Checked, rbPremFlowAppend.Checked,
+                Convert.ToInt32(nudPremConsentedTotal.Value), cmbPremConsentedType.Text,
+                Convert.ToInt32(nudPremSocialTotal.Value), cmbPremSocialType.Text);
+        }
+        catch (SoapException exception)
+        {
+            txtMessages.Text = exception.Detail.Value;
+        }
+        // Fill the errors text box with any error messages.
+        catch (Exception exception)
+        {
+            txtMessages.Text = exception.Message;
+            txtMessages.Text += "\r\n" + exception.Source;
+        }
+        this.DisplayCaptureResponse(response, tvPremResults);
+    }
+}
+
+
+private void DisplayCaptureResponse(ExecuteCaptureResponse response, TreeView tvResults)
+{
+    // Clear the TreeView so we can add new Items.
+    tvResults.Nodes.Clear();
+    // Check and make sure the response is not null.
+    if ((response != null) &&
+        (response.profileResponse != null) &&
+        (response.profileResponse.profileResponseDetails != null) &&
+        (response.profileResponse.profileResponseDetails.Length > 0))
+    {
+        // For each address returned from the webservice.
+        foreach (ProfileResponseDetails profileResponseDetails
+            in response.profileResponse.profileResponseDetails)
+        {
+            if ((null != profileResponseDetails.captureResponse) &&
+                (null != profileResponseDetails.captureResponse.response) &&
+                (profileResponseDetails.captureResponse.response.Length > 0))
+            {
+                int responseIndex = 0;
+                foreach (CaptureResponseData captureResponseData
+                    in profileResponseDetails.captureResponse.response)
+                {
+                    responseIndex++;
+                    String caption = (!String.IsNullOrEmpty(captureResponseData.input)
+                        ? captureResponseData.input : response.ToString());
+                    TreeNode tnResponse = new TreeNode(caption);
+                    tvResults.Nodes.Add(tnResponse);
+
+                    if (null != captureResponseData.address)
+                    {
+                        foreach (IdmDataAddress idmDataAddress in captureResponseData.address)
+                        {
+                            String formattedAddress = idmDataAddress.formattedAddress;
+                            TreeNode tnAddress = new TreeNode(formattedAddress);
+                            tnResponse.Nodes.Add(tnAddress);
+                            if ((null != idmDataAddress.persons) &&
+                                (null != idmDataAddress.persons.person) &&
+                                (idmDataAddress.persons.person.Length > 0))
+                            {
+                                foreach (IdmDataCapturePerson idmDataCapturePerson
+                                    in idmDataAddress.persons.person)
+                                {
+                                    String personName = idmDataCapturePerson.firstname +
+                                        " " + idmDataCapturePerson.middlename +
+                                        " " + idmDataCapturePerson.lastname;
+                                    TreeNode tnPerson = new TreeNode(personName);
+                                    tnAddress.Nodes.Add(tnPerson);
+                                    if ((null != idmDataCapturePerson.consentedEmails) &&
+                                        (0 < idmDataCapturePerson.consentedEmails.Length))
+                                    {
+                                        foreach(IdmDataSourcedValue idmDataSourcedValue
+                                            in idmDataCapturePerson.consentedEmails)
+                                        {
+                                            String email = idmDataSourcedValue.value;
+                                            TreeNode tnEmail = new TreeNode(email);
+                                            tnPerson.Nodes.Add(tnEmail);
+                                        }
+                                    }
+                                    if ((null != idmDataCapturePerson.consentedLandlines) &&
+                                        (0 < idmDataCapturePerson.consentedLandlines.Length))
+                                    {
+                                        foreach (IdmDataSourcedValue idmDataSourcedValue
+                                            in idmDataCapturePerson.consentedLandlines)
+                                        {
+                                            String landline = idmDataSourcedValue.value;
+                                            TreeNode tnLandline = new TreeNode(landline);
+                                            tnPerson.Nodes.Add(tnLandline);
+                                        }
+                                    }
+                                    if ((null != idmDataCapturePerson.consentedMobiles) &&
+                                        (0 < idmDataCapturePerson.consentedMobiles.Length))
+                                    {
+                                        foreach (IdmDataSourcedValue idmDataSourcedValue
+                                            in idmDataCapturePerson.consentedMobiles)
+                                        {
+                                            String mobile = idmDataSourcedValue.value;
+                                            TreeNode tnMobile = new TreeNode(mobile);
+                                            tnPerson.Nodes.Add(tnMobile);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (null != captureResponseData.groupedRelatedData)
+                    {
+                        foreach (IdmDataAdditionalDataGroup idmDataAdditionalDataGroup
+                                in captureResponseData.groupedRelatedData)
+                        {
+                            String name = idmDataAdditionalDataGroup.name;
+                            TreeNode tnDataGroup = new TreeNode(name);
+                            tnResponse.Nodes.Add(tnDataGroup);
+                            foreach (IdmDataItem idmDataItem in idmDataAdditionalDataGroup.item)
+                            {
+                                TreeNode tnItem = new TreeNode(idmDataItem.key + "=" + idmDataItem.value);
+                                tnDataGroup.Nodes.Add(tnItem);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Parsing Web Service Response
+
+ProfileResponseDisplay is a helper class given as an example as to how to parse the web service response. The class parses the response and returns a set of key value for display in the UI:
+
+```java
+class ProfileResponseDisplay
+{
+    public String ComponentName { get; set; }
+    public String ComponentStatus { get; set; }
+    public String Action { get; set; }
+    public String Notes { get; set; }
+    public ProfileResponseDetails ProfileResponseDetails { get; set; }
+
+    private static String seperator = " | ";
+
+    public ProfileResponseDisplay(ProfileResponseDetails profileResponseDetails)
+    {
+        this.ComponentName = profileResponseDetails.componentName;
+        this.ComponentStatus = profileResponseDetails.componentStatus.ToString();
+        this.Action = profileResponseDetails.componentAction;
+        this.Notes = profileResponseDetails.notes;
+        this.ProfileResponseDetails = profileResponseDetails;
+    }
+
+    public string DisplayValue
+    {
+        get { return this.ComponentName + seperator + this.Action + seperator + this.ComponentStatus; }
+    }
+
+    public ProfileResponseDisplay Value
+    {
+        get { return this; }
+    }
+
+    /**
+    * Gets the lookup results from the ExecuteCaptureResponse.
+    */
+    public List<ValidateResponseDataDisplay> getValidateResponse()
+    {
+        List<ValidateResponseDataDisplay> validateResponseData = new List<ValidateResponseDataDisplay>();
+        if (this.ProfileResponseDetails != null
+            && this.ProfileResponseDetails.validateResponse != null
+            && this.ProfileResponseDetails.validateResponse.response != null)
+        {
+            foreach(ValidateResponseData responseData in
+                   this.ProfileResponseDetails.validateResponse.response.ToList<ValidateResponseData>())
+            {
+                // Adds an object that combines the key and value separated by " = "
+                validateResponseData.Add(new ValidateResponseDataDisplay(responseData));
+            }
+        }
+        return validateResponseData;
+    }
+
+    /**
+    * Gets the addresses from the ExecuteCaptureResponse.
+    */
+    public List<IdmDataAddress> getAddresses()
+    {
+        List<IdmDataAddress> addresses = new List<IdmDataAddress>();
+
+        if (this.ProfileResponseDetails != null
+                && this.ProfileResponseDetails.captureResponse != null
+                && this.ProfileResponseDetails.captureResponse.response != null)
+        {
+            foreach (CaptureResponseData data in this.ProfileResponseDetails.captureResponse.response)
+            {
+                addresses = data.addresses.address.ToList<IdmDataAddress>();
+            }
+        }
+
+        return addresses;
+    }
+}
+```
+
+The two methods to note here are the getValidationResponse() and the getAddresses() they safely return the telephone results and the addresses matched.
+
+#### Integrating AddressBase Premium
+
+The following sample code shows the additional integration of the AddressBase Premium capture service.
+
+A tab control has been added to the page to run the simple AddressBase Premium lookup.
+
+You can get the latest source from the zip file at the bottom of this document.
+
+In order to call the Web Service the ExecuteCaptureRequest request object must be created containing the input data for address lookup. The table below summarises the objects required:
+
+| Object                    | Description                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| ExecuteCaptureRequest     | The top level request object containing the data for the web service method |
+| ProfileRequestCapture     | Contains the IdM profile data                                               |
+| ProfileRequestCaptureData | Contains the input data                                                     |
+| IdmDataSearchAddress      | Contains the search address                                                 |
+| IdmRequestOptions         | Contains options required for the request                                   |
+
+The following code demonstrates setting up the request data that is passed into the code above:
+
+```java
+public ExecuteCaptureResponse AddressBasePremiumLookup(
+    String postcode,
+    String building)
+{
+    var requestOptions = new IdmRequestOptions
+    {
+        addressSearchLevel = EnumAddressLevel.PREMISE,
+        casing = EnumCasing.MIXED,
+        maxReturn = 100,
+        offset = 0,
+        addressEnvelopeFormat = "A3TCP"
+    };
+
+    // create the address
+    var searchAddress = new IdmDataSearchAddress()
+    {
+        building = building,
+        postCode = postcode,
+    };
+
+    // create the profile request capture data
+    var profileRequestCaptureData = new ProfileRequestCaptureData()
+    {
+        address = searchAddress,
+        options = requestOptions,
+    };
+    // create the profile request capture
+    var profileRequestCapture = new ProfileRequestCapture()
+    {
+        // Set the Profile you wish to call (the profile dictates which services are used)
+        profileGuid = this.ProfileGuid,
+        configurationId = 1,
+        // Customer Reference is stamped on the audit trail for each query
+        customerReference = "SampleCode",
+        requestData = profileRequestCaptureData
+    };
+```
+
+**Handling the Web Service Return (ExecuteCaptureResponse) for AddressBase Premium lookup**
+
+Once you have successfully called the web service and retrieve a valid response you can start to handle the results. The following code provides a high level overview of processing the results:
+
+```java
+private void btnABPrLookup_Click(object sender, EventArgs e)
+{
+    using (Waiter hourGlass = new Waiter(this))
+    {
+        ExecuteCaptureResponse response = null;
+        txtMessages.Text = String.Empty;
+
+        // Attempt to do a lookup.
+        try
+        {
+            this.GlobalServicesWS.ProfileGuid = txtProfileABPr.Text;
+            response = this.GlobalServicesWS.AddressBasePremiumLookup(
+                txtABPrPostcode.Text,txtABPrBuilding.Text);
+        }
+        catch (SoapException exception)
+        {
+            txtMessages.Text = exception.Detail.Value;
+        }
+        // Fill the errors text box with any error messages.
+        catch (Exception exception)
+        {
+            txtMessages.Text = exception.Message;
+            txtMessages.Text += "\r\n" + exception.Source;
+        }
+        this.DisplayCaptureResponse(response, tvABPrResults);
+    }
+}
+```
+
+The display method can be updated to show specific AddressBase Premium data. i.e.
+
+```java
+foreach (IdmDataAddress idmDataAddress in captureResponseData.address)
+{
+    String formattedAddress = idmDataAddress.formattedAddress;
+    TreeNode tnAddress = new TreeNode(formattedAddress);
+    tnResponse.Nodes.Add(tnAddress);
+
+    // AddressBasePremium data
+    if (!String.IsNullOrEmpty(idmDataAddress.apOSAPR))
+        tnAddress.Nodes.Add(new TreeNode("OSAPR=" + idmDataAddress.apOSAPR));
+    if (!String.IsNullOrEmpty(idmDataAddress.osAl2Toid))
+        tnAddress.Nodes.Add(new TreeNode("AL2Toid=" + idmDataAddress.osAl2Toid));
+    if (!String.IsNullOrEmpty(idmDataAddress.osItnToid))
+        tnAddress.Nodes.Add(new TreeNode("ITNToid=" + idmDataAddress.osItnToid));
+    if (!String.IsNullOrEmpty(idmDataAddress.osTopoToid))
+        tnAddress.Nodes.Add(new TreeNode("TopoToid=" + idmDataAddress.osTopoToid));
+
+    IdmDataBLPU blpu = idmDataAddress.blpu;
+    if (null != blpu)
+    {
+        TreeNode tnBLPU = new TreeNode("BLPU");
+        tnAddress.Nodes.Add(tnBLPU);
+        tnBLPU.Nodes.Add(new TreeNode("State=" + blpu.blpuState.ToString()));
+        if (null != blpu.blpuStartDate)
+            tnBLPU.Nodes.Add(new TreeNode("StartDate=" + blpu.blpuStartDate.ToString()));
+        tnBLPU.Nodes.Add(new TreeNode("LogicalStatus=" + blpu.blpuLogicalStatus.ToString()));
+        tnBLPU.Nodes.Add(new TreeNode("Easting=" + blpu.easting.ToString()));
+        tnBLPU.Nodes.Add(new TreeNode("Northing=" + blpu.northing.ToString()));
+    }
+
+    IdmDataLPI lpi = idmDataAddress.lpi;
+    if (null != lpi)
+    {
+        TreeNode tnLPI = new TreeNode("LPI");
+        tnAddress.Nodes.Add(tnLPI);
+        if (!String.IsNullOrEmpty(lpi.lpiKey))
+            tnLPI.Nodes.Add(new TreeNode("Key=" + lpi.lpiKey));
+        if (!String.IsNullOrEmpty(lpi.level))
+            tnLPI.Nodes.Add(new TreeNode("Level=" + lpi.level));
+        if (!String.IsNullOrEmpty(lpi.lpiLanguage))
+            tnLPI.Nodes.Add(new TreeNode("Language=" + lpi.lpiLanguage));
+        tnLPI.Nodes.Add(new TreeNode("LogicalStatus=" + lpi.lpiLogicalStatus.ToString()));
+    }
+}
+```
+
+#### Integrating Matchcode Names
+
+The following sample code shows the additional integration of the Matchcode Names capture service.
+
+A tab control has been added to the page to run the simple Matchcode Names lookup.
+
+You can get the latest source from the zip file at the bottom of this document.
+
+In order to call the Web Service the ExecuteCaptureRequest request object must be created containing the input data for Names lookup. The table below summarises the objects required:
+
+| Object                      | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| ExecuteCaptureRequest       | The top level request object containing the data for the web service method |
+| ProfileRequestCapture       | Contains the IdM profile data                                               |
+| ProfileRequestCaptureData   | Contains the input data                                                     |
+| IdmDataSearchAddress        | Contains the search address                                                 |
+| IdmDataCapturePerson        | Contains ther person information                                            |
+| IdmDataArrayOfCapturePerson | Contains the IdmDataCapturePerson                                           |
+| IdmRequestOptions           | Contains options required for the request                                   |
+
+Within the address contains a list of people this is where the IdmDataArrayOfCapturePerson can be found.
+
+Code for the search button:
+
+```java
+private void btnNamesLookup_Click(object sender, EventArgs e)
+{
+    using (Waiter hourGlass = new Waiter(this))
+    {
+        ExecuteCaptureResponse response = null;
+        txtMessages.Text = String.Empty;
+
+        // Attempt to do a lookup.
+        try
+        {
+            this.GlobalServicesWS.ProfileGuid = txtProfileMatchcodeNames.Text;
+            response = this.GlobalServicesWS.LookupMatchcodeNames(
+                txtNamesFirstName.Text, txtNamesLastName.Text,
+                txtNamesBuilding.Text, txtNamesPostcode.Text);
+        }
+        catch (SoapException exception)
+        {
+            txtMessages.Text = exception.Detail.Value;
+        }
+        // Fill the errors text box with any error messages.
+        catch (Exception exception)
+        {
+            txtMessages.Text = exception.Message;
+            txtMessages.Text += "\r\n" + exception.Source;
+        }
+
+        this.DisplayCaptureResponse(response, tvNamesResults, "MatchcodeNames");
+    }
+}
+```
+
+The following method shows the construction of the request:
+
+```java
+public ExecuteCaptureResponse LookupMatchcodeNames(
+        String firstName, String lastname, String building, String postcode)
+    {
+        // create the options
+        var requestOptions = new IdmRequestOptions
+        {
+            addressSearchLevel = EnumAddressLevel.PREMISE,
+            casing = EnumCasing.MIXED,
+            maxReturn = 100,
+            offset = 0,
+            addressEnvelopeFormat = "A3TCP"
+        };
+
+        // create the person
+        List<IdmDataCapturePerson> listOfPerson = new List<IdmDataCapturePerson>();
+        var person = new IdmDataCapturePerson()
+        {
+            firstname = firstName,
+            lastname = lastname
+        };
+        listOfPerson.Add(person);
+        // convert to IdM array type
+        var idmDataArrayOfCapturePerson = new IdmDataArrayOfCapturePerson()
+        {
+            person = listOfPerson.ToArray()
+        };
+
+
+    // create the address
+    var searchAddress = new IdmDataSearchAddress()
+    {
+        persons = idmDataArrayOfCapturePerson,
+        building = building,
+        postCode = postcode,
+    };
+
+    // create the profile request capture data
+    var profileRequestCaptureData = new ProfileRequestCaptureData()
+    {
+        address = searchAddress,
+        options = requestOptions,
+    };
+
+    // create the profile request capture
+    var profileRequestCapture = new ProfileRequestCapture()
+    {
+        // Set the Profile you wish to call (the profile dictates which services are used)
+        profileGuid = this.ProfileGuid,
+        configurationId = 1,
+        // Customer Reference is stamped on the audit trail for each query
+        customerReference = "SampleCode",
+        requestData = profileRequestCaptureData
+    };
+
+
+    // create the top level request object
+    ExecuteCaptureRequest request = new ExecuteCaptureRequest()
+    {
+        profileRequest = profileRequestCapture
+    };
+
+
+    // Call the service and return the web service response
+    ExecuteCaptureResponse executeCaptureResponse = this.executeCapture(request);
+
+    // return
+    return executeCaptureResponse;
+}
+```
+
+For a better understanding of the request/response see the Integration Guide which will contain an address search with returned people.
+
+Exception Handling
+The following exception handling code will be able to handle business exceptions and service exceptions. The BusinessExceptions can contain things like: Invalid Authentication Token, Locked account and Invalid profile. They are useful for determining what is wrong with the executing account. You can see the Integration Guide for a list of some of the common BusinessExceptions.
+
+```java
+try
+{
+// Put here handling of the Web Service Return (ExecuteCaptureResponse),
+    i.e. for Telephone or Bank account lookup
+}
+catch (SoapException exception)
+{
+    // SoapException caught use IdmExceptionHandler to see if it is a Business or Service exception.
+    SoapException convertedException = util.IdmExceptionHandler.getException(exception);
+
+    // Check to see if the exception is a BusinessException
+    if (convertedException.GetType() == typeof(util.BusinessException))
+    {
+        // We know it is a BusinessException so cast the convertedException to BusinessException
+        // so codes can be retrieved.
+        util.BusinessException businessException = (util.BusinessException)convertedException;
+
+        // Display a different message for invalid credentials
+        if (businessException.errorCode.Equals("BE010009"))
+        {
+            txtMessages.Text = "Incorrect credentials: Check username and password";
+        }
+        // Otherwise use a more general message.
+        else
+        {
+            txtMessages.Text = "Business Exception Caught: "
+                + businessException.errorCode + ": " + businessException.message;
+        }
+    }
+    // Check to see if the exception is a ServiceException
+    else if (convertedException.GetType() == typeof(util.ServiceException))
+    {
+        // We know it is a ServiceException so cast the convertedException to ServiceException
+        // so codes and transactionGuid can be retrieved.
+        util.ServiceException serviceException = (util.ServiceException)convertedException;
+        // This method for the ServiceException returns an error message with the transactionGuid
+        // so the error can be identified by helpdesk or the IdM team.
+        txtMessages.Text = serviceException.getErrorMessage();
+    }
+    // If the exception is not a Business or Service Exception then handle the SOAPException here.
+    else
+    {
+        // Just show the error message.
+        txtMessages.Text = "SOAPException caught: "+ convertedException.Detail;
+    }
+```
+
+This demonstrates how to catch exceptions and handle them with user friendly messages. The BusinessException, ServiceException and IdmExceptionHandler can be found in the sample code attached.
+
+#### Project Source Code
+
+Download the source code here: IdMGlobalServicesIntegration
+
+### Powersearch Sample Code
+
+A simple UI Global PowerSearch client has been proposed with the aim of providing a suggestion on how to consume this web service by a C# .net application. The application has two distinctive components: the main ui form and the PowerSearchSampleCode.Service package. The former is a trivial gui and no further details are going to be described in this document. The latter encapsulates all the http connection logic and just exposes a regular C# static method with a PowerSearchRequest class as an argument and a PowerSearchResponse as the returned value so the service can be used seamlessly with other .Net code. This component is explained below.
+
+### Building the request
+
+Global Powersearch is a REST web service and requires an authenticathed and authorised user. There is not an ad-hoc authentication service, therefore this is done in each Global Powersearch call.
+
+Only two elements are needed to build a request, the authentication header and the parameters. The authentication header is the only mandatory HTTP header of the request.
+
+Authentication is done under basic access authentication protocol RFC2045-MIME so this is not secured by default, therefore the service runs under HTTPS to protect user's credentials as well as the content.
+
+There is not a specific authenticate web service call, instead, all requests should be contained in the header field "Authentication". This field should follow the RFC2045-MIME specification.
+
+The next method in the sample code is responsible for generating that header:
+
+```java
+
+///
+/// Generates the basic access authentication header based on
+/// RFC2045-MIME. Notice this protocol does not provide security.
+/// To provide a security layer service should be running under HTTPS.
+///
+///IdM username
+///Password belonging to the username
+///
+private static AuthenticationHeaderValue createBasicHeader(string username, string password)
+{
+    return new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(username + ":" + password)));
+}
+```
+
+The algorithm concatenates the strings username, ":" and password. The result is encoded in base64 and the header is created under the scheme "basic". The client uses the HttpClient provided by the .Net Framework to encapsulate the network complexities, so the authentication header must be built as an AuthenticationHeaderValue object.
+
+The last step will be generating the request parameters. In order to make the data manipulation easier, the parameters are encapsulated in the class PowerSearchRequest. The lookup method will read the request in order to reconstruct the final URL.
+
+country + geocode + address + format (where country and address are mandatory and geocode and format optional).
+
+Once we have the authentication header and URL, eventually, the web service call can be executed.
+
+### Building the response
+
+The response can be retrieved as a stream. Since the response is formatted in XML, this can be easily de-serialised onto a C# object to facilitate the access to the information from the C# code.
+
+```java
+// XML parse
+var data = await response.Content.ReadAsStreamAsync();
+var serializer = new XmlSerializer(typeof(Response));
+var reader = XmlReader.Create(data);
+
+// Use the Deserialize method to restore the object's state.
+var response = (Response)serializer.Deserialize(reader);
+```
+
+Inside the response object, the field 'matches' contain a list of strings of free formatted addresses and a field 'address' which encapsulates the free formatted address and the geolocation information.
+
+#### Project Source Code
+
+Download the source code here: [PowerSearchSampleCode](https://www.loqate.com/media/0dlltm3a/powersearchsamplecode.zip)

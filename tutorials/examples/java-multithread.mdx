@@ -1,0 +1,29 @@
+---
+title: "Loqate Multithreading Sample Code (LqtMultithreadTestDriver.java)"
+---
+
+## Sample Java Code: LqtMultithreadTestDriver.java
+
+```java
+package lqtmultithreadtestdriver;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+/**
+* Sample Code Test Driver
+* This class is responsible for creating multiple threads (16 in this case, for sample purposes)
+* @author loqate.com
+*/
+public class LqtMultithreadTestDriver {
+
+     static
+     {
+          // Load the JNI library
+          System.loadLibrary("lqtjava");
+     }
+
+     public static void main(String[] args) {
+          // Create and run threads
+          for (int threadNo = 1; threadNo <= 16; threadNo++)           {                (new Thread(new LqtThreadRunner())).start();           }      } }
+
+```

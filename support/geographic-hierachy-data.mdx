@@ -1,0 +1,74 @@
+---
+title: "Geographic Hierarchy Data"
+---
+
+This page outlines some of the key features of the geographic data hierarchy product (also referred to as Seed Data). For more information about how you can benefit from integrating our geography data hierarchy across your organizational platform, please contact your Customer Success or Channel manager.
+
+## Geography Data vs Address Verification
+
+The geographic data hierarchy is purposely designed to provide textual names for all regions (up to the smallest regional definition) in every country or territory. It is not intended to provide values or formats required for postal use cases. The Verify product should be used alongside the geography data to yield values in the correct postal format.
+
+## Field Name Hierarchy
+
+Following the Oasis aXL standards adopted by Loqate to represent all core global reference data, these fields form the basis of all data in the hierarchy product (going from large to small).
+
+**– – SuperAdministrativeArea:** (not used)\
+**– – – – AdministrativeArea:&#x20;**&#x42;undesland\
+**– – – – – – SubAdministrativeArea:** Regierungsbezirk\
+**– – – – – – – – Locality:** Gemeinde\
+**– – – – – – – – – – DependentLocality:** Settlement\
+**– – – – – – – – – – – -DoubleDependentLocality:** (not used)
+
+## Postcodes
+
+PostalCode is also included in the data, and will be assigned to the the highest possible position in the hierarchy. Where a postcode spans multiple Locality values (but resides in the same parent region) the postcode will append to all applicable Locality values. It will not append to any smaller, child regions.
+
+Please note that it is possible for postcodes to be present at any level in the hierarchy. For example, postcodes could be at SubAdministrativeArea and Locality levels, depending on how they are laid out by the respective authorities.
+
+## Delivery Information
+
+Delivery point information, such as thoroughfares, premise numbers, or building names, are not covered in the hierarchy product.
+
+## Localization
+
+In addition to the raw data, an accompanying information schema will indicate which fields are used in the hierarchy and if there is a local designation for each regional boundary. For example:
+
+**Country:&#x20;**&#x44;E (Germany)\
+**– – SuperAdministrativeArea:** (not used)\
+**– – – – AdministrativeArea:&#x20;**&#x42;undesland\
+**– – – – – – SubAdministrativeArea:** Regierungsbezirk\
+**– – – – – – – – Locality:** Gemeinde\
+**– – – – – – – – – – DependentLocality:** Settlement\
+**– – – – – – – – – – – -DoubleDependentLocality:** (not used)
+
+## Dataset Field Reference
+
+One flat file (TXT format) is published per country.
+
+|                            |                                                                                                                                                                                                                                                                                                                      |                                                                   |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Field name**             | **Description**                                                                                                                                                                                                                                                                                                      | **Example**                                                       |
+| Field Type (String)        | Geography field name for the component (see section above about Field Hierarchy)                                                                                                                                                                                                                                     | SubAdministrativeArea                                             |
+| Field ID (Integer)         | The index number for the value                                                                                                                                                                                                                                                                                       | 374020                                                            |
+| Parent Field Type (String) | Geography field name of the parent component (see section above about Field Hierarchy)                                                                                                                                                                                                                               | AdministrativeArea                                                |
+| Parent Field ID (Integer)  | The index number for the parent value                                                                                                                                                                                                                                                                                | 191574                                                            |
+| Field Value (String)       | A combination of primary and alternative values for the component, supplemented with script and language tags and notation that indicates valid/invalid aliases.<br/> **Note that the first value will always be the default/primary textual name (in Latin) that is local to the respective country or territory.** | Oberpfalz\<S=LATN,L=DE> \|\$Amberg\| \$Amberg-Sulzbach\| \$Cham … |
+
+#### Field Value Notation
+
+|              |                                                                                                          |             |
+| ------------ | -------------------------------------------------------------------------------------------------------- | ----------- |
+| **Notation** | **Description**                                                                                          | **Example** |
+|              | A value without any notation indicates a valid alias. Primary values will be listed first.               | Waldhäusl   |
+| \$           | Prefix. Denotes an invalid alias                                                                         |             |
+| @            | Prefix. Indicates an acronym or abbreviation for the default name. A value may have multiple variations. |             |
+| +            | Prefix. Alternate value with diacritical characters decomposed (long format)                             | +WALDHAEUSL |
+| –            | Prefix. Alternate value with diacritical characters decomposed (short format)                            | -WALDHAUSL  |
+
+## Delivery
+
+Datasets for all countries and territories are updated and published in line with every Loqate major and minor release (with plans for this to be available monthly in 2024). Files are delivered to customers via the Verify Installation Manager. A customer can add GDH to a Verify licence key or can licence GDH separately.
+
+The granularity and quality of coverage per dataset is dependent on the supply of data available to Loqate.
+
+Currently, the Geographic Data Hierarchy is only available as one global product. It is not possible to purchase countries or regions individually.

@@ -1,0 +1,296 @@
+---
+title: "Geocoding Typeahead"
+description: ""
+sidebarTitle: "Geocoding Typeahead"
+---
+
+The Geocoding Typeahead API uses a text search to suggest Town, City, State and Postcode/ZIP Codes. When one of these is selected by the end user, a subsequent request (using the associated address ID) can be made to retrieve the latitude and longitude for the location.
+
+The Global Geocoding API currently supports an initial set of 17 countries, with more scheduled for inclusion in the near future. See the ['List of available countries' section](/#list-of-available-countries) for details of which territories are available.
+
+Text searches using the "Input" field are always free. This method will consume credit per `addressID` search and co-ordinates returned.
+
+#### Try here
+
+Use the form below to test the service. Note: there is a usage limit on the demo key.
+
+Country
+
+United States
+Location
+Town, City, State, Postcode or ZIP Code
+
+- [Input search](#input-search)
+- [AddressID search](#addressid-search)
+- [Errors](#errors)
+- [List of available countries](#list-of-available-countries)
+- [Use of geocodes/addresses](#use-of-geocodes-addresses)
+
+### Base URL
+
+```
+https://api.addressy.com/LocationServices/Geocoding/GlobalTypeAhead/v1.00/
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+### JSON
+
+```
+https://api.addressy.com/LocationServices/Geocoding/GlobalTypeAhead/v1.00/json4.ws?
+```
+
+<Note>
+  Note: A REST endpoint with a JSON payload is the only call style supported.
+</Note>
+
+## Input search
+
+An Input search is used to take a string input and provide suggested location responses. This can be triggered after each key stroke from your end user.
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.
+</Note>
+
+#### Request parameters: Input search
+
+| Parameter | Required | Type    | Description                                                                                                                                                                                                                                                                                                              |
+| --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Key       | Required | string  | The key used to authenticate with the service. For example: "AA11-AA11-AA11-AA11".                                                                                                                                                                                                                                       |
+| Input     | Required | string  | The search text to find. This can be a Town, City, State, Postcode or ZIP Code. Requests made using this as an input will be free.                                                                                                                                                                                       |
+| Countries | Required | string  | A comma separated list of ISO2 or ISO3 country codes (e.g. GB or GBR). This will limit the search to those countries.                                                                                                                                                                                                    |
+| Limit     | Optional | integer | The maximum number of results that will be returned. If not set this will default to 7. The maximum possible value is 100.                                                                                                                                                                                               |
+| Types     | Optional | string  | The types that you want to be returned in the response. Valid types are Locality \| Postcode \| AdministrativeArea. This can be set to include multiple types (comma separated). For example, passing "Postcode" will only return Postcode results; passing "Locality, Postcode" will return both Locality and Postcode. |
+| Origin    | Optional | string  | A starting location for the search. This can be the name or ISO 2 or 3 character code of a country, WGS84 coordinates (comma separated) or IP address to search from.                                                                                                                                                    |
+
+#### Example request: Input search
+
+Add your API key into the code below for a sample Input search request:
+
+```
+GET https://api.addressy.com/LocationServices/Geocoding/GlobalTypeAhead/v1.00/json4.ws?key=AA11-AA11-AA11-AA11&input=Worcester&countries=GB&origin=145.119.1.237&&
+```
+
+Content-Type: application/json
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+#### Response fields: Input search
+
+| Field       | Type   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ID          | string | The unique identifier for a returned location. For example: "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok_QD0". This can be used in a subsequent "addressID" search to return co-ordinates for the location.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Text        | string | The first half of the result that's displayed to the user. For example, if the returned location is "Worcester, Worcestershire" then Text will display "Worcester".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Type        | string | The type of location returned. Possible values include: SuperAdministrativeArea \|AdministrativeArea \| SubAdministrativeArea \| Locality \| DependentLocality \| DoubleDependentLocality \| Postcode                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Description | string | The second half of the location that's displayed to the user, featuring the broader geographic area. For example, if the returned location is "Worcester, Worcestershire" then Description will display "Worcestershire" as this is the larger geographic area.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Highlight   | string | A list of number ranges showing which characters in the Text and Description fields match the user's search term. This can be used to determine which characters should be highlighted in bold in the search field, to give the user a visual representation of what's being searched. Notes: Highlight ranges are expressed as 'X-Y' where highlighting should start from character position X and go up to but not including character position Y. Characters start from position 0. Commas separate numbers within a single field, while a semicolon separates numbers in Text from numbers in Description. Spaces are counted as characters. If no characters in Text should be highlighted, the string will start with a semicolon. Take the example "0-4, 7; 1-4" - this indicates that characters 0, 1, 2, 3 and 7 in the Text field should be highlighted, and also characters 1, 2 and 3 in the Description field. |
+| Language    | string | Currently will always return blank.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Country     | string | The full name of the country the location is in, as per the ISO 3166-1 standard. Intended for display purposes if you want to present this to the customer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+
+#### Example response: Input search
+
+```json
+{
+  "Items": [
+    {
+      "Id": "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok_QD0",
+      "Text": "Worcester",
+      "Type": "Locality",
+      "Description": "Worcestershire",
+      "Highlight": "0-9;0-9",
+      "Language": "",
+      "Country": "United Kingdom"
+    },
+    {
+      "Id": "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok-Pz9B",
+      "Text": "Worcester Park",
+      "Type": "Locality",
+      "Description": "Surrey",
+      "Highlight": "0-9",
+      "Language": "",
+      "Country": "United Kingdom"
+    },
+    {
+      "Id": "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok-RUFGRURC",
+      "Text": "Worcester Park",
+      "Type": "DoubleDependentLocality",
+      "Description": "Sutton, London",
+      "Highlight": "0-9",
+      "Language": "",
+      "Country": "United Kingdom"
+    },
+    {
+      "Id": "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5DwolAPg",
+      "Text": "Worcestershire",
+      "Type": "AdministrativeArea",
+      "Description": "",
+      "Highlight": "0-9",
+      "Language": "",
+      "Country": "United Kingdom"
+    }
+  ]
+}
+```
+
+### AddressID search
+
+An addressID search is used to take an ID returned from an Input search and provide co-ordinates and additional location details in its response. This can be triggered after the user selects a suggested location.
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in [your account](https://account.loqate.com/account/#/Setup/).
+
+<Note>
+  Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.
+</Note>
+
+#### Request parameters: addressID search
+
+| Parameter | Required | Type   | Description                                                                                                                                                                                                      |
+| --------- | -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key       | Yes      | string | The Loqate key used to authenticate with the service. For example: `AA11-AA11-AA11-AA11`.                                                                                                                        |
+| addressID | Yes      | string | The unique identifier for a location, as provided in a previous Input search. For example: `VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok_QD0`. Requests made with this parameter will return co-ordinates and be charged. |
+
+#### Example request: addressID search
+
+Add your API key into the code below for a sample addressID search request:
+
+```
+GET https://api.addressy.com/LocationServices/Geocoding/GlobalTypeAhead/v1.00/json4.ws?addressId=VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok_QD0&key=AA11-AA11-AA11-AA11
+```
+
+Content-Type: application/json
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+#### Response fields: addressID search
+
+| Field                   | Type   | Description                                                                                                                                                                              |
+| ----------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ID                      | string | The unique identifier for a returned location. For example: "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok_QD0".                                                                                   |
+| Type                    | string | The type of location returned. Currently these will only return as "Address" but this will be expanded to include other types such as Postcode, Town etc.                                |
+| Location                | string | An array containing the Latitude and Longitude co-ordinates for the given location. For example: <br/> `"Location": { "Latitude": 52.190645170996554 "Longitude": -2.2210694521417644 }` |
+| Language                | string | The ISO code of the display language for a result (for example: "ENG" to represent English).                                                                                             |
+| SuperAdministrativeArea | string | The largest administrative district within a country, if applicable (most countries only use AdministrativeArea).                                                                        |
+| AdministrativeArea      | string | The most common administrative district within a country (i.e. US State or UK County).                                                                                                   |
+| SubAdministrativeArea   | string | In the US this can be used to define a county within a state or a sub area of a city.                                                                                                    |
+| Locality                | string | The most common population centre within a country (i.e. USA City, Canadian Municipality).                                                                                               |
+| DependentLocality       | string | A smaller population centre, dependent on the contents of the Locality field (i.e. District). Can only be present if Locality is present.                                                |
+| DoubleDependentLocality | string | A locality within a Dependent locality.                                                                                                                                                  |
+| Postcode                | string | The full postal code of the address (i.e. Postcode, ZIP Code, etc.).                                                                                                                     |
+| Thoroughfare            | string | The name of the street or thoroughfare. Will only display for UK postcodes.                                                                                                              |
+| OrganisationName        | string | Currently will always return blank.                                                                                                                                                      |
+| Department              | string | Currently will always return blank.                                                                                                                                                      |
+| DependentThoroughfare   | string | Currently will always return blank.                                                                                                                                                      |
+| BuildingName            | string | Currently will always return blank.                                                                                                                                                      |
+| SubBuilding             | string | Currently will always return blank.                                                                                                                                                      |
+| SubBuildingFloor        | string | Currently will always return blank.                                                                                                                                                      |
+| Number                  | string | Currently will always return blank.                                                                                                                                                      |
+
+#### Example response: addressID search
+
+```json
+{
+  "Items": [
+    {
+      "Id": "VE_CiVlgwok_QT1BPT4_QT1FP0U-PT5Dwok_QD0",
+      "Type": "Locality",
+      "Language": "",
+      "Location": {
+        "Latitude": 52.190625816038995,
+        "Longitude": -2.2210952705813876
+      },
+      "DependentThoroughfare": "",
+      "DependentLocality": "",
+      "OrganisationName": "",
+      "SuperAdministrativeArea": "",
+      "DoubleDependentLocality": "",
+      "Thoroughfare": "",
+      "AdministrativeArea": "Worcestershire",
+      "BuildingName": "",
+      "SubAdministrativeArea": "",
+      "Locality": "Worcester",
+      "Postcode": "",
+      "Department": "",
+      "SubBuilding": "",
+      "SubBuildingFloor": "",
+      "Number": "",
+      "Country": "United Kingdom",
+      "Iso2": "GB",
+      "Iso3": "GBR",
+      "AdditionalFields": {
+        "Easting": 384986,
+        "Northing": 254735
+      }
+    }
+  ]
+}
+```
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4-column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+Here's a generic example, for reference:
+
+```json
+{
+  "Items": [
+    {
+      "Error": "2",
+      "Description": "Unknown key",
+      "Cause": "The key you are using to access the service was not found.",
+      "Resolution": "Please check that the key is correct. It should be in the form AA11-AA11-AA11-AA11."
+    }
+  ]
+}
+```
+
+For a list of errors applicable to all APIs, have a look at the [list of common errors](/apis/generic-errors/).
+
+| Number | Description            | Cause                                          | Resolution                                                                                                           |
+| ------ | ---------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1001   | Unsupported HttpMethod | The HttpMethod has been set incorrectly        | Check which method you used - only GET and POST are acceptable.                                                      |
+| 1002   | Bad Request Data       | Missing parameters in the request.             | The Input parameter and Countries parameter are required - try again with these included.                            |
+| 1003   | Invalid Country Code   | Invalid Country Code.                          | The Countries code parameter should be ISO2 or ISO3 - check to make sure you're using a correct code, and try again. |
+| 2002   | ProviderFailure        | Internal Server Error. Please try again later. | Internal Server Error. Please try again later.                                                                       |
+| 2007   | Id Invalid             | The Id parameter supplied was invalid.         | Check to make sure the ID you're using is valid (note that IDs do not persist indefinitely) and try again.           |
+
+#### List of available countries
+
+The Geocoding Typeahead API currently supports the following countries:
+
+<Accordion
+title="Click here to expand..."
+>
+
+    | ISO Code | Country Name |
+    |----------|--------------|
+    | CZ | Czech Republic |
+    | DE | Germany |
+    | ES | Spain |
+    | FR | France |
+    | GB | United Kingdom |
+    | HU | Hungary |
+    | IE | Ireland |
+    | IT | Italy |
+    | JP | Japan |
+    | KR | Republic of Korea |
+    | NL | The Netherlands |
+    | PL | Poland |
+    | PT | Portugal |
+    | RO | Romania |
+    | SI | Slovenia |
+    | SK | Slovakia |
+    | US | United States |
+
+</Accordion>
+
+#### Use of geocodes/addresses
+
+Use of the output of the Global Geocoding API is temporary, and only for use as part of a Store Finder. It is not permitted to index or store results for other purposes, such as use in a checkout process. For further information please see [Loqate Terms and Conditions](https://www.gbgplc.com/en/legal-and-regulatory/products/loqate-storefinder/legal-notices-loqate-storefinder/).

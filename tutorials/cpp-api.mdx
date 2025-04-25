@@ -1,0 +1,66 @@
+---
+title: "How to Integrate the Loqate C++ API using Microsoft Visual Studio"
+sidebarTitle: "C++ API"
+---
+ that was
+1. Launch Microsoft Visual Studio (the following screenshots are taken from Microsoft Visual Studio 2005).
+
+2. Select File > New > Project
+
+3. The New Project wizard will open. Highlight "Win32" under the Visual C++ node on the left under Project types and "Win32 Console Application" under Templates on the right as seen below.
+
+<Frame caption="">
+  <img src="/images/newproject.png" />
+</Frame>
+
+4. Enter the name for your project in the Name field and select OK (this will automatically populate the Solution name with the same name). For this example, we will use "lqttest."
+
+5. The Win32 Application Wizard will open; select Next.
+
+6. Select "Console application" for Application type and click the "Empty project" box under Additional options as seen below and select Finish.
+
+<Frame caption="">
+  <img src="/images/win32appwiz.png" />
+</Frame>
+
+7. Highlight and right-click the "lqttest" project in the Explorer window. Select Add > Existing Item…
+
+8. Browse to the directory where your Loqate software is installed and you will see both the lqtcr.h and lqtsample.cpp files. Select both files and select Add as seen below.
+
+<Frame caption="">
+  <img src="/images/addfiles.png" />
+</Frame>
+
+9. Highlight and right-click the "lqttest" project in the Explorer window again and select Properties.
+
+10. In the Configuration drop-down menu, select "All Configurations" and for the Platform drop-down menu, select "Active(Win32)."
+
+11. Under Configuration Properties, expand the C/C++ node and select General. We will set the Additional Include Directories to point to your Loqate install directory. Click on the ellipses and it will open another window. Click the folder icon and click on the next set of ellipses. Browse to your Loqate install directory and select Open and hit OK. Next, hit Apply.
+
+<Frame caption="">
+  <img src="/images/addfiles.png" />
+</Frame>
+
+12. Stay in the Property Pages window and expand the Linker node. Highlight Input and enter the path of the lqtcr.lib file in the Additional Dependencies field.
+
+For example, this path would be filled in: "C:\Program Files\Loqate\lqtcr.lib" Hit Apply and OK.
+
+<Frame caption="">
+  <img src="/images/linker.png" />
+</Frame>
+
+13. Right-click the "lqttest" project and select Build. You should see in the Output window at the bottom if the build was successful or not.
+
+14. Next, we will add the lqttest.exe file to your Loqate install directory. Go to Documents > Visual Studio 2005 > Projects > lqttest > debug > lqttest.exe. Copy the lqttest.exe file that was created and add it to your Loqate install directory. Your Loqate install directory should now have the following contents:
+
+<Frame caption="">
+  <img src="/images/lqttestexe.png" />
+</Frame>
+
+15. Open a command window and cd to your Loqate install directory. Run the lqttest.exe file and you will see the output of the single record as seen below.
+
+<Frame caption="">
+  <img src="/images/cmd.png" />
+</Frame>
+
+You have now successfully integrated our C++ API!

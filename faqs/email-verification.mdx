@@ -1,0 +1,70 @@
+---
+title: "Email Validation"
+sidebarTitle: "Email Verification"
+---
+
+<AccordionGroup>
+  <Accordion
+  title="How does Email Validation work - are addresses checked against a database?"
+  >
+    Loqate's Email Validation service can validate emails either individually or in bulk, and follows a series of steps to confirm whether email addresses are valid or not. Those steps include:
+
+    * Checking the syntax of the inputted address to ensure it's a plausible address (i.e. it contains an '@' sign and an email domain, etc.)
+    * Verifying the validity of the email domain to make sure it can send and receive emails
+    * 'Pinging' the mailbox to check whether it will accept emails to the specified account. We can validate whether an email address exists on an email server with 97% accuracy
+      * We also have proprietary integrations with mailbox providers which allow us to verify things like whether a mailbox is a catch-all mailbox, whether the domain is disposable or temporary, etc.
+
+  </Accordion>
+  <Accordion
+  title="Can Email Validation handle business and personal email addresses?"
+  >
+    Yes, you can use Email Validation to check any email addresses, whether they're for business or personal accounts.
+  </Accordion>
+  <Accordion
+  title="Does Email Validation work internationally?"
+  >
+
+    Yes, Email Validation is an international service with global coverage.
+
+  </Accordion>
+  <Accordion
+  title="What types of information are returned in the Email Validation results?"
+  >
+    Besides detecting if in email address is valid or not, the Email Validation service returns a wide range of information, including - but not limited to - the following:
+
+    * Whether an email address is disposable
+    * If the domain is considered 'high risk' to send email to
+    * If the mailbox is a role-based address (i.e. support@, marketing@, etc.)
+    * If the mailbox is full
+
+    You can find complete details of which fields are returned in our [Email Validation API documentation](/apis/email-validation/) (please note that the exact available fields may differ depending on which service youuse).
+
+  </Accordion>
+  <Accordion
+  title="What does a 'catch all' response code mean?"
+  >
+    Each of the Email Validation endpoints includes a 'catch all' field as one of the response parameters:
+
+    * [Batch Validate (v1.2)](/apis/email-validation/batch-validate-v1.2/): the **Accept\_All** Status
+    * [Interactive Validate (v2)](/apis/email-validation/interactive-validate-v2/): the **Valid\_CatchAll** ResponseCode
+    * [Bulk Email Validation](/apis/email-validation/bulk-email-validation/): the **accept\_all** Primary Status
+
+    These 'catch all' responses indicate email domains that will accept emails to **any** email account, meaning that it is not possible to fully validate an email account at thisdomain, often due to firewall restrictions. We provide these 'catch all' responses so that you can decide whether or not you want to email theseaddresses.
+
+  </Accordion>
+  <Accordion
+  title="How does the Risk field work?"
+  >
+    Calls made to the Validate v2 endpoint ([https://api.addressy.com/EmailValidation/Interactive/Validate/v2/](https://api.addressy.com/EmailValidation/Interactive/Validate/v2/)) return a field called **Risk**, which is designed to provide anindicationof how likely emails are to bounce if sent to a given email address.
+
+    The Risk field returns one of four options: High, Medium, Low or Unknown, where the higher the risk the greater the likelihood that an email will bounce.
+
+    You can use this field to inform your decision making, when deciding whether or not to send to a particular email address.
+
+  </Accordion>
+  <Accordion
+  title="Can you link an email to an individual name?"
+  >
+    No. For the purposes of maintaining privacy, the Email Validation service will confirm whether or not an email address is active and capable of receiving messages, but does not link back to individuals in any way.
+  </Accordion>
+</AccordionGroup>

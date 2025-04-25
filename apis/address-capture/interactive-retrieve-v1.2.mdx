@@ -1,0 +1,302 @@
+---
+title: "Interactive Retrieve v1.2"
+description: ""
+sidebarTitle: "Interactive Retrieve v1.2"
+---
+
+Returns the full address details based on the Id.
+
+This method will consume credit.
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+Base URL
+
+https://api.addressy.com/capture/interactive/retrieve/v1.2/
+
+Note: we don't support API connections using HTTP - all calls should use HTTPS.
+
+Secure SOAP WSDL
+https://api.addressy.com/capture/interactive/retrieve/v1.2/wsdl3.ws
+
+## Request parameters
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in [your account](https://account.loqate.com/account/#/Setup/).
+
+**Note: where potentially sensitive data is used in these parameters, remember to make the request as secure as possible.**
+
+`*` = required field
+
+| Name          | Type   | Values | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------- | ------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key\*         | String |        | The key to use to authenticate with the service. For example: "AA11-AA11-AA11-AA11".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Id\*          | String |        | The unique Id generated from a Find method, which you want to retrieve the details for. For example: "GB\|RM\|B\|55605138\|ENG".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field1Format  | String |        | The FieldxFormat fields can be used to return extra data fields into the corresponding Fieldx response. This needs to be supplied in the format of {FieldName} (for example: "{Latitude}"). You can include multiple data fields within each Fieldx field, with commas to separate them - for example, you could call "&Field1Format={Latitude}, {Longitude}" to include both lat/long coordinates in a single field. You can call up to 50 Fieldx fields - if you need more than the default 20, include the &Fields parameter to set how many you need. For example: &Fields=35. Which fields can be called is determined by the available dataset(s) in the country being searched - speak to your account manager or contact Loqate support for more information. |
+| Field2Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field3Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field4Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field5Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field6Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field7Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field8Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field9Format  | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field10Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field11Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field12Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field13Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field14Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field15Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field16Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field17Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field18Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field19Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field20Format | String |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+## Response
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an [error table](#error-table).
+
+| Name                 | Type   | Example | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------- | ------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- | -------- | ---------------------------------------- |
+| Id                   | String |         | The unique Id of the returned address as generated by Capture, for use in a subsequent RETRIEVE call (note that this Id can change over time).                                                                                                                                                                                                                                                                                                        |
+| DomesticId           | String |         | The unique reference number of the address as it appears in its respective dataset (such as the UDPRN in the Royal Mail PAF dataset). For example, if Id is "GB                                                                                                                                                                                                                                                                                       | RM  | B   | 55605138 | ENG" then DomesticId will be "55605138". |
+| Language             | String |         | A three-letter code denoting the language of the address. For example, "ENG" to represent English.                                                                                                                                                                                                                                                                                                                                                    |
+| LanguageAlternatives | String |         | Alternative language versions available for the address, presented in a comma-separated list. For example, if an address was available in both English and German then LanguageAlternatives would be "GER, ENG".                                                                                                                                                                                                                                      |
+| Department           | String |         | This is populated if a business address has a department as well as organisation name registered at it. For example, in the address "University of London Accommodation Office, Senate House, Malet Street, LONDON, WC1E 7HU", the Department is "Accommodation Office".                                                                                                                                                                              |
+| Company              | String |         | The name of the company associated with the address.                                                                                                                                                                                                                                                                                                                                                                                                  |
+| SubBuilding          | String |         | The name of the sub-building, if the address comprises part of a bigger building. For example, "Flat 4", "Unit 2", etc.                                                                                                                                                                                                                                                                                                                               |
+| BuildingNumber       | String |         | The house or building number in the address.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| BuildingName         | String |         | The associated name of the building in the address, should one exist.                                                                                                                                                                                                                                                                                                                                                                                 |
+| SecondaryStreet      | String |         | The secondary thoroughfare name, should one exist. Usually a small street off the primary.                                                                                                                                                                                                                                                                                                                                                            |
+| Street               | String |         | The main thoroughfare name.                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Block                | String |         | The block details for the address.                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Neighbourhood        | String |         | The neighbourhood the address is in.                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| District             | String |         | District name.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| City                 | String |         | The town/city name in the returned address.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Line1                | String |         | The first line of the formatted address. The line 1-5 properties attempt to format an address into usable lines (based on the addressing standards of the relevant country). Depending on the length of the address the later lines may be empty. For example, the address "Old Change House, 128 Queen Victoria Street, London, EC4V 4BJ" would result in the following: Line1: "Old Change House" Line2: "128 Queen Victoria Street" Line3-5: blank |
+| Line2                | String |         | The second line of the formatted address.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Line3                | String |         | The third line of the formatted address.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Line4                | String |         | The fourth line of the formatted address.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Line5                | String |         | The fifth line of the formatted address.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| AdminAreaName        | String |         | The name of the administrative area for the address (such as a local administrative county council). For example, if an address is in New York City the AdminAreaName will be "New York"                                                                                                                                                                                                                                                              |
+| AdminAreaCode        | String |         | The associated code of the administrative area for the address. For example, if the AdminAreaName is "New York", the AdminAreaCode will be "061".                                                                                                                                                                                                                                                                                                     |
+| Province             | String |         | This field assumes the value of either ProvinceName or ProvinceCode, depending on the standard address format for the country in question. For example, in the UK this will be ProvinceName, while in Italy it will be ProvinceCode. Note: if the expected value isn't available but the other value is available, Province may pull through whichever value is present.                                                                              |
+| ProvinceName         | String |         | The name of the largest administrative division of the country in the address (typically state or county, but dependent on each country's addressing standards). For example, in Australia this would be the federal state of the address.                                                                                                                                                                                                            |
+| ProvinceCode         | String |         | As per ProvinceName, but the code of the administrative division.                                                                                                                                                                                                                                                                                                                                                                                     |
+| PostalCode           | String |         | The full postal code of the address (i.e. Postcode, ZIP Code, etc.).                                                                                                                                                                                                                                                                                                                                                                                  |
+| CountryName          | String |         | The full name of the country the address is in, as per the ISO 3166-1 standard.                                                                                                                                                                                                                                                                                                                                                                       |
+| CountryIso2          | String |         | The two character ISO code for the country in the address. For example, the CountryIso2 for the United Kingdom is "GB".                                                                                                                                                                                                                                                                                                                               |
+| CountryIso3          | String |         | The three character ISO code for the country in the address. For example, the CountryIso3 for the United Kingdom is "GBR".                                                                                                                                                                                                                                                                                                                            |
+| CountryIsoNumber     | String |         | The ISO numeric code for the country in the address. For example, the CountryIsoNumber for the United Kingdom is "826".                                                                                                                                                                                                                                                                                                                               |
+| SortingNumber1       | String |         | One of two numbers associated with bulk mailing discount schemes.                                                                                                                                                                                                                                                                                                                                                                                     |
+| SortingNumber2       | String |         | One of two numbers associated with bulk mailing discount schemes.                                                                                                                                                                                                                                                                                                                                                                                     |
+| Barcode              | String |         | The barcode for the address, for use with bulk mailing discount schemes. For example, with the address "Old Change House, 128 Queen Victoria Street, London, EC4V 4BJ", the Barcode is "(EC4V4BJ2ZE)". This needs to be used with an appropriate barcode font.                                                                                                                                                                                        |
+| POBoxNumber          | String |         | The relevant number, if an address is a PO Box.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Label                | String |         | The full address formatted as a label (where <br/> denotes a line break). For example: "G B G<br/>Old Change House<br/>128 Queen Victoria Street<br/>LONDON<br/>EC4V 4BJ<br/>UNITED KINGDOM".                                                                                                                                                                                                                                                         |
+| Type                 | String |         | The type of address, if known. The possible values are: Residential \ Commercial \ Unknown                                                                                                                                                                                                                                                                                                                                                            |
+| DataLevel            | String |         | The data level, if known (this depends on the dataset the address originates from). The possible values are: Unknown \ Premise \ RangedPremise \ Street \ City.                                                                                                                                                                                                                                                                                       |
+| Field1               | String |         | If Field1Format was used in the request, the data for that field's response will appear here (otherwise it will be blank). The same applies for all FieldX responses. For example, if Field1Format was set to "(Latitude)" in a request, Field1 would return a latitude such as "44.751422".                                                                                                                                                          |
+| Field2               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field3               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field4               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field5               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field6               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field7               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field8               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field9               | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field10              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field11              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field12              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field13              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field14              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field15              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field16              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field17              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field18              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field19              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field20              | String |         |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+## Try it now
+
+Use the form below to test the service.
+Note: there is a usage limit on the demo key, but you can swap it for one of your own if you need to.
+
+Use sandbox data?
+Key _
+AA11-AA11-AA11-AA11 (Demo key)
+Id _
+Field1Format
+Field2Format
+Field3Format
+Field4Format
+Field5Format
+Field6Format
+Field7Format
+Field8Format
+Field9Format
+Field10Format
+Field11Format
+Field12Format
+Field13Format
+Field14Format
+Field15Format
+Field16Format
+Field17Format
+Field18Format
+Field19Format
+Field20Format
+Try it
+
+## Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the [list of common errors](/apis/generic-errors/).
+
+| Id   | Error            | Cause                                                                                               | Resolution                                                                                                                                                                                                                                                       |
+| ---- | ---------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1001 | Id Invalid       | The Id parameter supplied was invalid.                                                              | You should only pass an ID where the type was returned as Address from the Find service. Passing IDs of type Postcode will not result in a retrieve - instead, these should be passed back into the Find service as Container until an Address type is returned. |
+| 1002 | License Required | This record contains data that requires an additional license and is not available on your account. | Please contact support to purchase a license for this data.                                                                                                                                                                                                      |
+
+## Example requests
+
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+## Available endpoints
+
+Dataset (ADO.NET)
+Example request
+
+```
+https://api.addressy.com/Capture/Interactive/Retrieve/v1.20/dataset.ws?Key=&Id=&Field1Format=&Field2Format=&Field3Format=&Field4Format=&Field5Format=&Field6Format=&Field7Format=&Field8Format=&Field9Format=&Field10Format=&Field11Format=&Field12Format=&Field13Format=&Field14Format=&Field15Format=&Field16Format=&Field17Format=&Field18Format=&Field19Format=&Field20Format=
+```
+
+## Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Language
+
+```asp ASP function
+function Capture_Interactive_Retrieve_v1_20(Key, Id, Field1Format, Field2Format, Field3Format, Field4Format, Field5Format, Field6Format, Field7Format, Field8Format, Field9Format, Field10Format, Field11Format, Field12Format, Field13Format, Field14Format, Field15Format, Field16Format, Field17Format, Field18Format, Field19Format, Field20Format)
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/Capture/Interactive/Retrieve/v1.20/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&Id=" & Server.UrlEncode(Id)
+      strUrl = strUrl & "&Field1Format=" & Server.UrlEncode(Field1Format)
+      strUrl = strUrl & "&Field2Format=" & Server.UrlEncode(Field2Format)
+      strUrl = strUrl & "&Field3Format=" & Server.UrlEncode(Field3Format)
+      strUrl = strUrl & "&Field4Format=" & Server.UrlEncode(Field4Format)
+      strUrl = strUrl & "&Field5Format=" & Server.UrlEncode(Field5Format)
+      strUrl = strUrl & "&Field6Format=" & Server.UrlEncode(Field6Format)
+      strUrl = strUrl & "&Field7Format=" & Server.UrlEncode(Field7Format)
+      strUrl = strUrl & "&Field8Format=" & Server.UrlEncode(Field8Format)
+      strUrl = strUrl & "&Field9Format=" & Server.UrlEncode(Field9Format)
+      strUrl = strUrl & "&Field10Format=" & Server.UrlEncode(Field10Format)
+      strUrl = strUrl & "&Field11Format=" & Server.UrlEncode(Field11Format)
+      strUrl = strUrl & "&Field12Format=" & Server.UrlEncode(Field12Format)
+      strUrl = strUrl & "&Field13Format=" & Server.UrlEncode(Field13Format)
+      strUrl = strUrl & "&Field14Format=" & Server.UrlEncode(Field14Format)
+      strUrl = strUrl & "&Field15Format=" & Server.UrlEncode(Field15Format)
+      strUrl = strUrl & "&Field16Format=" & Server.UrlEncode(Field16Format)
+      strUrl = strUrl & "&Field17Format=" & Server.UrlEncode(Field17Format)
+      strUrl = strUrl & "&Field18Format=" & Server.UrlEncode(Field18Format)
+      strUrl = strUrl & "&Field19Format=" & Server.UrlEncode(Field19Format)
+      strUrl = strUrl & "&Field20Format=" & Server.UrlEncode(Field20Format)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set Capture_Interactive_Retrieve_v1_20 = rst
+
+      'FYI: The recordset returns the following columns:
+      'Id
+      'DomesticId
+      'Language
+      'LanguageAlternatives
+      'Department
+      'Company
+      'SubBuilding
+      'BuildingNumber
+      'BuildingName
+      'SecondaryStreet
+      'Street
+      'Block
+      'Neighbourhood
+      'District
+      'City
+      'Line1
+      'Line2
+      'Line3
+      'Line4
+      'Line5
+      'AdminAreaName
+      'AdminAreaCode
+      'Province
+      'ProvinceName
+      'ProvinceCode
+      'PostalCode
+      'CountryName
+      'CountryIso2
+      'CountryIso3
+      'CountryIsoNumber
+      'SortingNumber1
+      'SortingNumber2
+      'Barcode
+      'POBoxNumber
+      'Label
+      'Type
+      'DataLevel
+      'Field1
+      'Field2
+      'Field3
+      'Field4
+      'Field5
+      'Field6
+      'Field7
+      'Field8
+      'Field9
+      'Field10
+      'Field11
+      'Field12
+      'Field13
+      'Field14
+      'Field15
+      'Field16
+      'Field17
+      'Field18
+      'Field19
+      'Field20
+
+end function
+```
+
+## Example implementation
+
+Try our example of Address Verification in a website using our sandbox environment.
+
+See the Pen [AddressLookup](https://codepen.io/GBGLoqate/pen/MWVQrbN) by GBG Loqate ([@GBGLoqate](https://codepen.io/GBGLoqate)) on [CodePen](https://codepen.io/). Please note, you must [accept Functional Cookies](/apis/address-capture/interactive-retrieve-v1.2/#) to view the Pen here.

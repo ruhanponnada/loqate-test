@@ -1,0 +1,150 @@
+---
+title: "Loqate REST Client Integration Guide (Formerly Matchcode360)"
+---
+
+This guide explains how to access Matchcode360 Web service products using their Identity Management Platform (IdM), available via REST WebServices, from a Web Client Environment (Web Browser), by using javascript. The document won't provide a general description of the available functionality, as this is already treated on other documents (Integration Fundamentals). Instead, it will focus on the Integration from Javascript case.
+
+The operations and the options available to get the data remains the same. The only difference from the classic server-to-server way is how, when and where the Authentication operation is performed and also how the Token obtained is used in the subsequent transactions. Also, the technology used on the browser to call the WebServices (javascript) will change from the one used on the servers, but this term is up to the customer.
+
+### Client Side Integration
+
+Integrating to WebServices from the client side (javascript) involves some problems that need to be addressed.
+
+1. Browsers are not allowed to send Http calls to other Origins different from the Origin serving the Web Page, unless CORS (Cross Origin Resource Sharing) is allowed on the remote server.
+2. Credentials used to Authenticate on the remote server might be stolen as all the javascript code is visible and easily accessible for the clients.
+
+In order to sort the point 1 out, IdM servers allow CORS communications. This means that client's browsers HTTP calls are allowed (only for certain applications). The browsers first check if the target server allow CORS calls and if so, they perform the HTTP call.
+
+In order to sort the point 2 out, the Authentication step needs to be done on the customer's server side (classic server-to-server communication), and the Token obtained should be shared to the client browser to be used for a fixed amount of time. Thus, if for some reason the Token is comprised, it will be valid only for a period of time (24 hours normally).
+
+Taking into account the above, the Client Side Integration process would be as follows:
+
+1. The customer's server perform an AuthenticateUser call to the existing Matchcode360 REST Services by using the usual credentials (Authentication and Fixed Duration Tokens).
+2. The customer's server stores internally the Token obtained in the above operation, which will be valid for 24 hours.
+3. When the customers's server receives a request to serve a Web Page, where the javascript calls to Matchcode360 will be performed from, the server will serve the Web Page and pass the Token obtained previously and the username to be used.
+4. The javascript code on the WebPage will use the username and Token passed to call Matchcode360 REST WebService, by running the executeCapture operation.
+5. The Token will be valid for 24 hours, and can be used in as many browser sessions as needed, as it can be used concurrently.
+6. The customer's server is recommended to have more than 1 valid Token available to be served to their clients. Thus, the server won't pass a Token that is about to expire, but other Token with some longer duration.
+7. A customer account can have 10 valid Tokens issued at the same time as many. Although, as already said, the same Token can be widely used for all their clients requests.
+
+### Authentication and Fixed Duration Tokens
+
+As already explained, the Authentication operation must happen at the customer's server side in order to get 1 or more available Tokens for the browser clients.
+
+This Authentication operation needs to send an additional parameter to let the IdM Servers know that the Token to be issued is a Fixed Duration Token. This means, the Token won't expire based on its use (for instance one hour later the last time it was used on any Transaction). Rather, it will expire always after a fixed amount of time from when it was issued.
+
+### Calling authenticateUser
+
+The call to authenticateUser comprises the endpoint, resource string and request details:
+
+```
+Request Type: GET
+Endpoint: https://idmp.gb.co.uk
+Resource: idm-core-rest-globalservices/<version>/authentication/authenticateUser
+Request: username=<yourUserName>&password=<yourPassword>&fixedduration=true
+```
+
+Where:
+
+`<version>`is the current version of the Matchcode360 service. For example, for version 21a (first version released in 2021)
+`<yourUserName>` and `<yourPassword>` are the credentials given to you by GBG
+
+Optionally, you can also pass the parameter ipAddress to authenticateUser to tie the searching to an IP address. If ipAddress is supplied to authenticateUser, then the same IP address must be provided with subsequent executeCapture requests using this authentication token.
+
+The parameters for authenticateUser are summarised in the table below:
+
+Type: AuthenticateUserRequest
+
+| Field Name | Type   | Description                                                                            |
+| ---------- | ------ | -------------------------------------------------------------------------------------- |
+| username   | String | The username used to access the system including domain name (e.g. user1@mydomain.com) |
+| password   | String | The user's password                                                                    |
+| ipAddress  | String | (Optional) The IPv4 Address of the requesting machine.                                 |
+
+Note that if an ipAddress is supplied to authenticateUser, then the same ipAddress must be provided with subsequent requests using this authentication.
+fixedduration String Mandatory for Client Side Integration.
+
+This generates a "fixed duration" Token, to be used from the browser client side.
+
+Values: true. Other value than "true" would cause the Token not to be "fixed duration"
+Example authenticateUser Request
+
+GET host/idm-core-rest-globalservices/21a/authentication/authenticateUser?username= user1@mydomain.com&password=myPassword&fixedduration=true
+
+**authenticateUser Response**<br/>
+
+The returned data from the authenticateUser request includes:
+
+Unique authentication token and
+Error/success codes and
+Connection details
+
+The full authenticateUser response from the REST service contains the following fields:
+
+| Field Name          | Type     | Description                                                                      |
+| ------------------- | -------- | -------------------------------------------------------------------------------- |
+| authenticationToken | String   | Unique authentication token to be passed into the subsequent Execute method call |
+| authenticationTime  | DateTime | Authentication time                                                              |
+| fullUserName        | String   | Full user name                                                                   |
+| userGuid            | String   | The unique identifier for the user                                               |
+| username            | String   | User name without domain                                                         |
+| domain              | String   | The domain name of the authenticated user                                        |
+| lastLogin           | DateTime | Last login for the user                                                          |
+| sessionExpiryTime   | DateTime | Session expiry date and time                                                     |
+
+In case of Error, these are the fields obtained:
+
+| Field Name    | Type     | Description                      |
+| ------------- | -------- | -------------------------------- |
+| httpStatus    | String   | Http Status code in the Response |
+| faultType     | DateTime | Sort of Error                    |
+| errorCode     | String   | Error code                       |
+| errorMessage  | String   | Error Message                    |
+| transactionId | String   | Transaction Id                   |
+
+**Example authenticateUser Response**
+
+```json
+{
+  "authenticationToken": "1C986C48-6CFD-492C-B305-04BAB6EB76AA",
+  "authenticationTime": "2017-06-02T09:55:30.255Z",
+  "fullUsername": " user1@mydomain.com",
+  "userGuid": "359628C7-4AC3-4B33-B7FA-31FC81A8479E",
+  "username": "user1",
+  "domain": "mydomain.com",
+  "domainType": "ORGANISATION",
+  "lastLogin": "2017-05-31T19:46:12.000Z",
+  "sessionExpiryTime": "2017-06-03T09:55:30.255Z"
+}
+```
+
+In case of Error, this would be an example of Error Response:
+
+```json
+{
+  "httpStatus": "200",
+  "faultType": "BUSINESSERROR",
+  "errorCode": "BE010009",
+  "errorMessage": "Invalid authentication details supplied.",
+  "transactionId": "4C29850E-613C-4535-98EF-8C0947D04117"
+}
+```
+
+### Running Transactions from javascript
+
+Once there're one or more valid Tokens available on the server side, either of them can be used to perform transaction calls from the browsers. As already mentioned, the same Token can be used concurrently from multiple browsers.
+
+When serving the Web Page, the server will write the selected valid Token on it, to be used on the subsequent javascript REST calls.
+
+The technology used on the client side to perform the calls is customer's choice. There are multiple options, from pure javascript code or using any of the well-known javascript libraries (such as JQuery).
+
+IdM Matchcode360 Servers are ready to receive CORS calls. So the client's javascript code must use CORS calls to perform the client-to-server HTTP Rest calls.
+
+The CORS HTTP calls are based on 2 inner calls:
+
+1. PreFlight calls for the browser to know if CORS is allowed on the remote server and which operations and headers are allowed.
+2. Actual HTTP REST call performing the transaction.
+
+The existing javascript libraries usually carry out both calls out-of-the-box, so developers don't need to care about it.
+
+The JSON / XML to be sent to perform a Matchcode360 REST Request and the fields content as well as the responses from the REST WebService are the same regardless the origin of the calls (server or client). Thus, the user can query other articles to get that information ([Integration Fundamentals](/product-support/matchcode/general-information/integration-fundamentals/)).

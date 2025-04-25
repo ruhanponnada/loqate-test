@@ -1,0 +1,53 @@
+---
+title: "Bank Validation"
+---
+
+Our Bank Validation service lets you query whether UK account number & sort code
+combinations are valid, or check IBANs for most European countries. Available
+via our API, you can find all you need to know about using the service here.
+
+<CardGroup>
+  <Card
+  href="https://www.loqate.com/en-gb/demos/bank/"
+  >
+    Demo
+  </Card>
+  <Card
+  href="https://www.loqate.com/en-gb/integrations/"
+  >
+    Integrations
+  </Card>
+  <Card
+  href="/apis/bank-validation/"
+  >
+    APIs
+  </Card>
+  <Card
+  href="/sandbox/"
+  >
+    Sandbox
+  </Card>
+
+</CardGroup>
+
+### Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="Is Bank Validation available worldwide?">
+    Most of the Bank Validation services are UK-only, however we do provide an
+    International service which covers EMEA. You can find out more about the
+    International service in [its API
+    documentation](https://www.loqate.com/api/InternationalBankValidation/Interactive/Validate/1/).
+  </Accordion>
+  <Accordion title="Why does the address listed for this branch not match its physical location?">
+    Manybanks use a central processing depot for their BACS and
+    othertransactions. Therefore a BACS check on a specific sort code may return
+    the bank's central depot rather than the specific branch address.
+  </Accordion>
+  <Accordion title="Will Bank Validation return information on the account holder?">
+    No, we do not hold any information on individual accounts. When you make a
+    Bank Validation request, you will only ever receive information back
+    regarding the sort code, with confirmation of whether the account number
+    matches that sort code.
+  </Accordion>
+</AccordionGroup>

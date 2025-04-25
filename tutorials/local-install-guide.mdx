@@ -1,0 +1,84 @@
+---
+title: "Installation Guide (Windows)"
+sidebarTitle: "Local Install Guide"
+---
+
+### Download the Loqate Engine
+
+Registered users will receive email notifications when a new Loqate engine becomes available. The FTP server location and credentials will be included with the email notifications. Please contact the support team: [support@loqate.com](mailto:support@loqate.com) for new user FTP login information or to register as a new user.
+
+Before you install, please make sure you have all [prerequisites](/getting-started/platforms/) installed for the chosen platform.
+
+Once inside the FTP server location, please select a folder from the list of available releases to download; then proceed to the next section “Install the Loqate Engine”.
+
+Install the Loqate Engine
+
+The installation of the Loqate engine is quite simple and it is described in the product release notes. The installation process is shown in detail in this section. For detailed information regarding installation, please refer to [installers](/installers/).
+
+In the installation directory, select the **setup.exe** file or the **setup_x64.exe** (for 32-bit systems or 64-bit systems, respectively). Double clicking on that file will launch the Loqate Install Wizard, as shown below.
+
+<Frame caption="">
+  <img src="/images/95256a51-installer-1-apr2020.png" />
+</Frame>
+
+_Figure 1: Loqate Install Wizard Welcome panel_
+
+After selecting “Next”, the “Select Components” panel will be displayed, as shown in the figure below. To use the Loqate engine with Java both the “C++ API” and the “Java API” options should be selected. Then click “Next”.
+
+<Frame caption="">
+  <img src="/images/a703a0cb-installer-2-apr2020.png" />
+</Frame>
+
+_Figure 2: Select Components panel_
+
+Next the user must select the installation directory for the Loqate engine. Select the default installation directory C:\Loqate.
+
+_Figure 3: Choose Destination Location panel_
+
+The “Start Copying Files” panel will be displayed. Please click “Next”.
+
+<Frame caption="">
+  <img src="/images/b5e2e1a1-setup2-300x231.png" />
+</Frame>
+
+_Figure 4: Start Copying Files panel_
+
+The API installation is then complete. To install reference data and certified products, please refer to the [data installation guide](/installers/data-installation-and-update-process/).
+
+<Frame caption="">
+  <img src="/images/a476eb91-installer-5-apr2020.png" />
+</Frame>
+*Figure 5: Loqate Install Wizard Complete panel*
+
+### Sample US Data
+
+When selecting the components to install (see Figure 2) there will be an option to install US Sample Data. This will populate the data directory with a rd_US_vfy.lfs file that can be used for functionality and implementation testing if full datasets are not yet accessible or available.
+
+General information about the dataset can be found on the GKR tab on the lqtDemo.exe application.
+
+<Frame caption="">
+  <img src="/images/d2301448-installer-6-apr2020.png" />
+</Frame>
+
+_Figure 6: GKR tab on lqtDemo.exe_
+
+The specification for the US Sample Data is as follows:
+
+- The build date for the data may change, and can be found on the “Interpreted GKRInfo output” panel. Look for the field named “Build Date” (US format). Any new addresses (i.e. new houses or apartment complexes) built after the reference data “Build Date” will not verify successfully.
+
+- The “Interpreted GKRInfo output” panel will also include the statistical coverage of the file, by component.
+
+- Sample data is included from California (CA) and Iowa (IA). The cities listed below represent a subset of localities from one or more counties.
+
+  - **California**: Sacramento, Rio Vista, Carmichael, Citrus Heights, Courtland, Elk Grove, Elverta, Fair Oaks, Folsom, Galt, Herald, Hood, Isleton, Mcclellan, Mather, North Highlands, Orangevale, Gold River, Rancho Cordova, Represa, Rio Linda, Roseville, Ryde, Rancho Murieta, Sloughhouse, Walnut Grove, Wilton, Rancho Cordova, Antelope
+  - **Iowa**: Early, Lytton, Nemaha, Newell, Sac City, Galva, Schaller, Arthur, Auburn, Breda, Kiron, Carnarvon, Lake View, Odebolt, Wall Lake
+
+- Some sample APO/FPO/DPO data is also provided for Armed Forces Americas (AA), Armed Forces Africa (AE), and Armed Forces Pacific (AP).
+
+- For all records, the SubAdministrativeArea field is changed to “Sample Data, Not For Production”.
+
+- Additional files will be installed to the data directory to allow functionality on the sample data, including US lexicon files (starting “lx\_”) and worldwide context, lexicon, and format files.
+
+- The sample data provides evaluation of Verify only. Geocode data and further enrichment data are not provided with the sample data.
+
+- Customers familiar with the Query Tool on the lqtDemo application can enter “Sample Data” into the SubAdministrativeArea field to filter and display raw record data from the sample dataset.

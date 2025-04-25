@@ -1,0 +1,38 @@
+---
+title: "How Are Geocode Accuracy Codes Generated?"
+sidebarTitle: "Geocode Accuracy Codes"
+---
+
+Recently, a Loqate customer sent us a question about geocode accuracy codes returned by The Loqate Engine. The addresses were next to each other on the same street, but had three different codes. It doesn’t seem to make sense that they would have different codes at first glance. Looking under the covers a bit at how geocodes and the corresponding accuracy codes are computed reveals why and when this happens.
+
+Here’s the example:
+
+- 11 Main Street – P4
+- 12 Main Street – A3
+- 13 Main Street – I4
+
+With the 2012Q4 release, we get another piece of information, the new Geocode Distance field. This is a measure of the how close the address is to the actual reference data entry in meters. This new measurement is a great way to build more confidence in applications that use geocodes. The addresses above yielded this new information:
+
+- 11 Main Street – P4 `<blank>`
+- 12 Main Street – A3 63.211805
+- 13 Main Street – I4 21.070602
+
+Let’s do the easy one first – P4. This means that an entry in the reference data in the Loqate Global Knowledge Repository exactly matches 11 Main Street. Why is the GeoDistance field blank? Well, since we have a single point we’re reliant on the quality of the underlying data provider. Most premise level data providers say their GPS data points are within an accuracy of around 5 meters but since we have no corroborating data we leave this field blank.
+
+The second point to consider is 13 Main Street. An I4 result says that we are valid to the premise number. It is just that premise number is derived a different way. A little research with the GKR told us that there is not a reference data point for 13 Main Street. However, another reference data point at 15 Main Street does exist. It makes sense that not every address is geocoded. The information may not be available or the size of the reference file may get so big that it becomes hard to use.
+
+What does exist is a vector or line connecting the reference data at 11 Main Street and 15 Main Street. At this point, The Loqate Engine makes the assumption that 13 Main Street is between the other two points on this line. The Geocode Distance field tells us that we are no further than 21 meters from one of the reference data points. That’s still pretty close. Again, a picture may be better:
+
+<Frame caption="">
+  <img src="/images/7487a912-5qb94-Geocode-Blog-2.jpg" />
+</Frame>
+
+The last data point 12 Main St yields an A3. It seems like it should be somewhere near the other two houses. Why an A3? The first reason is that 12 Main Street, unlike the other two addresses, does not lie directly on a vector between two point like 13 Main Street and it doesn’t have reference data like 11 Main Street. We’re assuming like most places that odd numbered addresses are on one side of the street and even numbered addresses are on the opposite side of the street. In this case, we are also assuming that reference data does not exist for even numbered premises.To compute the geocode, the engine pulls another point on the street out of the GKR . The geocode algorithm positions 12 Main St somewhere within the polygon created and tells us the diagonal distance of the polygon. Again a picture:
+
+<Frame caption="">
+  <img src="/images/06fafaed-c8mvu-Geocode-Blog-3.jpg" />
+</Frame>
+
+One last question – Why an A3 rather than an A4? Loqate is conservative when it comes to computing results. Because an A geocode is not directly next to a reference point nor directly on a vector, then the level indicates to what level we could actually call the geocode accurate. In this case, it is the street level and not the premise number level. The geocode still may be totally usable for the application. We are telling you exactly what we did and being conservative with the results unlike some other systems.
+
+Understanding geocode results isn’t so hard. Now that we have both a Geocode Accuracy Code and the Geocode Distance field, applications can be better and smarter.

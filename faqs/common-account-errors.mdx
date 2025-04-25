@@ -1,0 +1,75 @@
+---
+title: "Common Account Errors"
+---
+
+<AccordionGroup>
+  <Accordion
+  title="Why do I get the error 'License key is no longer valid, it may have expired'?"
+  >
+    This error is generated whenever you try and do a lookup using a key that has been deleted, or has expired. Licence keys can be deleted through your account online; if you do this by mistake you’ll need to contact us to get them reinstated. With annual user licences available for the Royal Mail's Postcode Address File (PAF®) data, this error will be displayed if you have not renewed and the licence has expired, again please contact us.
+  </Accordion>
+  <Accordion
+  title="What does the error 'The licence key has reached its daily limit, please check your settings or wait until tomorrow' mean?"
+  >
+    Each per-click licence key has a setting that dictates the total credit it can consume from the account on a single calendar day. This is a security setting to help protect your credit from being consumed too quickly. It can be changed within the edit wizard of the licence key in question. If you are using a user licence key then the daily limit will be set at the time of purchase, in accordance with our fair usage policy.
+  </Accordion>
+  <Accordion
+  title="What does the error 'This license key cannot be used from this website, the security settings for the license key may not include this domain' mean?"
+  >
+    Within your key settings you have the option to limit our service to only accept requests on that key that are coming from specified website addresses. This is a security feature to prevent your key from being used anywhere other than the site you intended. If you set this up and get this error message please check the URL is formatted correctly and is available.The website address will be detailed in the table in the email.
+  </Accordion>
+  <Accordion
+  title="Why do I have the error 'Your credit has run out'?"
+  >
+    This means your account has run out of credit. An error message email will be generated when a user tries to do a lookup. The error will usually show the IP, or URL where the request originated and details of the service that was used. To fix this, [log into your account](https://account.loqate.com/Login/) and top up with credit.
+  </Accordion>
+  <Accordion
+  title="What does the error message 'Free Service Limit Exceeded' mean?"
+  >
+    The Free Service Limit Exceeded error occurs automatically when there are a significantly higher number of uncharged requests in comparison to charged. Forexample,when using the address validation service, a find (free) request should usually be followed by a retrieve (charged) request. This error is highlighting an imbalance in free and charged calls to the service. Check the usage on your account under Menu > Reporting to see if the service has been installed correctly.If the calls to the service are dramaticallyimbalancedplease [get in touch](https://www.loqate.com/en-gb/contact/customer-support/#form) with our Support team.
+  </Accordion>
+  <Accordion
+  title="What does the error message 'Request not allowed from this URL' mean?"
+  >
+    Each of ourservices can have its own security settings. One of these is an allowed URL list, which restricts your service for use on specific web pages.This error message is highlighting that the security you have in place on your account is working as it should by blocking off any unknown URLs from accessing your service.
+
+    The URL in question can be found in the ‘Additional information’ section of the error message.
+
+    * If you recognise the URL you might like to add it to your list of allowedURLs.
+    * If you do not recognise the URL you can ignore this message with the understanding that your security settings are working as intended.
+    * Blank source URL? Blank URLs can be caused due toa number of reasons. This can be caused by internal coding, how the service is being used or (most commonly) by pop-up blockers used by customers which can occasionally remove the URL from the request. We block these URLs too because we can’t be certain of the source.
+
+    You can find these settings in your account under the security tab for each key.
+
+  </Accordion>
+  <Accordion
+  title="Why do I get the error 'Request not allowed from this IP'?"
+  >
+    In your account, there area number ofoptional security settings, one of these being an ‘allowed IP list’. This error has occurred due to a request coming through to us from an IP not currently on this list. The IPs in question can be found in the “Additional information” section of your error message.If you recognise the IP address then you can add it to your list of allowedIPs. You can add IPs under 'Limit by IP' in your account; you'll find this under Menu > Your Services > Select the specific Key and select 'Limits'.
+  </Accordion>
+  <Accordion
+  title="What is the account error 'Surge protector triggered'?"
+  >
+    The surge protector detects when there is a notable or out of average surge in account usage. This protects against spam attacks, problems with code looping requests but above all will protect the account credit from being drained. An alert is automatically sent out when the surge protector is triggered and the service is disabled.
+
+    This setting is commonly triggered when you are load testing the service. While this is not a malicious act this spike in requests will knock out theaccountsaverage usage. We recommend to turn off the surge protector while testing and turning it back on when the testing is completed.
+
+    If you know what triggered the surge, such testing or an unusually busy period, or have fixed the issue, and you'd like to activate your account again, please [get in touch](https://www.loqate.com/en-gb/contact/customer-support/#form) with our Support team.
+
+  </Accordion>
+  <Accordion
+  title="What does the error 'Unknown Key' mean?"
+  >
+    This error occurs when the key submitted is malformed or incorrect. Keysshould be in the format AA11-AA11-AA11-AA11 when submitted and should match one of the keys in your account. Please make sure that the key you are using in your request is correct.
+  </Accordion>
+  <Accordion
+  title="Why do I have the error 'Sandbox mode is not available on this endpoint'?"
+  >
+    This error is triggered when you attempt to send a request to a non ‘Capture’ API when ‘Sandbox Mode’ is enabled on a key.Sandbox mode uses a fictitious address dataset. Sandbox mode allows you to test your integration without using credit, however, this mode only applies to the /Capture/Interactive/... services. Please ensure you are using only these services when testing using a ‘Sandbox’ enabled key. Alternatively, you can [contact our Support team](https://www.loqate.com/en-gb/contact/customer-support/#form) and they will disable the Sandbox mode for you.
+  </Accordion>
+  <Accordion
+  title="Why is a 'Management Key' required?"
+  >
+    Certain services within the ‘Management’ family of services require a ‘Management key’ to use. These can only be created by the support team atLoqate. If you believe you require a management key please [contact our Support team](https://www.loqate.com/en-gb/contact/customer-support/#form) directly and they would be more than happy to help.
+  </Accordion>
+</AccordionGroup>

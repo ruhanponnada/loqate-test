@@ -1,0 +1,64 @@
+---
+title: "lqtServer"
+sidebarTitle: "lqtServer"
+---
+
+## Static Public Member Functions
+
+### static lqtServer\* create ()
+
+This member function returns a pointer to a newly created lqtServer instance.
+
+### static void destroy (lqtServer\* pServer)
+
+This member function destroys all resources associated with the supplied lqtServer pointer.
+
+## Public Member Functions
+
+### void init (const char\* path)
+
+This member function initializes a server instance using the loqate.ini configuration file located at the supplied path.
+
+## void shutdown ()
+
+This member function shuts down the current server instance
+
+### int open ()
+
+This member function creates a new session and returns the session ID.
+
+### void close (int ID)
+
+This member function closes the session referenced by the supplied session ID.
+
+### serverStatus getStatus ()
+
+This member function returns a serverStatus enumeration value giving the current server status.
+
+### const char\* getLastError ()
+
+This member function returns a string containing textual detail of the outcome of the most recent member function call.
+
+### const char* getOption (const char* option)
+
+This member function returns the string value associated with the supplied option name.
+
+### void setOption (const char* option, const char* value)
+
+This member function sets the supplied option name with the supplied option value.
+
+### void log (const char\* msg)
+
+This member function logs the supplied string to the Loqate log.
+
+### void process (const lqtInputRecord* inputRecord, const lqtProcessList* processList, lqtProcessResult\* processResult)
+
+This member function performs the supplied lqtProcessList on the supplied lqtInputRecord, returning results in the supplied lqtProcessResult.
+
+### const char\* getVersion ()
+
+This member function returns the version number of the Loqate server.
+
+### const char* readRegistry (const char* tableName, const char\* key)
+
+This member function returns the value of the key from the given Loqate table.

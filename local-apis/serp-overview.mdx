@@ -1,0 +1,132 @@
+---
+title: "SERP Overview"
+sidebarTitle: "SERP Overview Documentation"
+---
+
+## What is SERP
+
+The Address Accuracy Software Evaluation and Recognition Program (SERP) ensures the best postage rates for your mailing list.
+
+### Platform Availability
+
+SERP is currently only available on the following platforms:
+
+- Windows 32
+- Windows 64
+- Linux 64
+- AIX 64
+
+### Release Cycle
+
+Please note, SERP dataset expiration dates are set by the postal authority. Please ensure that you have the latest library and data installed to avoid loss of service through these products.
+
+### How To Run SERP
+
+There are two ways to run the SERP certified certification in the Loqate Engine:
+
+1. You may invoke the SERP certification process for Canada directly by adding the process “SERP” to the process-list.
+
+In batch mode, run **lqtbatch** with the process set as “serp”.
+
+lqtbatch will also generate a SERP address accuracy report, if you specify the option “-r SERP” as follows:
+
+- lqtbatch … -p serp -r SERP
+
+2. You may invoke the certification process by calling the “verify” process while setting the server-option “CertifiedCountryList” to “CAN” – this will internally invoke the SERP process for Canadian addresses in your dataset. As we extend our certification process support to other countries, you will be able to specify the countries for which you want to run the certified process (as opposed to the Loqate “verify” process) through comma-separated list of country code values for the “CertifiedCountryList” option.
+
+### Input Requirement
+
+**Important note:**SERP process requires the input addresses to be in thefollowing format as input. The input headers must also match Loqate address fields, found on the support site [here](/field-descriptions/addfields/).
+
+- Address1 (required)
+- Address2 (optional)
+- Locality (optional)
+- AdministrativeArea (optional)
+- PostalCode (optional)
+- Country (required)
+
+### Output component fields
+
+The following page include detailed information regarding the SERP Fields:
+
+- [SERP Fields](/field-descriptions/serp-fields/)
+
+### Sample outputs:
+
+1. Input address example: 550 BURRARD ST RM 1230 VANCOUVER BC V6C2K2
+
+|                  |            |
+| ---------------- | ---------- |
+| **Result Codes** | **Output** |
+| SerpStatusEx     | V          |
+| Questionable     | Empty      |
+
+|                          |                   |
+| ------------------------ | ----------------- |
+| **Components**           | **&#xA0;**        |
+| **Address Field**        | **Sample Output** |
+| PremiseNumber            | 550               |
+| ThoroughfareName         | BURRARD           |
+| ThoroughfareTrailingType | ST                |
+| SubBuildingType          | RM                |
+| SubBuildingNumber        | 1230              |
+| Locality                 | VANCOUVER         |
+| AdministrativeArea       | BC                |
+| PostalCodePrimary        | V6C2K2            |
+
+2. Input address example: PO BOX 1200 SUCC POINTE-CLAIRE POINTE-CLAIRE QC H9R4R6
+
+|                  |            |
+| ---------------- | ---------- |
+| **Result Codes** | **Output** |
+| SerpStatusEx     | V          |
+| Questionable     | Empty      |
+
+|                                   |                   |
+| --------------------------------- | ----------------- |
+| **Components**                    | **&#xA0;**        |
+| **Address Field**                 | **Sample Output** |
+| PostBoxType                       | 1200              |
+| DeliveryInstallationType          | SUCC              |
+| DeliveryInstallationQualifierName | POINTE-CLAIRE     |
+| Locality                          | POINT-CLAIRE      |
+| AdministrativeArea                | QC                |
+| PostalCodePrimary                 | H9R4R6            |
+
+3. Input address example: GD STN MAIN PARKSVILLE BC V9P2G2
+
+|                  |            |
+| ---------------- | ---------- |
+| **Result Codes** | **Output** |
+| SerpStatusEx     | V          |
+| Questionable     | Empty      |
+
+|                                   |                   |
+| --------------------------------- | ----------------- |
+| **Components**                    | **&#xA0;**        |
+| **Address Field**                 | **Sample Output** |
+| GeneralDelivery                   | GD                |
+| DeliveryInstallationType          | STN               |
+| DeliveryInstallationQualifierName | MAIN              |
+| Locality                          | PARKSVILLE        |
+| AdministrativeArea                | BC                |
+| PostalCodePrimary                 | V9P2G2            |
+
+4. Input address example: RR 1 LOT 89 CONC 3 MARYSTOWN NL A0E2M0
+
+|                  |            |
+| ---------------- | ---------- |
+| **Result Codes** | **Output** |
+| SerpStatusEx     | V          |
+| Questionable     | Empty      |
+
+|                    |                   |
+| ------------------ | ----------------- |
+| **Components**     | **&#xA0;**        |
+| **Address Field**  | **Sample Output** |
+| RouteType          | RR                |
+| RouteNumber        | 1                 |
+| AdditionalContent  | LOT 89 CONC       |
+| Locality           | MARYSTOWN         |
+| AdministrativeArea | NL                |
+| PostalCodePrimary  | A0E2M0            |

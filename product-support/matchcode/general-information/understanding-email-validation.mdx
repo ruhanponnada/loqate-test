@@ -1,0 +1,79 @@
+---
+title: "Understanding Email Validation"
+---
+
+### Why Use Email Validation
+
+At a high level GBG’s real-time email verification service determines email address:
+
+- Deliverability
+- Quality
+- Detailed information of the email address
+
+It is designed to help GBG clients improve their on-boarding process or existing database while also making more informed decisions about how they want to handle undeliverable or potentially risky email addresses.
+
+While some may wish to use a simple pass/ fail approach described below, others may have more nuanced requirements from the service and this guide will also help them by offering advice on common scenarios, while also giving detail on all flags and response codes to allow customers to adapt the service to their needs.
+
+Examples of how the email validation API helps customers understand their emails include:
+
+- 50 email address verification tests
+- Calculates a quality score
+- Auto-corrects common domain misspellings and syntax errors,
+- Removes extraneous characters
+- Flags risky emails to send to such as Bots and Greylisters
+
+### Two suggested approaches
+
+Different organisations will have differing demands on the usage of Email Validation, as such, it is suggested that developers carefully evaluate each and every returned response flag in order to determine the most effective way to meet their specific business needs.
+
+Due to the sheer complexity of email validation, it’s challenging to provide guidance that will work for all customers.
+
+Howevere, below are two common approaches that customers may choose to adopt, as a starting point.
+
+### Simple: IsDeliverable
+
+The simplest way to use the service is to look at the IsDeliverable field. This field will return `true`, `false` or `unknown`.
+
+If your primary concern is to be able to send out email with the lowest possible chance of a hard bounceback then this field alone will suffice. However, this field does not take spamtraps, vulgarities, bots or other factors into consideration: it simply indicates if the service was able to verify the deliverability of an email address with the host mail server.
+
+This does not measure the overall integrity of the email address.
+
+#### Qualitative
+
+Alternatively a more nuanced approach in deciding whether or not to accept an email address as valid, the below represents that some customers will adopt:
+
+**Accept Email Address:**
+
+- IsGood = Email is good or Email is probably good
+- AND
+- IsRole = False
+- AND
+- IsBogus = False
+- It is also worth considering:
+  - CatchAllDomain
+
+#### Reject Email Address:
+
+- IsGood = Email is bad or Email is probably bad
+- OR
+- IsRole = True
+- OR
+- IsBogus = True
+- It is also worth considering:
+  - IsCatchAllDomain
+  - KnownGreyLister
+  - MailServerTemporarilyUnavailable
+  - ServerConnectTimeout
+  - MailBoxTimeout
+  - TemporaryReject
+
+### Unknown Status:
+
+- IsGood = Unknown
+- It is also worth considering:
+  - IsCatchAllDomain
+  - KnownGreyLister
+  - MailServerTemporarilyUnavailable
+  - ServerConnectTimeout
+  - MailBoxTimeout
+  - TemporaryReject

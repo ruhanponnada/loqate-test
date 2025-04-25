@@ -1,0 +1,324 @@
+---
+title: "Saas Platform Capture Find And Retrieve"
+description: ""
+sidebarTitle: "Saas Platform Capture Find And Retrieve"
+---
+
+Address Capture consists of two main API requests: a Find request is used to narrow down a possible list of addresses; and a Retrieve request is used to retrieve a fully formatted address.
+
+A typical address search is made up of a series of Find requests, fired on user input, followed by a Retrieve based on the user selection.
+
+<Warning>
+  Please note that the Saas Platform is currently only available in North
+  America.
+</Warning>
+
+## Base URL
+
+All API requests use the same base URL of:
+
+```
+https://api-us.platform.loqate.com
+```
+
+<Note>
+  Note:we don't support API connections using HTTP - all calls should use HTTPS.
+</Note>
+
+## Authentication
+
+API requests are authenticated using your API key as the value of a `key` parameter on the request.
+
+An authenticated sample request would therefore look like this:
+
+```
+https://api-us.platform.loqate.com/address-capture/find?text=GBG PLC&key=[insert your key here]
+```
+
+## Find (GET)
+
+### Base URL
+
+```
+https://api-us.platform.loqate.com
+```
+
+## Request parameters
+
+| Parameter    | Required | Type    | Description                                                                                                                                                                                                                                                                                                                                |
+| ------------ | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Key          | Required | string  | The key used to authenticate with the service.                                                                                                                                                                                                                                                                                             |
+| Text         | Required | string  | The search text to find. Ideally a postcode or the start of the address.                                                                                                                                                                                                                                                                   |
+| Countries    | Optional | array   | A container for the search. This should only be another Id previously returned from this service when the Type of the result was not 'Address'.                                                                                                                                                                                            |
+| Limit        | Optional | string  | The maximum number of results to return.                                                                                                                                                                                                                                                                                                   |
+| Container    | Optional | string  | A container for the search. This should only be another Id previously returned from this service when the Type of the result was not 'Address'.                                                                                                                                                                                            |
+| IsMiddleware | Optional | boolean | Whether the API is being called from a middleware implementation (and therefore the calling IP address should not be used for biasing).                                                                                                                                                                                                    |
+| Origin       | Optional | string  | A starting location for the search. This can be the name or ISO 2 or 3 character code of a country, WGS84 coordinates (comma separated) or IP address to search from.                                                                                                                                                                      |
+| Language     | Optional | string  | The preferred language for results. This should be a 2 or 4 character language code (e.g. en, fr, en-gb, en-us etc.).                                                                                                                                                                                                                      |
+| Bias         | Optional | boolean | When Bias is set to True and when the Origin value provided is WGS84 coordinates or an IP address, this allows the user to find addresses that are near to them with less entry. When Bias is set to False, information provided in the Origin field will be used to prefer address matches from the country that Origin field identifies. |
+| Filters      | Optional | string  | You can include or exclude certain type of addresses or locations from the address matches presented back to end user. All Filters are currently operating on the basis of an exact match. Multiple Filters can be provided in the same request.                                                                                           |
+
+## Return fields
+
+The service returns an object with a key of items that contains an array of possible matches.
+
+| Field       | Type   | Description                                                                                                                                                               |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id          | string | This can be an address Id or a container Id for further results.                                                                                                          |
+| text        | string | The name of the result.                                                                                                                                                   |
+| type        | string | If the Type is 'Address' then the Id can be passed to the Retrieve service. Any other Id should be passed as the Container to a further Find request to get more results. |
+| description | string | Descriptive information about the result.                                                                                                                                 |
+| highlight   | string | A list of number ranges identifying the matched characters in the Text and Description.                                                                                   |
+| language    | string | The language of the result                                                                                                                                                |
+
+## Example request
+
+Add your API key into the code below for a sample FIND request:
+
+```
+https://api-us.platform.loqate.com/address-capture/find?text=GBG PLC&key=[insert your key here]
+```
+
+## Example response
+
+```json
+{
+  "items": [
+    {
+      "id": "GB|RM|A|27964893|A5|ENG",
+      "text": "Suzuki GB plc Winnall Down Farm Alresford Road Winchester SO21 1FP",
+      "type": "Address",
+      "description": "",
+      "highlight": "7-9,10-13",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|50958735|A3|ENG",
+      "text": "Toyota GB plc Aspen Building Vantage Point Business Village Mitcheldean GL17 0AF",
+      "type": "Address",
+      "description": "",
+      "highlight": "7-9,10-13",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|12243871|ENG",
+      "text": "Toyota (GB) plc PO Box 449 Epsom KT18 5WG",
+      "type": "Address",
+      "description": "",
+      "highlight": "12-15",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|646784|A1|ENG",
+      "text": "Suzuki GB plc Lloyd House 471-478 Garretts Green Lane Birmingham B33 0SG",
+      "type": "Address",
+      "description": "",
+      "highlight": "7-9,10-13",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|28091924|ENG",
+      "text": "Suzuki GB plc Steinbeck Crescent Snelshall West Milton Keynes MK4 4AE",
+      "type": "Address",
+      "description": "",
+      "highlight": "7-9,10-13",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|12243866|ENG",
+      "text": "Toyota (GB) plc Yew Tree Bottom Road Epsom KT18 5UX",
+      "type": "Address",
+      "description": "",
+      "highlight": "12-15",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|12243943|ENG",
+      "text": "Toyota (GB) plc PO Box 327 Epsom KT18 5XQ",
+      "type": "Address",
+      "description": "",
+      "highlight": "12-15",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|27695927|A1|ENG",
+      "text": "Suzuki GB plc PO Box 450 Brighton BN1 1SN",
+      "type": "Address",
+      "description": "",
+      "highlight": "7-9,10-13",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|26871817|A5|ENG",
+      "text": "Home Service GB Ltd South Staffordshire Water plc Green Lane Walsall WS2 7PD",
+      "type": "Address",
+      "description": "",
+      "highlight": "13-15,46-49",
+      "language": "ENG"
+    },
+    {
+      "id": "GB|RM|A|4624695|A3|ENG",
+      "text": "Eware Interactive GB Group plc The Foundation Herons Way Chester Business Park Chester CH4 9GB",
+      "type": "Address",
+      "description": "",
+      "highlight": "18-20,27-30",
+      "language": "ENG"
+    }
+  ]
+}
+```
+
+## Retrieve (GET)
+
+### Base URL
+
+```
+https://api-us.platform.loqate.com
+```
+
+## Request parameters
+
+| Parameter | Required | Type   | Description                                                     |
+| --------- | -------- | ------ | --------------------------------------------------------------- |
+| Key       | Required | string | The key used to authenticate with the service.                  |
+| id        | Required | string | An Id resulting from a Find method to retrieve the details for. |
+
+## Return fields
+
+| Field                | Type   | Description                                                                                                                                                                         |
+| -------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id                   | string | The id of the result.                                                                                                                                                               |
+| domesticId           | string |                                                                                                                                                                                     |
+| language             | string | The language of this result.                                                                                                                                                        |
+| languageAlternatives | string |                                                                                                                                                                                     |
+| department           | string | The 'department' part of the address.                                                                                                                                               |
+| company              | string | The 'company' part of the address.                                                                                                                                                  |
+| subBuilding          | string | The 'subBuilding' part of the address.                                                                                                                                              |
+| buildingNumber       | string | The building number of the address.                                                                                                                                                 |
+| buildingName         | string | The building name of the address.                                                                                                                                                   |
+| secondaryStreet      | string | The 'secondaryStreet' part of the address.                                                                                                                                          |
+| street               | string | The 'street' part of the address.                                                                                                                                                   |
+| block                | string | The 'block' part of the address.                                                                                                                                                    |
+| neighbourhood        | string | The 'neighbourhood' part of the address.                                                                                                                                            |
+| district             | string | The 'district' part of the address.                                                                                                                                                 |
+| city                 | string | The 'city' part of the address.                                                                                                                                                     |
+| line1                | string | A formatted first line of the address. The line 1-5 properties attempt to format an address into usable lines. Depending on the length of the address the later lines may be empty. |
+| line2                | string | A formatted second line of the address.                                                                                                                                             |
+| line3                | string | A formatted third line of the address.                                                                                                                                              |
+| line4                | string | A formatted fourth line of the address.                                                                                                                                             |
+| line5                | string | A formatted fifth line of the address.                                                                                                                                              |
+| adminAreaName        | string | The 'adminAreaName' part of the address.                                                                                                                                            |
+| adminAreaCode        | string | The 'adminAreaCode' part of the address.                                                                                                                                            |
+| province             | string | The 'province' part of the address.                                                                                                                                                 |
+| provinceName         | string | The 'provinceName' part of the address.                                                                                                                                             |
+| provinceCode         | string | The 'provinceCode' part of the address.                                                                                                                                             |
+| postalCode           | string | The 'postalCode' part of the address.                                                                                                                                               |
+| countryName          | string | The 'countryName' part of the address.                                                                                                                                              |
+| countryIso2          | string | The two character ISO representation of the address country.                                                                                                                        |
+| countryIso3          | string | The three character ISO representation of the address country.                                                                                                                      |
+| countryIsoNumber     | string | The numerical ISO representation of the address country.                                                                                                                            |
+| sortingNumber1       | string |                                                                                                                                                                                     |
+| sortingNumber2       | string |                                                                                                                                                                                     |
+| barcode              | string |                                                                                                                                                                                     |
+| poBoxNumber          | string | The PO Box Number part of the address.                                                                                                                                              |
+| label                | string | A formatted label for the address.                                                                                                                                                  |
+| type                 | string |                                                                                                                                                                                     |
+| dataLevel            | string |                                                                                                                                                                                     |
+| source               | string |                                                                                                                                                                                     |
+
+## Example request
+
+Add your API key into the code below for a sample RETRIEVE request:
+
+```
+https://api-us.platform.loqate.com/address-capture/retrieve?id=GB|RM|A|4624695|ENG&key=[insert your key here]
+```
+
+## Example response
+
+```json
+{
+  "items": [
+    {
+      "id": "GB|RM|A|4624695|A3",
+      "domesticId": "4624695",
+      "language": "ENG",
+      "languageAlternatives": "",
+      "department": null,
+      "company": "GBG plc",
+      "subBuilding": "",
+      "buildingNumber": "",
+      "buildingName": "The Foundation",
+      "secondaryStreet": "",
+      "street": "Herons Way",
+      "block": null,
+      "neighbourhood": null,
+      "district": "Chester Business Park",
+      "city": "Chester",
+      "line1": "The Foundation",
+      "line2": "Herons Way",
+      "line3": "Chester Business Park",
+      "line4": "",
+      "line5": "",
+      "adminAreaName": "Cheshire West and Chester",
+      "adminAreaCode": null,
+      "province": "Cheshire",
+      "provinceName": "Cheshire",
+      "provinceCode": null,
+      "postalCode": "CH4 9GB",
+      "countryName": "United Kingdom",
+      "countryIso2": "GB",
+      "countryIso3": "GBR",
+      "countryIsoNumber": "826",
+      "sortingNumber1": "30213",
+      "sortingNumber2": null,
+      "barcode": "(CH49GB1AR)",
+      "poBoxNumber": null,
+      "label": "Phonelink plcThe FoundationHerons WayChester Business ParkCHESTERCH4 9GBUNITED KINGDOM",
+      "type": 1,
+      "dataLevel": 0,
+      "source": "P"
+    },
+    {
+      "id": "GB|RM|A|4624695|A3",
+      "domesticId": "4624695",
+      "language": "CYM",
+      "languageAlternatives": "",
+      "department": null,
+      "company": "GBG plc",
+      "subBuilding": "",
+      "buildingNumber": "",
+      "buildingName": "The Foundation",
+      "secondaryStreet": "",
+      "street": "Herons Way",
+      "block": null,
+      "neighbourhood": null,
+      "district": "Chester Business Park",
+      "city": "Caer",
+      "line1": "The Foundation",
+      "line2": "Herons Way",
+      "line3": "Chester Business Park",
+      "line4": "",
+      "line5": "",
+      "adminAreaName": "Cheshire West and Chester",
+      "adminAreaCode": null,
+      "province": "Cheshire",
+      "provinceName": "Cheshire",
+      "provinceCode": null,
+      "postalCode": "CH4 9GB",
+      "countryName": "United Kingdom",
+      "countryIso2": "GB",
+      "countryIso3": "GBR",
+      "countryIsoNumber": "826",
+      "sortingNumber1": "30213",
+      "sortingNumber2": null,
+      "barcode": "(CH49GB1AR)",
+      "poBoxNumber": null,
+      "label": "Phonelink plcThe FoundationHerons WayChester Business ParkCAERCH4 9GBUNITED KINGDOM",
+      "type": 1,
+      "dataLevel": 0,
+      "source": "W"
+    }
+  ]
+}
+```

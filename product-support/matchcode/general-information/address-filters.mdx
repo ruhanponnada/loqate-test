@@ -1,0 +1,29 @@
+---
+title: "Address Filters"
+---
+
+Filtering provides a way to ‘filter out’ addresses, which have been found by the web service, which match a particular kind of address. Addresses which match an enabled filter are excluded from the IDM results and are not returned in the overall response.
+
+Each supported filter is identified by a code. To enable a particular filter, a new element needs to be added to the “additionalData” of the “requestData” of the IDM request. This element is a key-value pair, whose key must be the filter code and whose value should be a “yes” or “no” value. Providing “yes” informs the service that address types covered by this filter should be returned, while providing “no” informs the service that those addresses should not be returned (should be filtered out).
+
+Multiple filters may be specified in a request, if an address matches any of the enabled filters, then the address is not returned.
+
+### Available Filters
+
+Below are the available filters for use, some are only supported by certain profiles and some are further only supported by certain datasets used in conjunction with one of the profiles.
+
+| Name        | Notes                                                                     | Profile(s) Supported                                                             | Dataset(s) Supported                                                     |
+| ----------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ADDRPROV    | Filter addresses with logical status of 'provisional'                     | Matchcode AddressBase, MultiDatabase                                             | ABP, ABL                                                                 |
+| ADDRAPPR    | Filter addresses with logical status of 'approved'                        | Matchcode AddressBase, MultiDatabase                                             | ABP, ABL                                                                 |
+| ADDRALT     | Filter addresses with logical status of 'alternative'                     | Matchcode AddressBase, MultiDatabase                                             | ABP, ABL                                                                 |
+| ADDRHIST    | Filter addresses with logical status of 'historical'                      | Matchcode AddressBase, MultiDatabase                                             | ABP, ABL                                                                 |
+| PREMCONSTR  | Filter properties with state 'under construction'                         | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| PREMINUSE   | Filter properties with state 'in use'                                     | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| PREMUNOCC   | Filter properties with state 'unoccupied'                                 | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| PREMDEM     | Filter properties with state 'demolished' or 'no longer existing'         | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| PREMPLAN    | Filter properties with state 'planning permission granted' or 'candidate' | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| PREMUNKOWN  | Filter properties with building state of 'unknown'                        | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| POSTADRCODE | Filter non-postal addresses                                               | Matchcode AddressBase, MultiDatabase                                             | ABP                                                                      |
+| ADDRBUS     | Filter addresses showing those from business dataset                      | MultiDatabase                                                                    | N/A                                                                      |
+| ADDROG      | Filter business addresses from non-business-specific sources (e.g. PAF)   | Matchcode AddressBase, Matchcode UK Address, Matchcode Eircode, Matchcode Global | ABP, ABL, NAMES, NOT_YET_BUILT, MULTI_RES, ECAF, ECAD, GLOBAL_ADDRESSING |

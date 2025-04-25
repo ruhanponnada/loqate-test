@@ -1,0 +1,37 @@
+export const CustomInfo = ({ 
+  title, 
+  children, 
+  image, 
+  imageSize = "120px",
+  topPadding = "25px",
+  sidePadding = "10%",
+  border = "16px"
+}) => {
+  return (
+    <div>
+      <div className="block dark:hidden" style={{ background: '#fafcfc', padding: border, borderRadius: '25px', margin: '24px 0' }}>
+        {title && <div style={{ marginTop: topPadding, marginLeft: sidePadding, color: "black" }}><strong>{title}</strong></div>}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+          {image && <img src={image} style={{ width: imageSize, height: imageSize, marginTop: '0' }} />}
+          <div style={{ color: "black" }}>
+            {children}
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden dark:block" style={{ background: '#141819', padding: border, borderRadius: '25px', margin: '24px 0' }}>
+        {title && <div style={{ marginTop: topPadding, marginLeft: sidePadding, color: "white" }}><strong>{title}</strong></div>}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+          {image && <img src={image} style={{ width: imageSize, height: imageSize, marginTop: '0' }} />}
+          <div style={{ color: "white" }}>
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+
+); };
+
+export default CustomInfo;
+
+;

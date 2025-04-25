@@ -1,0 +1,63 @@
+---
+title: "Address Quality Index"
+---
+
+The Address Quality Index (AQI) is used to indicate the quality of an address, e.g., Excellent quality, Good quality, Average quality, Poor quality, and Bad quality. Any record that is able to be parsed will have an AQI.
+
+Two factors decide the address quality, post-processed verification match level and Matchscore.
+
+This offers a view of overall address quality, but it is not used as a metric for deciding whether to accept an address which has been processed via Verify. [Please use the AVC to verify addresses](https://support.loqate.com/documentation/reportcodes/address-verification-code/).
+
+|               |                     |                                                                            |                        |                      |
+| ------------- | ------------------- | -------------------------------------------------------------------------- | ---------------------- | -------------------- |
+| **AQI&#xA0;** | **Address Quality** | **Explanation**                                                            | **Verification level** | **Matchscore&#xA0;** |
+| A             | Excellent           | Verifiable to at least Premise level without changes                       | >=4                    | 100                  |
+| B             | Good                | Verifiable to at least Thoroughfare level with minor changes               | >=3                    | >=95                 |
+| C             | Average             | Verifiable to at least Locality level with moderate changes                | >=2                    | >=90                 |
+| D             | Poor                | Only verifiable to at least Locality level with more than moderate changes | >=2                    | >=80                 |
+| E or Empty    | Bad                 | If an address is unable to be parsed, the AQI can be empty.                | else                   | else                 |
+
+**Excellent Quality ‘A’ examples**
+
+_999 Baker Way, San Mateo, CA, 94404, US_
+
+The address is verified to the Premise level without changes. Thepost-processed verification match level is 4, and the Matchscore is 100, the Address Quality Index is A.
+
+_80 Rama 2 Rd , Bangkok, 10150, Thailand_
+
+**Good Quality ‘B’ examples**
+
+_Rua Jose Iziboro Bizetto 158, Curitiba, 81200-240, Brazil_
+
+The address is verified to the Premise level with small change. Thepost-processed verification match level is 4, the Matchscore is 96, and an AQI “B” is returned.
+
+**Average Quality ‘C’ examples**
+
+_Church Hill Ave, Sandy Bay, Tasmania, 7001, AU_
+
+The address is good but incomplete, and an AQI “C” is expected.
+
+**Poor Quality ‘D’ examples**
+
+_Hong Kong Blvd 108, HongKong, HK_
+
+The address is verified to the Thoroughfare level but with large changes (Matchscore 81), so an AQI “D” is returned.
+
+**Bad Quality ‘E’ examples**
+
+_2010 Rutter St, Irving, TX, 75015, US_
+
+The address can only be verified with large changes to the Thoroughfare and Postal Code. Matchscore is 73, and the Address Quality Index is E.
+
+**Output field**
+To get the Address Quality Index in the output, the field “AQI” needs to be specified.
+
+For example,
+_C++ sample code_
+`cout << res->getField(0, "AQI") << endl;`
+
+_Java sample code_
+`System.out.println("AQI: "+ res.getField(0,"AQI"));`
+
+_lqtbatch_
+`lqtbatch -of "Address|AVC|AQI|"`

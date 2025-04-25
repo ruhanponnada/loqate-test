@@ -1,0 +1,570 @@
+---
+title: "Matchcode UK Address Integration Guide"
+---
+
+This web service guide is recommended for customers looking to use Address Validation using Royal Mail's PAF (Postal Address File), Multiple Residency and Not-Yet-Built.
+
+Other Consumer and Location Intelligence services can also be appended such as the Acorn demographic data and GBG's Location Intelligence file.
+
+This web service also provides access to GBG's Names data which allows our customers to confirm the correct spelling and date of birth of UK Citizens.
+
+Please discuss with your account manager if you would like to use any of these additional datasets.
+
+### About This Guide
+
+This guide explains how to access GBGroup's web service products using their Identity Management Platform (IdM), available via SOAP web services. The document provides a general description of the available functionality along with a definition of the corresponding interfaces used to access different datasets and services.
+
+The fundamentals of integrating with the service are described here: Integration Fundamentals
+
+Section 2 of the document gives product specific details regarding the use of the Matchcode Names web service products via IdM.
+
+Please note: Wherever `<LatestWSDLVersion>` is shown in Example Code below, please replace this with GlobalServices21a.wsdl.
+
+### Matchcode Names Web Service Product Information
+
+The Matchcode Names service provides access to UK names information in a similar manner to Matchcode UK Address searching (see Matchcode UK Address Integration Guide)
+
+The Matchcode Names web service products are available via the Identity Management ExecuteCapture web service method.
+
+**Input Format**<br/>
+
+The ExecuteCapture method takes in a ExecuteCaptureRequest data structure, which contains all the information necessary to carry out the request.
+
+Type: ExecuteCaptureRequest
+
+| Field Name     | Type                  | Description                                                      |
+| -------------- | --------------------- | ---------------------------------------------------------------- |
+| securityHeader | SecurityHeader        | The username and authentication token used to access the system. |
+| profileRequest | ProfileRequestCapture | Details of the request                                           |
+
+The SecurityHeader structure holds security data to access products and services in the IdM Platform.
+
+The ProfileRequestCapture structure contains the criteria to identify the target product being called and the search data for the product request.
+
+Within the profileRequest element, the profileGuid element should contain the GUID value listed below:
+
+| Profile                     | GUID                                 |
+| --------------------------- | ------------------------------------ |
+| Matchcode Names web service | A86F1483-822B-4CB8-A683-349F54F4A6C6 |
+
+### Search Criteria
+
+The address search criteria should be entered into the IdmDataSearchAddress data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → address**
+
+The search address object is the same that is used in the Address Lookup request, described here.
+
+The persons criteria should be entered into the persons property of the address, multiple persons can be specified with multiple instances of the IdmDataPerson data structure. When this criteria is specified, only the people at the matched address which match the persons criteria are returned. If no persons critieria is specified, then all the people are returned for the address which has been matched to the input address.
+
+While multiple person objects can be specified for the address, only the first person object is used and the rest are ignored. This does not however mean that only one specific person can be searched for, because of the way that the person fields are treated, as described below.
+
+When a person object is used in the search criteria, the last name must be provided. All other person fields are optional, and are treated as wild cards when not provided. The date of birth field however is not applicable to this service and is ignored. This behaviour allows more or less specific searches to be done as required, by simply adding or removing person fields.
+
+### Additional Request Options
+
+The additional search options, used for configuring options such as casing or transliteration of output results, can be set in the IdmRequestOptions structure located in the ProfileRequestCaptureData.options property.
+
+### Additional Return Data
+
+Additional data can be returned, or excluded from being returned, for each address by providing one or more values in the IdmRequestOption.relatedDataItems property.
+
+Note: For each value provided, the corresponding data is returned, and the corresponding additional data for all the values not provided are not returned. So, for example, if OSLAUA is specified as a relatedDataItem, then the country code, udprn, geocode data (easting, northing, latitude, longitude) and person data (title, first, middle, last names, gender, date-of-birth) will no longer be returned by default; those fields must then be explicitly also requested as relatedDataitems.
+
+The following values are supported by this service.
+
+| Key Mnemonic | Description                                  | Returned By Default | Required subscription | Returned as |
+| ------------ | -------------------------------------------- | ------------------- | --------------------- | ----------- |
+| COUNTRYCODE  | Country code                                 | Yes                 | PAF                   | countryCode |
+| UDPRN        | PAF unique delivery point reference number   | Yes                 | PAF                   | rmUDPRN     |
+| EFORENAME    | Person first name                            | Yes                 | PAF+Names             | firstname   |
+| EMIDNAME     | Person middle name(s)                        | Yes                 | PAF+Names             | middlename  |
+| ESURNAME     | Person last name                             | Yes                 | PAF+Names             | lastname    |
+| ETITLE       | Person title                                 | Yes                 | PAF+Names             | title       |
+| EGENDER      | Person gender                                | Yes                 | PAF+Names             | gender      |
+| EDOB         | Person date of birth                         | Yes                 | PAF+Names             | dateOfBirth |
+| PCNORTH      | 1m grid northing                             | Yes                 | PAF                   | northing    |
+| PCEAST       | 1m grid easting                              | Yes                 | PAF                   | easting     |
+| LATITUDE     | World geodetic standard 1984 datum latitude  | Yes                 | PAF                   | latitude    |
+| LONGITUDE    | World geodetic standard 1984 datum longitude | Yes                 | PAF                   | longitude   |
+| OSLAUA       | Local authority district Code                | No                  | PAF+Names             | OSLAUA      |
+
+Sample Options XML
+
+```json
+
+<req:options>
+    <req:addressEnvelopeFormat>A3TCP</req:addressEnvelopeFormat>
+    <req:relatedDataItems>
+        <data:key>UDPRN</data:key>
+    </req:relatedDataItems>
+    <req:offset>0</req:offset>
+    <req:maxReturn>100</req:maxReturn>
+    <req:casing>MIXED</req:casing>
+</req:options>
+```
+
+### Additional Request Datasets
+
+Data from additional datasets can be enabled or disabled for an address search, by populating the ProfileRequestCaptureData.additionalData property with key-value pairs from the applicable list table below. To use a particular dataset, the user must be subscribed to the dataset.
+
+This information should be entered into the IdmDataArrayAdditionalData data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → additionalData**
+
+| Key Mnemonic    | Key Value     | Description                                                      |
+| --------------- | ------------- | ---------------------------------------------------------------- |
+| MULTI_OCC       | "Yes" or "No" | Request Multiple Occupancy information to be returned            |
+| MULTI_RES       | "Yes" or "No" | Request Multiple Residency information to be returned            |
+| NOT_YET_BUILT   | "Yes" or "No" | Request Not Yet Built information to be returned                 |
+| ACORN           | "Yes" or "No" | Request Acorn consumer classification information to be returned |
+| LOC_INT         | "Yes" or "No" | Request Location Intelligence information to be returned         |
+| PREMISE_GEOCODE | "Yes" or "No" | Request Premise Level Geocode information to be returned         |
+
+Each dataset, when enabled, supports a set of values which can be used in the related data items property of the request options, these values are listed below.
+
+| Key Mnemonic | Description               | Returned By Default |
+| ------------ | ------------------------- | ------------------- |
+| MOI          | Multi occupancy indicator | Yes                 |
+
+**Multiple Residency**
+
+| Key Mnemonic | Description                                           | Returned By Default |
+| ------------ | ----------------------------------------------------- | ------------------- |
+| UMRRN        | Unique multiple residence reference number            | Yes                 |
+| OWNINGUDPRN  | UDPRN of owning delivery point                        | Yes                 |
+| OWNINGAK     | Address key of owning delivery point                  | Yes                 |
+| OWNINGOK     | Organisation key of owning delivery point             | Yes                 |
+| OWNINGAKOK   | Address and organisation key of owning delivery point | Yes                 |
+| PCTYPE       | Large or small user indicator                         | Yes                 |
+
+**Not Yet Built**
+
+| Key Mnemonic | Description                                     | Returned By Default |
+| ------------ | ----------------------------------------------- | ------------------- |
+| NOTYETBUILT  | Flag set to 'Y' for all Not Yet Built addresses | Yes                 |
+| NYB_UDPRN    | Unique delivery point reference number          | Yes                 |
+
+**ACORN** <br/>
+
+| Key Mnemonic | Description          | Returned By Default |
+| ------------ | -------------------- | ------------------- |
+| ACORNCOD     | ACORN classification | Yes                 |
+| ACATNAME     | ACORN category       | Yes                 |
+| AGRPNAME     | ACORN group          | Yes                 |
+| ATYPNAME     | ACORN type           | Yes                 |
+
+**Location Intelligence**
+The Location Intelligence dataset is detailed here.
+
+**Premise Level Geocodes**
+The Premise Level Geocodes dataset is detailed here.
+
+**Address Filters**
+Addresses which have been found by the web service, which match a particular kind of address, can be filtered out from the search results by using the address filters functionality described here.
+
+### Output Format
+
+The results of the Matchcode Names web service search are returned in a ProfileResponseDetails structure with a ProfileResponseDetail.responseType of 'CAPTURE'.
+
+The ProfileResponseDetails structure contains a single CaptureResponse data structure which holds an array of IdmDataAddress records containing the returned address data.
+
+**ExecuteCaptureResponse > ProfileResponse [0] > ProfileResponseDetails [0] > CaptureResponse > CaptureResponseData > IdmDataAddress [n]**
+
+### PAF Address Elements
+
+The returned address will include address elements from the Royal Mail Postcode Address File (PAF), as well as non-PAF elements and information on persons at the address.
+
+Below is a list of specifcally PAF address elements
+
+| PAF Field                 | Output Field: IdmDataAddress |
+| ------------------------- | ---------------------------- |
+| Organisation              | organisation                 |
+| Department                | department                   |
+| Sub Building              | subBuilding                  |
+| Building Name             | buildingName                 |
+| Building Number           | buildingNumber               |
+| PO Box                    | poBox                        |
+| Thorofare                 | street                       |
+| Dependent Thorofare       | subStreet                    |
+| Dependent Locality        | locality                     |
+| Double Dependant Locality | sublocality                  |
+| Post Town                 | town                         |
+| County                    | stateRegion                  |
+| Postal Code               | postCode                     |
+
+Additional Items
+Additional data from a search may be returned in the additionalItems or the groupedAdditionalItems of the IdmDataAddress.
+
+Below is a list of possible additional data fields for this service. The fields returned for a particular search depends on the related data items specified in the request, the additional datasets enabled in the request and the data available for the matched addresses.
+
+| Name        | Description                                                     | Requirements for Output                  |
+| ----------- | --------------------------------------------------------------- | ---------------------------------------- |
+| NOTYETBUILT | Not Yet Built Indicator (Y/N)                                   | NOT_YET_BUILT dataset enabled in request |
+| UMRRN       | Unique Multiple Residence Reference Number                      | MULTI_RES dataset enabled in request     |
+| OWNINGUDPRN | Unique Delivery Point Reference Number of owning Delivery Point | MULTI_RES dataset enabled in request     |
+| OWNINGAK    | Address Key of owning Delivery Point                            | MULTI_RES dataset enabled in request     |
+| OWNINGOK    | Organisation Key of owning Delivery Point                       | MULTI_RES dataset enabled in request     |
+| OWNINGAKOK  | Combined Address and Organisation Key of owning Delivery Point  | MULTI_RES dataset enabled in request     |
+| MOI         | Multiple Occupancy Indicator                                    | MULTI_OCC dataset enabled in request     |
+| ACORNCLASS  | Acorn Classification                                            | ACORN dataset enabled in request         |
+| ACORNCATE   | Acorn Category                                                  | ACORN dataset enabled in request         |
+| ACORNGROU   | Acorn Group                                                     | ACORN dataset enabled in request         |
+| ACORNTYPE   | Acorn Type                                                      | ACORN dataset enabled in request         |
+| OSLAUA      | Local authority district Code                                   | OSLAUA in additional return data         |
+
+### Example Requests & Responses
+
+### Example Requests
+
+**SOAP** <br/>
+
+```xml
+<soapenv:envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:a="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/"
+                  xmlns:head="http://gbworld.gb.co.uk/types/header/"
+                  xmlns:req="http://gbworld.gb.co.uk/types/core/request/"
+                  xmlns:data="http://gbworld.gb.co.uk/types/core/data/">
+    <soapenv:header/>
+    <soapenv:body>
+        <a:executecapturerequest>
+            <a:securityheader>
+                <head:authenticationtoken>C18AB65D-85A0-4C48-81A9-C5E23058C819</head:authenticationtoken>
+                <head:username>CENSORED</head:username>
+            </a:securityheader>
+            <a:profilerequest>
+                <req:customerreference>Sample Names Lookup</req:customerreference>
+                <req:profileguid>A86F1483-822B-4CB8-A683-349F54F4A6C6</req:profileguid>
+                <req:configurationid>1</req:configurationid>
+                <req:requestdata>
+                    <req:address>
+                        <data:postcode>ch49gb</data:postcode>
+                    </req:address>
+                    <req:filters tmp="?"/>
+                    <req:options>
+                        <req:addressenvelopeformat>A4P</req:addressenvelopeformat>
+                        <req:offset>0</req:offset>
+                        <req:maxreturn>50</req:maxreturn>
+                        <req:transliteration>NATIVE</req:transliteration>
+                        <req:countrycodeformat>ISO3</req:countrycodeformat>
+                    </req:options>
+                    <req:additionaldata tmp="?"/>
+                </req:requestdata>
+            </a:profilerequest>
+        </a:executecapturerequest>
+    </soapenv:body>
+</soapenv:envelope>
+```
+
+**REST** <br/>
+
+```json
+{
+  "customerReference": "Test",
+  "profileGuid": "A86F1483-822B-4CB8-A683-349F54F4A6C6",
+  "configurationId": "1",
+  "requestData": {
+    "address": {
+      "postCode": "ch49gb"
+    },
+    "options": {
+      "offset": "0",
+      "maxReturn": "10"
+    },
+    "additionalData": {}
+  }
+}
+```
+
+### Example Responses
+
+**SOAP**
+
+```xml
+<soap-env:envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap-env:header/>
+    <soap-env:body>
+        <ns5:executecaptureresponse xmlns:ns5="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/"
+                                    xmlns:alu="http://gbworld.gb.co.uk/types/core/request/alu/"
+                                    xmlns:common="http://gbworld.gb.co.uk/types/common/"
+                                    xmlns:comp="http://gbworld.gb.co.uk/types/component/"
+                                    xmlns:data="http://gbworld.gb.co.uk/types/core/data/"
+                                    xmlns:datatypes="http://gbworld.gb.co.uk/types/datatypes/"
+                                    xmlns:faults="http://gbworld.gb.co.uk/types/faults/"
+                                    xmlns:head="http://gbworld.gb.co.uk/types/header/"
+                                    xmlns:ns8="http://gbworld.gb.co.uk/types/core/data/trace/"
+                                    xmlns:prop="http://gbworld.gb.co.uk/idm-core/component/properties/"
+                                    xmlns:req="http://gbworld.gb.co.uk/types/core/request/"
+                                    xmlns:ver="http://gbworld.gb.co.uk/types/core/request/verify/">
+            <ns5:securityheader>
+                <head:authenticationtoken xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    1273F4FA-3AE7-4742-A0C6-626D006A445A
+                </head:authenticationtoken>
+                <head:authenticationtime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    2014-02-14T13:05:11.000Z
+                </head:authenticationtime>
+                <head:sessionexpirytime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    2014-02-14T13:35:20.449Z
+                </head:sessionexpirytime>
+            </ns5:securityheader>
+            <ns5:transactionguid>8F9F9258-E772-45FC-B486-7F09FD3F067B</ns5:transactionguid>
+            <ns5:profileresponse>
+                <req:profileheader>
+                    <req:profileguid>A86F1483-822B-4CB8-A683-349F54F4A6C6</req:profileguid>
+                    <req:profilename>Matchcode Names</req:profilename>
+                    <req:transactionguid>8F9F9258-E772-45FC-B486-7F09FD3F067B</req:transactionguid>
+                    <req:transactiontimestamp>2014-02-14T13:05:20.537Z</req:transactiontimestamp>
+                    <req:profilestatus>SUCCESS</req:profilestatus>
+                </req:profileheader>
+                <req:profileresponsedetails>
+                    <req:transactionguid>87F581B6-5EC4-4F5D-9335-245B95C33B05</req:transactionguid>
+                    <req:componentname>Matchcode Edited Electoral Roll Names</req:componentname>
+                    <req:componentstatus>SUCCESS</req:componentstatus>
+                    <req:componentaction>REGISTER</req:componentaction>
+                    <req:responsetype>CAPTURE</req:responsetype>
+                    <req:notes>[]</req:notes>
+                    <req:invoice>
+                        <req:invoicelist>
+                            <req:invoiceguid>082BB684-3ED6-4C2B-9422-0959826DABD1</req:invoiceguid>
+                            <req:billinginformationguid>CCB1C022-BF7C-4C71-B445-710110FA0FC7
+                            </req:billinginformationguid>
+                            <req:billingpoints>1</req:billingpoints>
+                            <req:creditsused>1</req:creditsused>
+                            <req:datasetinvoices>
+                                <req:datasetcode>NAMES</req:datasetcode>
+                                <req:billingpoints>1</req:billingpoints>
+                                <req:recordsreturned>1</req:recordsreturned>
+                                <req:datalicenceguid>CCB1C022-BF7C-4C71-B445-710110FA0FC7</req:datalicenceguid>
+                            </req:datasetinvoices>
+                        </req:invoicelist>
+                    </req:invoice>
+                    <req:captureresponse>
+                        <req:resultstatus>SINGLE</req:resultstatus>
+                        <req:recordsreturned>1</req:recordsreturned>
+                        <req:moredata>false</req:moredata>
+                        <req:totalrecordcount>1</req:totalrecordcount>
+                        <req:totalpages>1</req:totalpages>
+                        <req:matchscore>0</req:matchscore>
+                        <req:matchlevel>POSTCODE</req:matchlevel>
+                        <req:outputstatus>NOTMATCHED</req:outputstatus>
+                        <req:fieldstatus>55555555</req:fieldstatus>
+                        <req:responsecount>1</req:responsecount>
+                        <req:response>
+                            <req:address>
+                                <data:organisation>GB GROUP PLC</data:organisation>
+                                <data:organisation>GB GROUP PLC</data:organisation>
+                                <data:street>HERONS WAY</data:street>
+                                <data:town>CHESTER</data:town>
+                                <data:postCode>CH4 9GB</data:postCode>
+                                <data:locality>CHESTER BUSINESS PARK</data:locality>
+                                <data:buildingName>THE FOUNDATION</data:buildingName>
+                                <data:stateRegion>CHESHIRE</data:stateRegion>
+                                <data:dpsZipPlus>1AR</data:dpsZipPlus>
+                                <data:formattedAddress>Gb Group Plc,The Foundation,Herons Way, Chester Business Park,Chester Cheshire,CH4 9GB
+                                </data:formattedAddress>
+                                <data:persons>
+                                    <data:person>
+                                        <data:title>Ms.</data:title>
+                                        <data:gender>FEMALE</data:gender>
+                                        <data:firstname>ABIGAIL</data:firstname>
+                                        <data:lastname>GREEN</data:lastname>
+                                    </data:person>
+                                    <data:person>
+                                        <data:title>Mr.</data:title>
+                                        <data:gender>MALE</data:gender>
+                                        <data:firstname>ADAM</data:firstname>
+                                        <data:lastname>GREEN</data:lastname>
+                                    </data:person>
+                                </data:persons>
+                            </req:address>
+                        </req:response>
+                    </req:captureresponse>
+                </req:profileresponsedetails>
+            </ns5:profileresponse>
+        </ns5:executecaptureresponse>
+    </soap-env:body>
+</soap-env:envelope>
+```
+
+**REST** <br/>
+
+```json
+{
+  "profileHeader": {
+    "profileGuid": "A86F1483-822B-4CB8-A683-349F54F4A6C6",
+    "profileName": "Matchcode Names",
+    "transactionGuid": "7E3B1A9C-4C0F-4253-9F32-7532282AD2C0",
+    "transactionTimeStamp": 1433410021843,
+    "profileStatus": "SUCCESS",
+    "remarks": null
+  },
+  "profileResponseDetails": [
+    {
+      "transactionGuid": "B4D1A4E0-F3E8-4719-895E-BFAA496CC55E",
+      "componentName": "Matchcode Edited Electoral Roll Names",
+      "componentStatus": "SUCCESS",
+      "componentAction": "VERIFY",
+      "responseType": "CAPTURE",
+      "notes": "[]",
+      "invoice": {
+        "invoiceList": [
+          {
+            "invoiceGuid": null,
+            "billingInformationGuid": "F0CF11E6-FC43-41E3-83D4-6086FD26023A",
+            "dataLicenceDescription": null,
+            "billingPoints": 0,
+            "creditsUsed": 0,
+            "dataSetInvoices": []
+          },
+          {
+            "invoiceGuid": "B105A327-6D55-4D2A-AB10-6FDBE599F98D",
+            "billingInformationGuid": "CCB1C022-BF7C-4C71-B445-710110FA0FC7",
+            "dataLicenceDescription": null,
+            "billingPoints": 1,
+            "creditsUsed": 1,
+            "dataSetInvoices": [
+              {
+                "dataSetCode": "NAMES",
+                "billingPoints": 1,
+                "recordsReturned": 1,
+                "dataLicenceGuid": "CCB1C022-BF7C-4C71-B445-710110FA0FC7"
+              }
+            ]
+          },
+          {
+            "invoiceGuid": "816FA32B-4BFE-44CE-A2CD-D4B018EA62A3",
+            "billingInformationGuid": "1E409557-6178-4970-A55F-8DA336A12410",
+            "dataLicenceDescription": null,
+            "billingPoints": 1,
+            "creditsUsed": 1,
+            "dataSetInvoices": [
+              {
+                "dataSetCode": "MULTI_RES",
+                "billingPoints": 1,
+                "recordsReturned": 1,
+                "dataLicenceGuid": "1E409557-6178-4970-A55F-8DA336A12410"
+              }
+            ]
+          },
+          {
+            "invoiceGuid": "C00EF75E-1405-403D-9734-DD2ACBB544CF",
+            "billingInformationGuid": "21AC03A7-C59B-4446-ABF0-0E02B8D72BE8",
+            "dataLicenceDescription": null,
+            "billingPoints": 1,
+            "creditsUsed": 1,
+            "dataSetInvoices": [
+              {
+                "dataSetCode": "NOT_YET_BUILT",
+                "billingPoints": 1,
+                "recordsReturned": 1,
+                "dataLicenceGuid": "21AC03A7-C59B-4446-ABF0-0E02B8D72BE8"
+              }
+            ]
+          },
+          {
+            "invoiceGuid": null,
+            "billingInformationGuid": "4E4CC906-7C21-4118-8FB6-0DF7F4164B38",
+            "dataLicenceDescription": null,
+            "billingPoints": 0,
+            "creditsUsed": 0,
+            "dataSetInvoices": []
+          }
+        ],
+        "tmp": null
+      },
+      "captureResponse": {
+        "resultStatus": "SINGLE",
+        "resultStatusDetail": null,
+        "recordsReturned": 1,
+        "moreData": false,
+        "totalRecordCount": 1,
+        "totalPages": 1,
+        "matchScore": 0,
+        "matchLevel": "POSTCODE",
+        "outputStatus": "NOTMATCHED",
+        "fieldStatus": "55555555",
+        "responseCount": 1,
+        "response": [
+          {
+            "input": null,
+            "address": [
+              {
+                "organisation": "Gb Group Plc",
+                "street": "Herons Way",
+                "town": "CHESTER",
+                "postCode": "CH4 9GB",
+                "locality": "Chester Business Park",
+                "addPoint": null,
+                "department": null,
+                "subBuilding": null,
+                "buildingNumber": null,
+                "buildingName": "The Foundation",
+                "buildingGroup": null,
+                "poBox": null,
+                "subStreet": null,
+                "subLocality": null,
+                "stateRegion": "Cheshire",
+                "subAdministrativeArea": null,
+                "administrativeArea": null,
+                "superAdministrativeArea": null,
+                "countryCode": "GBR",
+                "countryName": null,
+                "dpsZipPlus": "1AR",
+                "formattedAddress": "Gb Group Plc,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                "geographicInformation": {
+                  "easting": "340009",
+                  "northing": "363192",
+                  "latitude": "53.1624546529",
+                  "longitude": "-2.8987262198",
+                  "status": null,
+                  "level": null,
+                  "distance": null,
+                  "radius": null
+                },
+                "additionalItems": {
+                  "item": [
+                    {
+                      "key": "DATASOURCE",
+                      "value": "NAMES"
+                    }
+                  ],
+                  "tmp": null
+                },
+                "groupedAdditionalItems": [],
+                "persons": {
+                  "person": [],
+                  "tmp": null
+                },
+                "uprn": null,
+                "lpi": null,
+                "blpu": null,
+                "streetDescriptor": null,
+                "streetInformation": null,
+                "companyInformation": null,
+                "classification": null,
+                "osAl2Toid": null,
+                "osItnToid": null,
+                "osTopoToid": null,
+                "voaCtRecord": null,
+                "voaNdrRecord": null,
+                "apOSAPR": null,
+                "rmUDPRN": null,
+                "utilitiesInformation": null
+              }
+            ],
+            "relatedData": null,
+            "groupedRelatedData": []
+          }
+        ]
+      },
+      "validateResponse": null,
+      "verifyResponse": null,
+      "traceResponse": null
+    }
+  ]
+}
+```
+
+### Error Information
+
+Information on possible error codes is given here: [Error Code Information](/product-support/matchcode/general-information/error-codes/)

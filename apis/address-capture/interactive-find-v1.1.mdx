@@ -1,0 +1,203 @@
+---
+title: "Interactive Find v1.1"
+description: ""
+sidebarTitle: "Interactive Find v1.1"
+---
+
+Uses a text search to find addresses and places. Note this does not return formatted addresses, and repeated calls to this service may be required to drill-down through results until an address ID is returned. The address ID should then be passed into the Retrieve service to obtain a fully formatted address.
+
+This method does not consume credit.
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+<hr />
+Base URL https://api.addressy.com/capture/interactive/find/v1.1/
+
+Note: we don't support API connections using HTTP - all calls should use HTTPS.
+
+Secure SOAP WSDL
+https://api.addressy.com/capture/interactive/find/v1.1/wsdl3.ws
+
+<hr />
+
+<hr />
+Request parameters Each request to the web service requires a number of
+parameters, all of which are listed below. All requests require a key which can
+be generated in [your account](https://account.loqate.com/account/#/Setup/).
+
+**Note: where potentially sensitive data is used in these parameters, remember to make the request as secure as possible.**
+
+<hr />
+`*` = required field
+
+| Name         | Type    | Values | Description                                                                                                                                                                                                                                                                                                                                        |
+| ------------ | ------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key\*        | String  |        | The key used to authenticate with the service.                                                                                                                                                                                                                                                                                                     |
+| Text\*       | String  |        | The search text to find. Ideally a postcode or the start of the address.                                                                                                                                                                                                                                                                           |
+| IsMiddleware | Boolean |        | Whether the API is being called from a middleware implementation (and therefore the calling IP address should not be used for biasing).                                                                                                                                                                                                            |
+| Container    | String  |        | A container for the search. This should only be another Id previously returned from this service when the Type of the result was not 'Address'.                                                                                                                                                                                                    |
+| Origin       | String  |        | A starting location for the search. This can be the name or ISO 2 or 3 character code of a country, WGS84 coordinates (comma separated) or IP address to search from.                                                                                                                                                                              |
+| Countries    | String  |        | A comma separated list of ISO 2 or 3 character country codes to limit the search within.                                                                                                                                                                                                                                                           |
+| Limit        | Integer |        | The maximum number of results to return.                                                                                                                                                                                                                                                                                                           |
+| Language     | String  |        | The preferred language for results where the same address matches input in different languages. This parameter will also affect the label "Addresses" in the Description field of the Container results, eg. where Language=es, the value will be "direcciones". The value should be a 2 or 4 character language code e.g. (en, fr, en-gb, en-us). |
+| Bias         | Boolean |        | Enable/Disable biasing                                                                                                                                                                                                                                                                                                                             |
+| Filters      | String  |        | This setting allows filtering of addresses returned by the Find method in the latest Capture. Supported filters are described below.                                                                                                                                                                                                               |
+| GeoFence     | String  |        | This setting allows specifying coordinates for points in a geofence. Only the addresses within specified geofence will be returned. Please see example below.                                                                                                                                                                                      |
+
+\*Bias and Filters are available using the latest version of Capture.
+
+## Filters
+
+You can include or exclude certain type of addresses or locations from the address matches presented back to the end user. All Filters are currently operating on the basis of an exact match. Multiple filters can be provided in the same request.
+
+`&Filters=<Fieldname>:<Text>` - this is an IS filter and will limit matches to the subset where this field value is as specified
+
+`&Filters=!<Fieldname>:<Text>` - this is an ISN'T filter and will exclude any matches where this field value is as specified
+
+<hr />
+## Example This will return matches that are in Nottingham, UK and exclude
+addresses with NG11 7EP postcode:
+
+&Filters=Locality:Nottingham&Filters=!Postcode:NG11 7EP
+
+<hr />
+
+The following filters are supported:
+
+| Filter                                               | Description                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Postcode                                             | Postal code / Postcode / ZIP Code. Values can be specified regardless of casing or spaces. In the US it is possible to specify ZIP Code without the Zip+4 part and the results will include all records with the primary ZIP Code specified.                                                                                                                                                             |
+| Locality                                             | The most common population centre within a country (i.e. USA City, Canadian Municipality).                                                                                                                                                                                                                                                                                                               |
+| DependentLocality                                    | A smaller population centre, dependent on the contents of the Locality field (i.e. District).                                                                                                                                                                                                                                                                                                            |
+| Thoroughfare                                         | The name of the street or thoroughfare.                                                                                                                                                                                                                                                                                                                                                                  |
+| OrganisationName                                     | The name of the company listed at this address.                                                                                                                                                                                                                                                                                                                                                          |
+| Language                                             | The three character alpha country code as defined by the ISO 639-2/B specification.                                                                                                                                                                                                                                                                                                                      |
+| AdministrativeArea (US addresses only)               | The most common administrative district within a country (i.e. US State).                                                                                                                                                                                                                                                                                                                                |
+| SubAdministrativeArea (US addresses only)            | The smallest administrative region within a country (i.e. US County).                                                                                                                                                                                                                                                                                                                                    |
+| Attributes.CommercialResidential (US addresses only) | Address type. Allowed values are "Commercial" and "Residential".                                                                                                                                                                                                                                                                                                                                         |
+| Attributes.HasSubpremises (US addresses only)        | In the US, some addresses belong to a building that has a number of sub premises in it, (e.g. apartments or suites). By default, Capture will return an address of the building and a container with sub premises listed inside of it. You can exclude those building addresses where further sub premises exist by specifying a filter of HasSubpremises = NO. <br/> Allowed values are "YES" and "NO". |
+| HomeNation (UK addresses only)                       | This filter will restrict the results to addresses from the specified country within the UK. <br/> You can specify multiple values, and also invert the meaning to exclude selected countries (e.g. &Filters=!HomeNation:Northern Ireland ) <br/> Allowed values are "England", "Scotland", "Wales", "Northern Ireland", "Channel Islands", "Isle of Man".                                               |
+
+Response
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an [error table](#error-table).
+
+| Name        | Type   | Example             | Description                                                                                                                                                               |
+| ----------- | ------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Id          | String | GB\|RM\|A\|52509479 | This can be an address Id or a container Id for further results.                                                                                                          |
+| Type        | String | Address             | If the Type is 'Address' then the Id can be passed to the Retrieve service. Any other Id should be passed as the Container to a further Find request to get more results. |
+| Text        | String | High Street         | The name of the result.                                                                                                                                                   |
+| Highlight   | String | 0-2,6-4;0-3         | A list of number ranges identifying the matched characters in the Text and Description.                                                                                   |
+| Description | String | London              | Descriptive information about the result.                                                                                                                                 |
+
+<hr />
+Try it now Use the form below to test the service. Note: there is a usage limit
+on the demo key, but you can swap it for one of your own if you need to.
+<hr />
+
+<hr />
+Use sandbox data? Key * AA11-AA11-AA11-AA11 (Demo key) Text * IsMiddleware
+Container Origin Countries Limit Language Bias Filters GeoFence Try it
+<hr />
+
+## Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the [list of common errors](/apis/generic-errors/).
+
+| Id   | Error                      | Cause                                                                                                                    | Resolution                                                                                              |
+| ---- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| 1001 | Text or Container Required | The Text or Container parameters were not supplied.                                                                      | Check they were supplied and try again.                                                                 |
+| 1002 | Text or Container Invalid  | The Text or Container parameter was not recognised.                                                                      | Check the documentation for valid options.                                                              |
+| 1003 | Origin Invalid             | The Origin parameter was not recognised. Check the spelling and, if in doubt, use a valid ISO 2 or 3 digit country code. | Provide a valid ISO 2 or 3 digit country code or use a web service to convert country name to ISO code. |
+| 1004 | Language Invalid           | The Language parameter was not recognised.                                                                               | Please check what you entered and try again.                                                            |
+| 1005 | No response                | The query didn't respond fast enough, it may be too complex.                                                             | Please check what you entered and try again with something more specific.                               |
+| 1006 | Invalid Input              | Bad input detected.                                                                                                      | Please check what you entered and try again.                                                            |
+| 1007 | Invalid Country            | Invalid input for the selected country detected.                                                                         | Please check what you entered and try again.                                                            |
+| 1008 | Unauthorised Dataset       | A dataset was requested that is not authorised on this account.                                                          | Please contact us to arrange authorisation of datasets.                                                 |
+
+Example requests
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+<hr />
+Available endpoints
+
+Dataset (ADO.NET)
+Example request
+
+```txt
+https://api.addressy.com/Capture/Interactive/Find/v1.10/dataset.ws?Key=AA11-AA11-AA11-AA11&Text=wr5 3da&IsMiddleware=True&Container=GB|RM|ENG|3DA-WR5&Origin=52.182,-2.222&Countries=GB,US,CA&Limit=10&Language=&Bias=&Filters=&GeoFence=
+```
+
+<hr />
+
+## Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+<hr />
+Language
+
+```asp ASP function
+function Capture_Interactive_Find_v1_10(Key, Text, IsMiddleware, Container, Origin, Countries, Limit, Language, Bias, Filters, GeoFence)
+
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/Capture/Interactive/Find/v1.10/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&Text=" & Server.UrlEncode(Text)
+      strUrl = strUrl & "&IsMiddleware=" & Server.UrlEncode(IsMiddleware)
+      strUrl = strUrl & "&Container=" & Server.UrlEncode(Container)
+      strUrl = strUrl & "&Origin=" & Server.UrlEncode(Origin)
+      strUrl = strUrl & "&Countries=" & Server.UrlEncode(Countries)
+      strUrl = strUrl & "&Limit=" & Server.UrlEncode(Limit)
+      strUrl = strUrl & "&Language=" & Server.UrlEncode(Language)
+      strUrl = strUrl & "&Bias=" & Server.UrlEncode(Bias)
+      strUrl = strUrl & "&Filters=" & Server.UrlEncode(Filters)
+      strUrl = strUrl & "&GeoFence=" & Server.UrlEncode(GeoFence)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set Capture_Interactive_Find_v1_10 = rst
+
+      'FYI: The recordset returns the following columns:
+      'Id
+      'Type
+      'Text
+      'Highlight
+      'Description
+
+end function
+```
+
+<hr />
+
+## Example implementation
+
+Try our example of Address Verification in a website using our sandbox environment.
+
+See the Pen [AddressLookup](https://codepen.io/GBGLoqate/pen/MWVQrbN) by GBG Loqate ([@GBGLoqate](https://codepen.io/GBGLoqate)) on [CodePen](https://codepen.io/). Please note, you must [accept Functional Cookies](/apis/address-capture/interactive-find-v1.1/) to view the Pen here.

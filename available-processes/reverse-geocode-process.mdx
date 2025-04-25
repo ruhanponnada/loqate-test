@@ -1,0 +1,25 @@
+---
+title: "Reverse Geocode Process"
+---
+
+This process will provide address or location suggestions based on a proximity search of an input country, and digital latitude/longitude.
+
+## API Usage
+
+Set the process:
+
+```
+lst.add("ReverseGeocode", opts);
+```
+
+Define required parameters (example given):
+
+```
+rec.set("Country", "BEL");
+rec.set("Latitude", "50.848510");
+rec.set("Longitude", "4.387950");
+```
+
+## Relevant Options
+
+- MaxResults (when not set, the default value is 1)

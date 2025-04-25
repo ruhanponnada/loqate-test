@@ -1,0 +1,208 @@
+---
+title: "Map Tile API"
+description: ""
+sidebarTitle: "Map Tile API"
+---
+
+Visually represent the output from the Distance Finder API, in order to show
+customers where their nearest stores are.
+
+<Warning>Please note that we are unable to serve map data for China.</Warning>
+
+The Map Tile API takes an input of your Loqate key and returns a Signed URL,
+which is valid for one hour and can be used to provide secure access our tile
+server. Whilst the Signed URL is active you can make as many requests using that
+URL as needed.
+
+Our tile server provides access to basemap data, tiles and styling for a map.
+This can then be used with a map rendering library, such as
+[MapLibre](https://github.com/maplibre/maplibre-gl-js) or
+[Leaflet](https://leafletjs.com/examples/quick-start/), to add an interactive map to your application.
+
+Other functionality required for your map, such as pins for locations, can then
+be added afterwards via the map renderer.
+
+- [Mapping concepts](#concepts)
+- [Request parameters](#request)
+- [Response fields](#response)
+- [Errors](#errors)
+
+## Mapping Concepts
+
+There are several key concepts that are important to understand when
+implementing a map using this API:
+
+- **Signed URL**: a secure URL generated for a specific session within a limited
+  time period, with limited permissions. This contains authentication
+  information within the query, thus reducing the time required to authenticate
+  and reducing overall response times. You will receive two signed URLs, one for
+  vector based tiles and another for raster based tiles
+- **Basemap data**: basemaps form the foundation for your map, providing
+  geographic context stored as tile layers. These layers include the context
+  required to display useful information such as the names of streets, buildings
+  and land categorisation
+- **Vector tiles**: a format of tile that stores map data using vector shapes.
+  As these are composed dynamically, they can be easily styled and smoothly zoom
+  in and out as a user is navigating. These are generally faster to load than
+  Raster tiles, but can be more demanding on the end user's hardware
+- **Raster tiles**: a format of tile that stores map data using grids of pixels,
+  commonly as images. These tiles can be slower to load than vector tiles, but
+  are generally less demanding on the end user's hardware
+- **Map Style**: a Map style is a JSON document that defines how the map will
+  appear when rendered
+- **Map renderer**: library required to render a map within an application. Once
+  you have defined your data source as the signed URL you receive from this API,
+  the map rendering library will pull data from Loqate at run time, rendering
+  the map data for you. Commonly used open source libraries for this include
+  MapLibre, Leaflet and Amplify
+
+### Application flow using a map renderer
+
+Signed URLs can be used to request individual map tiles if required, however for
+more complex applications you're likely to use a map renderer.
+
+The following diagram represents how an application could be designed to work
+with our API and a map renderer:
+
+<Frame caption="Request flow diagram between the browser and the API">
+  <img src="/images/map-tile-application-flow.webp" />
+</Frame>
+
+Here are the steps this flow takes:
+
+1.  Make a request to
+    https://api.addressy.com/LocationServices/Mapping/GetUrl/v1.00/json4.ws?key={{license_key}}
+    (adding in your own API key)
+2.  Receive multiple Signed URLs in the response (one for Raster tiles and one
+    for Vector tiles)
+3.  Choose whether you want to use Raster tiles or Vector tiles, and pass the
+    appropriate Signed URL to the map renderer
+4.  The map renderer will request basemap data from Loqate as needed (for
+    instance this could be when a user scrolls on your map and the renderer
+    interprets which tiles will be needed next)
+5.  Loqate will return the appropriate map data
+6.  The map renderer will then use this data to render the map on the screen of
+    your browser
+
+ 
+
+**This method will consume credit each time a signed URL is generated.** :
+
+##### Base URL
+
+```
+https://api.addressy.com/LocationServices/Mapping/GetUrl/v1.00/
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+#### JSON
+
+```
+https://api.addressy.com/LocationServices/Mapping/GetUrl/v1.00/json4.ws?
+```
+
+<Note>
+  Note: A REST endpoint with a JSON payload is the only call style supported.
+</Note>
+
+### Get URL request
+
+Each request to the web service requires a number of parameters, all of which
+are listed below. All requests require a key which can be generated in
+[your account](https://account.loqate.com/account/#/Setup/).
+
+<Note>
+  **Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.** :
+</Note>
+
+#### Request parameters
+
+Key Required
+string The key used to authenticate with the service.
+For example: `AA11-AA11-AA11-AA11`.
+
+#### Example request
+
+Add your API key into the code below for a sample request:
+
+```
+GET https://api.addressy.com/LocationServices/Mapping/GetUrl/v1.00/json4.ws?&key=AA11-AA11-AA11-AA11
+```
+
+Content-Type: application/json
+
+### Get URL response
+
+The response from the web service is a table with the specification below. Where
+no items are found, the response will be empty (although all endpoints specify
+the columns). If an error occurs, the response will not follow this format.
+Instead the response will be an [error table](#errors).
+
+#### Response fields
+
+| Field          | Type     | Description                                                                                                                                                                                                                                                                                                                                                     |
+| -------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RasterStyleURL | String   | Signed URL to use when wanting to render Raster tiles, valid for one hour after creation. This will give you no flexibility over styling options and can be slower to load but is generally less demanding on end user hardware.                                                                                                                                |
+| VectorStyleURL | String   | Signed URL to use when wanting to render Vector tiles, valid for one hour after creation. This URL contains all the information required by a map renderer to draw the layers of data for the final map. Vector tiles offer more flexibility with styling and improved performance when navigating the map but they can be more demanding on end user hardware. |
+| GeneratedOnUtc | DateTime | UTC Timestamp representing when the URLs were signed and generated.                                                                                                                                                                                                                                                                                             |
+
+#### Example response
+
+```json
+{
+  "VectorStyleUrl": "https://tiles.loqate.com/styles/OSM OpenMapTiles/style.json?URLPrefix=aHR0cHM6Ly90aWxlcy5sb3FhdGUuY29t&Expires=1695818398&KeyName=tileserver-key&Signature=_71Ql0cQ9cZWEL_DceW6ipRwSpk=",
+  "RasterStyleUrl": "https://tiles.loqate.com/styles/OSM OpenMapTiles.json?URLPrefix=aHR0cHM6Ly90aWxlcy5sb3FhdGUuY29t&Expires=1695818398&KeyName=tileserver-key&Signature=_71Ql0cQ9cZWEL_DceW6ipRwSpk=",
+  "GeneratedOnUtc": "2023-09-27T12:39:58.3341192Z"
+}
+```
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs,
+an error table like the one below will be returned. To check for an error
+response, test for a 4-column table with columns `Error`, `Description`,
+`Cause` and `Resolution` containing a single row.
+
+Here's a generic example, for reference:
+
+ 
+
+```
+{
+    "Items": [
+        {
+            "Error": "2",
+            "Description": "Unknown key",
+            "Cause": "The key you are using to access the service was not found.",
+            "Resolution": "Please check that the key is correct. It should be in the form AA11-AA11-AA11-AA11."
+        }
+    ]
+}
+```
+
+ 
+
+For a list of errors applicable to all APIs, have a look at the
+[list of common errors](/apis/generic-errors/).
+
+| Number | Description         | Cause                                           | Resolution                                                              |
+| ------ | ------------------- | ----------------------------------------------- | ----------------------------------------------------------------------- |
+| 1000   | InternalServerError | Something unexpected has happened on the server | Please contact support and quote the error number and this API endpoint |
+| 1001   | InternalServerError | Something unexpected has happened on the server | Please contact support and quote the error number and this API endpoint |
+| 1002   | InternalServerError | Something unexpected has happened on the server | Please contact support and quote the error number and this API endpoint |
+
+### Attribution Statement
+
+You must ensure attribution is visible when rendering a map as part of your
+application. Loqate uses map styling from [OpenMapTiles](https://osmfoundation.org/wiki/Licence/Attribution_Guidelines) and open data from [OpenStreetMaps](https://www.openstreetmap.org/copyright).
+
+Attribution is provided by default as part of the map style configuration,
+however if you choose to create your own map styling you must still ensure that
+this attribution is visible. For further information on copyright notices please
+see the
+[Loqate Terms and Conditions](https://www.gbgplc.com/en/legal-and-regulatory/products/loqate-storefinder/legal-notices-loqate-storefinder/).

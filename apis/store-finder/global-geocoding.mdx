@@ -1,0 +1,460 @@
+---
+title: "Global Geocoding"
+description: ""
+sidebarTitle: "Global Geocoding"
+---
+
+import { CustomInfo } from "snippets/CustomInfo.mdx";
+
+The Global Geocoding API takes an input of one or more address strings and
+returns latitude and longitudes for the given locations. It can also be used for
+reverse geocoding, returning addresses that are close to a given set of latitude
+and longitude co-ordinates.
+
+When reverse geocoding, multiple addresses will be returned if possible (with a
+maximum of 5). This is because, particularly in urban areas, it can be difficult
+to identify the specific property associated with a set of co-ordinates.
+
+<CustomInfo
+image="/images/1020137f-support-customer.svg"
+imageSize="180px"
+title="A note on multiple inputs"
+>
+
+Please note that whilst the API can accept an input of multiple
+addresses/co-ordinates, response times will be quicker if only one is sent at a
+time.
+
+For the UK, only the first address/co-ordinate in the string will be parsed
+(i.e. only one geocoding/reverse geocoding result will be provided).
+
+If sending multiple addresses/co-ordinates, limiting these to one country will
+also improve performance.
+
+</CustomInfo>
+
+The Global Geocoding API supports
+most international locations. For a full list of coverage please
+see [here](/data-coverage/introduction/).
+
+**This method will consume credit. You will be charged per address geocoded.**
+
+- [Request parameters](#request)
+- [Response fields](#response)
+- [Errors](#errors)
+- [Use of geocodes/addresses](#useof)
+
+### Base URL
+
+```
+https:// api.addressy.com/LocationServices/Geocoding/Global/v1.00/
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+### JSON
+
+```
+https://api.addressy.com/LocationServices/Geocoding/Global/v1.00/json4.ws
+```
+
+<Note>
+  Note: A REST endpoint with a JSON payload is the only call style supported.
+</Note>
+
+### Request
+
+Each request to the web service requires a number of parameters, all of which
+are listed below. All requests require a key which can be generated
+in [your account](https://account.loqate.com/account/#/Setup/).
+
+<Note>
+  **Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.**
+</Note>
+
+#### Request parameters
+
+| Parameter | Required | Type             | Description                                                                                                                                                                                                 |
+| --------- | -------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key       | Required | String           | The key used to authenticate with the service. For example: "AA11-AA11-AA11-AA11".                                                                                                                          |
+| Input     | Required | Array of Strings | An array of strings containing either location co-ordinates and/or unstructured addresses. This array can contain up to 10 items.                                                                           |
+| Country   | Optional | String           | The ISO2 or ISO3 country code (e.g. GB or GBR). This will limit the geocoding lookup to the specified country, but will improve performance. This parameter is not required for reverse geocoding requests. |
+
+#### Example Geocoding request
+
+```
+POST https://api.addressy.com/LocationServices/Geocoding/Global/v1.00/json4.ws
+```
+
+Content-Type: application/json
+
+Add your API key into the code below for a sample Geocoding request:
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "input": [
+    "Waterside, Basin Rd, Worcester, WR5 3DA",
+    "The Foundation, Herons Way, Chester Business Park, Chester, CH4 9GB",
+    "128 Queen Victoria Street, London, EC4V 4BJ"
+  ],
+  "country": "GBR"
+}
+```
+
+#### Example Reverse Geocoding request
+
+```
+POST https://api.addressy.com/LocationServices/Geocoding/Global/v1.00/json4.ws
+```
+
+Content-Type: application/json
+
+Add your API key into the code below for a sample Reverse Geocoding request:
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "input": [
+    "52.182747,-2.222145",
+    "53.161261, -2.906420",
+    "51.512050, -0.097604"
+  ]
+}
+```
+
+### Response
+
+The response from the web service is a table with the specification below. Where
+no items are found, the response will be empty (although all endpoints specify
+the columns). If an error occurs, the response will not follow this format.
+Instead the response will be an [error table](#errors).
+
+#### Response fields
+
+| Field   | Type             | Description                                                           |
+| ------- | ---------------- | --------------------------------------------------------------------- |
+| Input   | Array of Strings | An array of strings containing the input from the original request.   |
+| Results | Array of Strings | An array of strings containing the results of your geocoding request. |
+
+#### Results fields
+
+| Field              | Type   | Description                                                                                                                                                                                                                                                                              |
+| ------------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Premise            | String | This field contains the alphanumeric code identifying an individual location, should one exist.                                                                                                                                                                                          |
+| Thoroughfare       | String | This field holds the most common street or block data element within a country.                                                                                                                                                                                                          |
+| Locality           | String | This field holds the most common population center data element within a country.                                                                                                                                                                                                        |
+| AdministrativeArea | String | This field holds the most common geographic data element within a country.                                                                                                                                                                                                               |
+| PostCode           | String | This field contains the complete postal code, should such information be able to be determined.                                                                                                                                                                                          |
+| Country            | String | This field holds the ISO2 country code.                                                                                                                                                                                                                                                  |
+| Latitude           | String | This field holds the WGS 84 latitude in decimal degrees format.                                                                                                                                                                                                                          |
+| Longitude          | String | This field holds the WGS 84 longitude in decimal degrees format.                                                                                                                                                                                                                         |
+| GeoDistance        | String | This field holds the radius of accuracy in meters, giving an indication of the likely maximum distance between the geocode and the physical location. Please note that this field is derived from and therefore dependent on the accuracy and coverage of the underlying reference data. |
+| GeoAccuracy        | String | This field is made up of the geocoding status and geocoding level. For more information on this please see the section below. When looking for a geocoding result it's important to look for this field, as if we return U0 it means we have been unable to geocode that input.          |
+| LocationType       | String | This field identifies the level we have validated a given address or co-ordinates to. E.g. if we cannot identify a premise number we may only validate to Thoroughfare level.                                                                                                            |
+
+#### GeoAccuracy Description
+
+The GeoAccuracy code is made up of the following values:
+
+- The geocoding Status
+- The geocoding Level
+
+e.g. I4, A2, P4
+
+**Geocoding Status**
+
+- *P: Point* - a single geocode was found matching the input address
+- *I: Interpolated* - a geocode was able to be interpolated from the input
+  addresses location in a range
+- *A: Average* - multiple candidate geocodes were found to match the input
+  address, and an average of these was returned
+- *U: Unable to geocode* - a geocode was not able to be generated for the input
+  address
+
+**Geocoding Level**
+
+- 4: Premise (Premise or Building)
+- 3: Thoroughfare
+- 2: Locality
+- 1: AdministrativeArea
+- 0: None :
+
+#### Example response: Geocoding request
+
+```json
+{
+  "Items": [
+    {
+      "Input": "Waterside, Basin Rd, Worcester, WR5 3DA, GB",
+      "Results": [
+        {
+          "Thoroughfare": "Basin Road",
+          "Locality": "Worcester",
+          "AdministrativeArea": "Worcestershire",
+          "Country": "GB",
+          "Latitude": "52.182747",
+          "Longitude": "-2.222145",
+          "GeoDistance": "0.0",
+          "LocationType": "Premise"
+        }
+      ]
+    },
+    {
+      "Input": "The Foundation, Herons Way, Chester Business Park, Chester, CH4 9GB, GB",
+      "Results": [
+        {
+          "Thoroughfare": "Herons Way",
+          "Locality": "Chester",
+          "AdministrativeArea": "Cheshire",
+          "Country": "GB",
+          "Latitude": "53.161261",
+          "Longitude": "-2.906420",
+          "GeoDistance": "0.0",
+          "LocationType": "Premise"
+        }
+      ]
+    },
+    {
+      "Input": "128 Queen Victoria Street, London, EC4V 4BJ, GB",
+      "Results": [
+        {
+          "Premise": "128",
+          "Thoroughfare": "Queen Victoria Street",
+          "Locality": "London",
+          "AdministrativeArea": "London",
+          "Country": "GB",
+          "Latitude": "51.512050",
+          "Longitude": "-0.097604",
+          "GeoDistance": "26.9",
+          "LocationType": "Premise"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Example response: Reverse Geocoding request
+
+```json
+{
+  "Items": [
+    {
+      "Input": "52.182747,-2.222145",
+      "Results": [
+        {
+          "Thoroughfare": "Basin Road",
+          "Locality": "Worcester",
+          "AdministrativeArea": "Worcestershire",
+          "Country": "GB",
+          "Latitude": "52.182747",
+          "Longitude": "-2.222145",
+          "GeoDistance": "0.013651",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "22",
+          "Thoroughfare": "Basin Road",
+          "Locality": "Worcester",
+          "AdministrativeArea": "Worcestershire",
+          "Country": "GB",
+          "Latitude": "52.182562",
+          "Longitude": "-2.221917",
+          "GeoDistance": "25.462199",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "24",
+          "Thoroughfare": "Basin Road",
+          "Locality": "Worcester",
+          "AdministrativeArea": "Worcestershire",
+          "Country": "GB",
+          "Latitude": "52.182536",
+          "Longitude": "-2.221981",
+          "GeoDistance": "25.716314",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "20",
+          "Thoroughfare": "Basin Road",
+          "Locality": "Worcester",
+          "AdministrativeArea": "Worcestershire",
+          "Country": "GB",
+          "Latitude": "52.182585",
+          "Longitude": "-2.221854",
+          "GeoDistance": "26.413655",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "26",
+          "Thoroughfare": "Basin Road",
+          "Locality": "Worcester",
+          "AdministrativeArea": "Worcestershire",
+          "Country": "GB",
+          "Latitude": "52.182511",
+          "Longitude": "-2.222045",
+          "GeoDistance": "26.920126",
+          "LocationType": "None"
+        }
+      ]
+    },
+    {
+      "Input": "53.161261, -2.906420",
+      "Results": [
+        {
+          "Thoroughfare": "Herons Way",
+          "Locality": "Chester",
+          "AdministrativeArea": "Cheshire",
+          "Country": "GB",
+          "Latitude": "53.161261",
+          "Longitude": "-2.906420",
+          "GeoDistance": "0.000000",
+          "LocationType": "None"
+        },
+        {
+          "Thoroughfare": "Herons Way",
+          "Locality": "Chester",
+          "AdministrativeArea": "Cheshire",
+          "Country": "GB",
+          "Latitude": "53.161261",
+          "Longitude": "-2.906420",
+          "GeoDistance": "0.012753",
+          "LocationType": "None"
+        },
+        {
+          "Thoroughfare": "Lakewood",
+          "Locality": "Chester",
+          "AdministrativeArea": "Cheshire",
+          "Country": "GB",
+          "Latitude": "53.159502",
+          "Longitude": "-2.906114",
+          "GeoDistance": "196.264215",
+          "LocationType": "None"
+        },
+        {
+          "Thoroughfare": "Wrexham Road",
+          "Locality": "Chester",
+          "AdministrativeArea": "Cheshire",
+          "Country": "GB",
+          "Latitude": "53.162955",
+          "Longitude": "-2.908206",
+          "GeoDistance": "219.094583",
+          "LocationType": "None"
+        },
+        {
+          "Thoroughfare": "Wrexham Road",
+          "Locality": "Chester",
+          "AdministrativeArea": "Cheshire",
+          "Country": "GB",
+          "Latitude": "53.162955",
+          "Longitude": "-2.908206",
+          "GeoDistance": "219.094583",
+          "LocationType": "None"
+        }
+      ]
+    },
+    {
+      "Input": "51.512050, -0.097604",
+      "Results": [
+        {
+          "Premise": "155",
+          "Thoroughfare": "Queen Victoria Street",
+          "Locality": "London",
+          "AdministrativeArea": "London",
+          "Country": "GB",
+          "Latitude": "51.512056",
+          "Longitude": "-0.097605",
+          "GeoDistance": "0.653191",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "128",
+          "Thoroughfare": "Queen Victoria Street",
+          "Locality": "London",
+          "AdministrativeArea": "London",
+          "Country": "GB",
+          "Latitude": "51.512033",
+          "Longitude": "-0.097648",
+          "GeoDistance": "3.578615",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "128",
+          "Thoroughfare": "Queen Victoria Street",
+          "Locality": "London",
+          "AdministrativeArea": "London",
+          "Country": "GB",
+          "Latitude": "51.512097",
+          "Longitude": "-0.097703",
+          "GeoDistance": "8.566401",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "128",
+          "Thoroughfare": "Queen Victoria Street",
+          "Locality": "London",
+          "AdministrativeArea": "London",
+          "Country": "GB",
+          "Latitude": "51.512038",
+          "Longitude": "-0.097431",
+          "GeoDistance": "12.048529",
+          "LocationType": "None"
+        },
+        {
+          "Premise": "126",
+          "Thoroughfare": "Queen Victoria Street",
+          "Locality": "London",
+          "AdministrativeArea": "London",
+          "Country": "GB",
+          "Latitude": "51.512038",
+          "Longitude": "-0.097431",
+          "GeoDistance": "12.057832",
+          "LocationType": "None"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Errors
+
+Below are the errors which are specific to this web service. If an error occurs,
+an error table like the one below will be returned. To check for an error
+response, test for a 4-column table with columns `Error`, `Description`,
+`Cause` and `Resolution` containing a single row.
+
+Here's a generic example, for reference:
+
+```json
+{
+  "Items": [
+    {
+      "Error": "2",
+      "Description": "Unknown key",
+      "Cause": "The key you are using to access the service was not found.",
+      "Resolution": "Please check that the key is correct. It should be in the form AA11-AA11-AA11-AA11."
+    }
+  ]
+}
+```
+
+For a list of errors applicable to all APIs, have a look at the
+[list of common errors](/apis/generic-errors/).
+
+| Number | Description     | Cause                     | Resolution                                                   |
+| ------ | --------------- | ------------------------- | ------------------------------------------------------------ |
+| 1001   | InputRequired   | Input value not provided. | Check that you have provided a valid input(s) and try again. |
+| 1002   | ProviderFailure | Internal Server Error.    | Internal Server Error. Please try again later.               |
+
+### Use of geocodes/addresses
+
+Use of the output of the Global Geocoding API is temporary, and only for use as
+part of a Store Finder. It is not permitted to index or store results for other
+purposes, such as use in a checkout process. For further information please see
+[Loqate Terms and Conditions](https://www.gbgplc.com/en/legal-and-regulatory/products/loqate-storefinder/legal-notices-loqate-storefinder/).

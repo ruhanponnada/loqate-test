@@ -1,0 +1,24 @@
+---
+title: "Local API"
+sidebarTitle: "Overview"
+---
+
+Loqate’s local APIs provide native libraries on a wide variety of platforms to allow the use of fast, embedded functionality within a client environment.
+
+The Loqate API is a multithreaded library able to make excellent use of multi-core CPUs and multiprocessor systems. Client applications interact with the Loqate server making calls to Loqate’s Local API.
+
+The Loqate Local API is installed in a single directory on the physical server. A /data subdirectory contains Loqate’s Global Knowledge Repository (GKR). The Loqate Local API product is self-contained and does not require any third-party database to be installed. All required reference data is contained in the application itself. No complex installation nor configuration is required.
+
+## API Documentation
+
+* C++/Java/.Net Functional Reference
+* Command line batch processor
+* Available Processes
+* SERP Overview
+* CASS Overview
+* AMAS Overview
+
+## Transaction Recording Service
+Being a random-access data-based application, the Loqate Engine will show higher performance with faster I/O systems and more memory available for caching. Better performance is achieved when the Global Knowledge Repository data files and the Loqate application are co-located in the same server.
+
+It may be useful to mention that the use of the term “Loqate server” should be interpreted as being a software application instead of an application server such as, for example, the Apache server. The Loqate server does not include server-client capabilities related to load balancing, failover, nor wait for client requests on certain physical port number. High availability, load balancing, failover capabilities are expected to be handled by the physical server or network hosting the Loqate Engine."

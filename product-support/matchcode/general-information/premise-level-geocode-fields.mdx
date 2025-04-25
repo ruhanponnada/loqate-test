@@ -1,0 +1,178 @@
+---
+title: "Premise Level Geocode Fields"
+---
+
+GBG's Premise Level Geocode is available to customers who require greater accuracy than Postcode Centroids, and can be used in conjunction with other UK Address Datasets i.e. PAF (Postal Address File).
+
+### Requestable Fields
+
+The various data that is provided by this dataset can be excluded from being returned, for each address by providing one or more values in the IdmRequestOption.relatedDataItems property of the IDM request.
+
+For each value provided, the corresponding data is returned, and the corresponding data for all the values not provided are not returned.
+
+The following values are supported by this dataset:
+
+| Field        | Description                  | Returned By Default |
+| ------------ | ---------------------------- | ------------------- |
+| `LICOUNTRY`  | Country                      | Yes                 |
+| `LIEASTING`  | Easting                      | Yes                 |
+| `LINORTHING` | Northing                     | Yes                 |
+| `LIGEOACC`   | Geocode accuracy code        | Yes                 |
+| `LIGEOACCD`  | Geocode accuracy description | Yes                 |
+| `LILAT`      | Latitude                     | Yes                 |
+| `LILONG`     | Longitude                    | Yes                 |
+
+### Output Format
+
+The Premise Level Geocode data is returned in the groupedAdditionalItems section of the IdmDataAddress.
+
+For this dataset, the group name used is "PremiseLevelGeocode" and the key/value pairs are as follows:
+
+| Field Name | Description                                                                             |
+| ---------- | --------------------------------------------------------------------------------------- |
+| LICOUNTRY  | Country                                                                                 |
+| LIEASTING  | Easting                                                                                 |
+| LINORTHING | Northing                                                                                |
+| LILAT      | Latitude                                                                                |
+| LILONG     | Longitude                                                                               |
+| LIGEOACC   | Accuracy Code (see accuracy code lookup table for details)                              |
+| LIGEOACCD  | Accuracy Description (corresponds to the description in the accuracy code lookup table) |
+
+Accuracy Description (corresponds to the description in the accuracy code lookup table)
+
+### Field Value Mappings
+
+Below are listed the mappings for certain fields, specifying what each possible value of the field means.
+
+### Geocode Accuracy
+
+| Value | Description                               |
+| ----- | ----------------------------------------- |
+| 1     | Central Internal Position                 |
+| 2     | General Internal Position                 |
+| 3     | Transitional position                     |
+| 4     | Street Location                           |
+| 5     | Postcode unit position                    |
+| 9     | Low accuracy - marked for priority review |
+
+#### Example Response
+
+The following responses shows a `IdmDataAddress` record where the record contains a "PremiseLevelGeocode" group in the groupedAdditionalItems.
+
+```java SOAP
+<req:address>
+    <data:organisation>Gb Group Plc</data:organisation>
+    <data:street>Herons Way</data:street>
+    <data:town>CHESTER</data:town>
+    <data:postCode>CH4 9GB</data:postCode>
+    <data:locality>Chester Business Park</data:locality>
+    <data:buildingName>The Foundation</data:buildingName>
+    <data:stateRegion>Cheshire</data:stateRegion>
+    <data:countryCode>GBR</data:countryCode>
+    <data:dpsZipPlus>1AR</data:dpsZipPlus>
+    <data:formattedAddress>Gb Group Plc,The Foundation,Herons Way Chester Business Park,Chester Cheshire,CH4 9GB</data:formattedAddress>
+    <data:geographicInformation>
+        <data:easting>340009</data:easting>
+        <data:northing>363191</data:northing>
+        <data:latitude>53.1624456651</data:latitude>
+        <data:longitude>-2.8987260320</data:longitude>
+    </data:geographicInformation>
+    <data:additionalItems>
+        <data:item>
+            <data:key>DATASOURCE</data:key>
+            <data:value>NAMES</data:value>
+        </data:item>
+    </data:additionalItems>
+    <data:groupedAdditionalItems>
+        <data:name>PremiseLevelGeocode</data:name>
+        <data:item>
+            <data:key>LICOUNTRY</data:key>
+            <data:value>England</data:value>
+        </data:item>
+        <data:item>
+            <data:key>LIEASTING</data:key>
+            <data:value>340010.0</data:value>
+        </data:item>
+        <data:item>
+            <data:key>LINORTHING</data:key>
+            <data:value>363192.0</data:value>
+        </data:item>
+        <data:item>
+            <data:key>LILAT</data:key>
+            <data:value>53.16247</data:value>
+        </data:item>
+        <data:item>
+            <data:key>LILONG</data:key>
+            <data:value>-2.898713</data:value>
+        </data:item>
+        <data:item>
+            <data:key>LIGEOACC</data:key>
+            <data:value>1</data:value>
+        </data:item>
+        <data:item>
+            <data:key>LIGEOACCD</data:key>
+            <data:value>Central Internal Position</data:value>
+        </data:item>
+    </data:groupedAdditionalItems>
+    <data:rmUDPRN>04624695</data:rmUDPRN>
+</req:address>
+```
+
+```json REST
+"address":[
+    {
+        "street":"Kingsfield Court",
+        "town":"CHESTER",
+        "postCode":"CH4 9GB",
+        "locality":"Eccleston",
+        "buildingName":"Edward House",
+        "stateRegion":"Cheshire",
+        "countryCode":"GBR",
+        "dpsZipPlus":"9ZI",
+        "formattedAddress":"Edward House,Kingsfield Court,Eccleston,CHESTER,Cheshire,CH4 9GB",
+        "additionalItems":{
+            "item":[
+                {
+                    "key":"DATASOURCE",
+                    "value":"ABP"
+                }
+            ]
+        },
+        "groupedAdditionalItems":[
+            {
+                "name":"PremiseLevelGeocode",
+                "item":[
+                    {
+                        "key":"LICOUNTRY",
+                        "value":"England"
+                    },
+                    {
+                        "key":"LIEASTING",
+                        "value":"340010.0"
+                    },
+                    {
+                        "key":"LINORTHING",
+                        "value":"363192.0"
+                    },
+                    {
+                        "key":"LILAT",
+                        "value":"53.16247"
+                    },
+                    {
+                        "key":"LILONG",
+                        "value":"-2.898713"
+                    },
+                    {
+                        "key":"LIGEOACC",
+                        "value":"1"
+                    },
+                    {
+                        "key":"LIGEOACCD",
+                        "value":"Central Internal Position"
+                    }
+                ]
+            }
+        ]
+    }
+]
+```

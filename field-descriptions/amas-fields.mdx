@@ -1,0 +1,44 @@
+---
+title: "AMAS Fields"
+---
+
+The table below is the list of AMAS specific output fields.
+
+|                        |                                                                                                                                                                                                                      |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field                  | Definition                                                                                                                                                                                                           |
+| DPID                   | Delivery Point Identifier is a unique 8-digit number which is assigned for every new address to the source address database                                                                                          |
+| FloorType              | Type of floor or level                                                                                                                                                                                               |
+| FloorNumber            | Floor or level number (including alpha characters)                                                                                                                                                                   |
+| LotNumber              | Allotment number                                                                                                                                                                                                     |
+| PostBoxNum             | Postal delivery number if the address is a postal delivery type                                                                                                                                                      |
+| PostBoxNumberPrefix    | Postal delivery number prefix related to the postal delivery number                                                                                                                                                  |
+| PostBoxNumberSuffix    | Postal delivery number suffix related to the postal delivery number                                                                                                                                                  |
+| PrimaryPremise         | Thoroughfare number for a property (first number in a property ranged address)                                                                                                                                       |
+| PrimaryPremiseSuffix   | Suffix for the thoroughfare number                                                                                                                                                                                   |
+| SecondaryPremise       | Second thoroughfare number (only used if the property has a ranged address eg 23-25)                                                                                                                                 |
+| SecondaryPremiseSuffix | Suffix for the second thoroughfare number                                                                                                                                                                            |
+| PreSortZone            | Also known as Barcode Sort Plan (BSP) number. The number of one of 54 individual sort regions around Australia. To qualify for Australia Post’s PreSort Letters Service, letters must be sorted based on this number |
+| PrintPostZone          | Also known as a PreSort Indicator. To qualify for Australia Post’s Print Post Service, letters must be sorted based on this number                                                                                   |
+| Barcode                | Standard barcode based on the DPID                                                                                                                                                                                   |
+| PrimaryAddressLine     | Primary address line in standardized format                                                                                                                                                                          |
+| SecondaryAddressLine   | Secondary address line in standardized format                                                                                                                                                                        |
+
+**AMAS Error code information:&#xA0;**
+
+For the AMAS process, the ErrorCode field lets us determine whether PPM rules have taken place. An ErrorCode of 4 indicates that all of the fields were matched correctly (i.e. no error), which means the DPID matches the entire input address and PPM has not been used:
+
+If the ErrorCode is 5 or 19,the address is respectively not verified or partially verified at the SubBuilding level, and PPM has been used to match to the Primary Point address:
+
+If the ErrorCode is 20 or 21, the address is only verified up to Thoroughfare or Locality respectively, and the output address and DPID both reflect this verification level. Although we cannot determine whether PPM has been used in this case, the output address does not contain information beyond what can be found with the DPID:
+
+If the ErrorCode is 211 through 216, at least one field has been changed between the input and the output, likely because of a spelling error or a blank field:
+
+We cannot determine whether PPM has been used based on this ErrorCode alone, but we can use the corrected output address to fix the input spelling error and get a new ErrorCode that allows us to determine whether PPM has been used. The error codes correspond to the following spelling errors:
+
+211 -> Thoroughfare name - The street name was corrected<br/>
+212 -> Locality - The suburb/town name was corrected<br/>
+213 -> PostalCode - The postal code was corrected<br/>
+214 -> AdministrativeArea - The state/territory was corrected<br/>
+215 -> Thoroughfare type - The street type (ST, RD, etc) was corrected<br/>
+216 -> Thoroughfare direction - The street direction (N, S, etc) was corrected

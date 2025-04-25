@@ -1,0 +1,31 @@
+---
+title: "Report Process"
+---
+
+## Report Process
+
+The Report process is designed to generate reports during batch processing.
+
+### Supported Reports :
+
+- Data Quality Report (DQR)
+- CASS Report
+- PS3553 Report
+- SERP Report
+
+## Usage
+
+Report Process can be invoked from lqtBatch by adding the following options in the command line\
+-r \<list of reports to generate. Delimited by pipe character>\
+-ri \<optional. Report info file passed to the report generator>\
+-ro \<optional. Report output file name>. If no file name is specified, a default file name will be used.
+
+|                  |                                                                                                                            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Supported Report | Definition                                                                                                                 |
+| DQR              | Data Quality Report                                                                                                        |
+| CASS             | CASS Stage File Report                                                                                                     |
+| PS3553           | CASS summary report that may be submitted to USPS together with the mailing list that was processed using the CASS Process |
+| SERP             | SERP address accuracy report                                                                                               |
+
+e.g. lqtBatch.exe -p v -r DQR -i c:\test\input.txt -d c:\test\data -ro myreport.txt

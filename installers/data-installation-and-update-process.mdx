@@ -1,0 +1,240 @@
+---
+title: "Data Installation And Update Process"
+---
+
+The first step towards installation of data packs is to check the availability of Install Manager in the API installation folder. If the Install Manager is not available, the [Install Manager installer](/installers/installation-manager-install-process/) should be used to first install the Install Manager. Then the data packs can be downloaded and installed using the Install Manager.
+
+To summarize the recommended steps for installation are as follows:
+
+- Install the Install Manager, if not already installed in the Loqate API Installation Folder (You will need the Install Manager Installer from Loqate, to install the Install Manager)
+- Request a license key from Loqate Support at [support@loqate.com](mailto:support@loqate.com) or use local data packs if available
+- Execute the Install Manager and use it to install the data packs as needed
+
+**Important Note** Please ensure Loqate is installed **outside** of program files. Even if you enable read/write permissions while inside program files, there may still be permissions issues, we recommend installing Loqate outside of program files.
+
+## Install Manager
+
+Install Manager is a java application that was introduced in 2013Q2.0 to handle the installation of the GKR. Install Manager can be run in graphical user interface (GUI) mode or in command line mode. Install Manager uses a web service running at licensing.loqate.com to provide the information on compatible data packs for a given Local API version. Install Manager requires either a license key or license pack that can be obtained by contacting [support@loqate.com](mailto:support@loqate.com).
+
+#### **Change to version of Java used by “Install Manager”**
+
+The loqate “Install Manager” used to install or update Loqate LFS datafiles if provided with a bundled Java run-time engine (JRE) that it uses rather than relying on the version of JAVA on the target machine.
+
+From 2024Q4.1 release the bundled JRE will be changed, due to vulnerabilities in the version of JRE previously used by InstallManager.
+
+However, the more recent JRE bundled from 2024Q4.1 onwards has a dependency on a later version of “glibc”; it will need glibc **2.14** or later to be on the machine.
+
+Customers with machines using old operating systems may not have support for glibc 2.14, and the bundled Java JRE will therefore not be usable on their machine, causing an error, like below example…
+
+**./java: /lib64/libc.so.6: version ‘GLIBC_2.14’ not found**
+
+Some older operating systems expected to be affected by this are:\
+\* SUSE Linux Enterprise Server (SLES) 11 SP3\
+\* RedHat 6.9
+
+If this should happen on your machine when trying to run InstallManager.sh, a potential workaround is to use the version of Java runtime already installed on the machine, rather than the bundled JRE.\
+This can be achieved by commenting out or removing the two lines highlighted below in “InstallManager.sh” before running it.
+
+<Frame caption="">
+  <img src="/images/0780c2e4-wPjEW1W7ct8AAAAABJRU5ErkJggg.png" />
+</Frame>
+
+Alternatively you can delete the Install Manager ‘jre’ folder/directory.
+
+If you do not have any JREs on your system, you are recommended to Install Java/JRE version 8 and above. Below is a list of links that contains downloadable Java/JDK, please choose the version that is compatible with your platform.
+
+Reference download sites for Java (JDK/JRE):
+
+• [Azul](https://www.azul.com/downloads/?package=jdk#zulu)
+
+• [Adoptium](https://adoptium.net/temurin/releases/)
+
+• [Openlogic](https://www.openlogic.com/openjdk-downloads)
+
+• [Corretto](https://github.com/corretto/corretto-8)
+
+### Graphical User Interface Mode
+
+Install Manager can be started in GUI mode by providing the command line option: mode=gui. GUI mode is the default mode on Windows platforms. On Windows platforms, Install Manager can be launched by double clicking on InstallManager.bat.
+
+The first screen displays the version of the Local API currently installed, at the lower left corner.
+
+<Frame caption="">
+  <img src="/images/1ac4bdaf-IMstep1-300x235.png" />
+</Frame>
+
+If a proxy server is used, the checkbox “Use Proxy Server” needs to be checked and the Proxy server name and port need to be entered as shown below. If the proxy server needs authentication, the checkbox “Use authentication for proxy server” should also be checked & the user name and password need to be provided.
+
+<Frame caption="">
+  <img src="/images/e1fbbf0a-IMstep2-300x236.png" />
+</Frame>
+
+The first step is to provide the installation folder.
+
+<Frame caption="">
+  <img src="/images/891cc8f4-IMstep3-300x236.png" />
+</Frame>
+
+The next step is to either provide a license key or provide the full path to a license pack. The license pack is named “loqateLicense”. If a license key is entered, Install Manager will communicate with licensing.loqate.com. If the license key is valid, the server will return the corresponding license pack to Install Manager and then Install Manager will write the license pack to the installation folder.
+
+<Frame caption="">
+  <img src="/images/46de4931-IMstep4-300x235.png" />
+</Frame>
+
+If the older format license pack “loqateLicense” is selected, it will be changed to the new format “license.lfs”
+
+<Frame caption="">
+  <img src="/images/7ce31b58-IMLicensepack-300x233.png" />
+</Frame>
+
+Once the license pack is saved to disk, Install Manager will display the contents of the license for reference.
+
+<Frame caption="">
+  <img src="/images/b7759098-IMstep5-300x234.png" />
+</Frame>
+
+There are 2 options available for downloading as shown below. One can either just download the data packs or install the data packs that are already downloaded to the local machine.
+
+<Frame caption="">
+  <img src="/images/e3791d25-datapacks-300x233.jpg" />
+</Frame>
+
+After a valid option is selected, Install Manager will communicate with licensing.loqate.com and fetch details about the latest available licensed data packs that are compatible with the Local API version that is currently installed. The details of available data packs to install will be shown next. In the case a user selects an existing data folder for installation, it will show newer data packs available to download and install. The release date of the available data packs will also be displayed. The user can select the required data packs from this screen by checking the checkboxes next to each product.
+
+<Frame caption="">
+  <img src="/images/d1cd367c-IMSelectproducts-300x237.jpg" />
+</Frame>
+
+If the user selects the download option, Install Manager will download the data packs.
+
+<Frame caption="">
+  <img src="/images/4e4ea006-download-300x235.jpg" />
+</Frame>
+
+The download can be paused and resumed at any point. If the “Pause Download” button is pressed the UI will change as follows:
+
+<Frame caption="">
+  <img src="/images/a8a303ba-IMresumedownload-300x234.jpg" />
+</Frame>
+
+The next screen displays location where the downloaded data packs will be installed.
+
+<Frame caption="">
+  <img src="/images/16ba1eb1-IMDiskspace-300x236.jpg" />
+</Frame>
+
+The next screen will proceed to installing the selected data packs.
+
+<Frame caption="">
+  <img src="/images/d8a069c6-IMUnzip-300x235.jpg" />
+</Frame>
+
+Finally, Install Manager will complete the installation as shown.
+
+<Frame caption="">
+  <img src="/images/c7c09a61-IMFinish-300x237.jpg" />
+</Frame>
+
+### Command Line Interface Mode
+
+Install Manager can be started in command line mode by providing the command line option: mode=commandline. Command line mode is the default in Linux and UNIX platforms. On Linux/Unix platforms, Install Manager can be launched by running the script InstallManager.sh.
+
+The first screen displays the version of the Local API currently installed.
+
+<Frame caption="">
+  <img src="/images/31aaebae-IM_CLI_image1.png" />
+</Frame>
+
+If a proxy server is used, the Proxy server name and port need to be entered as shown below. If the proxy server needs authentication, the user name and password need to be provided.
+
+<Frame caption="">
+  <img src="/images/743e2790-IM_CLI_image2.png" />
+</Frame>
+
+<Frame caption="">
+  <img src="/images/1d1f1f82-IM_CLI_image3.png" />
+</Frame>
+
+The first step is to provide the installation folder. If the user selects an empty folder the installation will proceed as a fresh installation of the data packs. If the user selects an existing data folder, the installer will proceed as an update installation.
+
+<Frame caption="">
+  <img src="/images/797cfd67-IM_CLI_image4.png" />
+</Frame>
+
+The next step is to either provide a license key or provide the full path to a license pack. The license pack is named “loqateLicense”. From 2015Q1 release the license pack format is changed from “loqateLicense” to “license.lfs”. If a license key is entered, Install Manager will communicate with licensing.loqate.com. If the license key is valid, the server will return the corresponding license pack to Install Manager and then Install Manager will write the license pack to the installation folder.\
+There are 3 options available for downloading and installing as shown below.
+
+<Frame caption="">
+  <img src="/images/69d4a40d-IM_CLI_image5.png" />
+</Frame>
+
+One can either just download the data packs or install the data packs that are already downloaded to the local machine.
+
+<Frame caption="">
+  <img src="/images/a7fd0bf9-IM_CLI_image6.png" />
+</Frame>
+
+When the list of available data packs is shown, enter “all” to select all data packs. Alternatively, if only certain products are desired for installation, enter the numbers next to those products, ending the selection by entering “done”.
+
+<Frame caption="">
+  <img src="/images/75811245-IM_CLI_image7.png" />
+</Frame>
+
+Depending on the choice made for download and installation, Install Manager may download data packs from download.loqate.com and install them.
+
+<Frame caption="">
+  <img src="/images/2ba30866-IM_CLI_image9.png" />
+</Frame>
+
+<Frame caption="">
+  <img src="/images/5ddb3dad-IM_CLI_image10.png" />
+</Frame>
+
+### Installation Troubleshooting Tips
+
+If you receive the error message ‘license expired’ but your license key is still valid, we have listed the below recommendations.
+
+1\. **Insufficient permissions**\
+Install Manager needs both read and write permissions to update the license pack. Make sure you have permission to create/overwrite license.lfs, otherwise the license pack will not update.
+
+Linux: Since the Linux install of license.lfs has default permissions of 644, only the owner of license.lfs has write permissions. If you are accessing license.lfs from a shared folder or someone else’s\
+folder, you will need to change the permissions to 664 or 666 first.\
+Windows: If you are installing data anywhere inside Program Files, Program Files (x86), or Windows (for example C:Program FilesLoqatedata), you will need to provide admin permissions, either by\
+running InstallManager as administrator through Command Prompt, or installing outside of Program Files and copying the installed data into the desired location.
+
+2\. **Older version of Install Manager**\
+If you are using an older version of the Install Manager from 2015, which had a bug, you will need to download the latest InstallManager from the Loqate FTP site. To retrieve the login info, please either ask your account manager or submit a ticket to support\@loqate.com
+
+3\. **Proxy/Firewall access**\
+Install Manager needs internet access and will connect to our licensing servers to validate the license key and to fetch the information about the latest compatible reference data for download. If there are any Proxy/Firewall settings in place that may block the access to our servers. Please check that the following URLs are not blocked by your settings. If the following URLs are blocked, please update your firewall settings or use the proxy authentication specified during the Install Manager process (on the first screen). The following URLs are needed so that the Install Manager can connect to our server to verify the license key and get the reference datapacks:
+
+https\://licensing.loqate.com port 443\
+https\://data.loqate.com port 443
+
+**Test the connections by using these curl commands**\
+\$ curl https\://licensing.loqate.com:443
+
+- Expected result: An empty result.
+- A result that contains “Could not resolve host” indicates you are not able to connect to the site and will not be able to download data. Please contact your IT department and ask them to allow access to that site.
+
+\$ curl https\://data.loqate.com:443
+
+- Expected result: \<Error>\<Code>AccessDenied\</Code>\<Message>Access Denied\</Message>\<RequestId>VY5YZNBETGF084CJ\</RequestId>\<HostId>T5Xl6GNk9N4GsYcIpzgZChQabj/zoYcHrTmAKKpPjGysliqiLEX7BKVh0oRvCYnMdkYvZzAna0o=\</HostId>\</Error>
+- Note that you will see this result because you were able to connect to the site and additional credentials (i.e., the license key) are needed
+- A result that contains “Could not resolve host” indicates you are not able to connect to the site and will not be able to download data. Please contact your IT department and ask them to allow access to that site.
+
+4\. **No Internet connection**\
+If you do not have internet connection on your server or are unable to open up the firewall on the server, we recommend to follow the online + offline instructions available on our website. Basically, you have to download the datapacks on a machine that can connect to our licensing servers. Copy them over to your servers and install those datapacks.
+
+Online and Offline installation scenarios: [Example of Installation Scenarios](/installers/example/installation-scenarios/)
+
+- [Local API](/local-apis/)
+
+- [Installers](/installers/)
+
+  - [Local API install process](/installers/local-api-install-process/)
+  - [Data installation and update process](/installers/data-installation-and-update-process/)
+
+- [Install Manager Installation Scenarios](/installers/example/installation-scenarios/)
+
+- [How to Obtain Version Information](/release-information/how-to-obtain-version-information/)

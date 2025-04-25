@@ -1,0 +1,188 @@
+---
+title: "Interactive Validate v2. 2"
+description: ""
+sidebarTitle: "Interactive Validate v2.2"
+---
+
+Starts a new phone number validation request.
+
+This method does not consume credit.
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+## Base URL
+
+```
+https://api.addressy.com/phonenumbervalidation/interactive/validate/v2.2/
+```
+
+<Note>
+  Note:we don't support API connections using HTTP - all calls should use HTTPS.
+</Note>
+
+### Secure SOAP WSDL
+
+```
+https://api.addressy.com/phonenumbervalidation/interactive/validate/v2.2/wsdl3.ws
+```
+
+### Request parameters
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note:where potentially sensitive data is used in these parameters, remember to
+  make the request as secure as possible.
+</Note>
+
+`*` = required field
+
+| Name             | Type   | Values | Description                                                                                                                                                                                                                                     |
+| ---------------- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key\*            | String |        | The key to use to authenticate to the service.                                                                                                                                                                                                  |
+| Phone\*          | String |        | The mobile/cell phone number to verify. This must be in international format (+447528471411 or 447528471411) if no country code is provided or national format with a Country parameter provided (07528471411 and GB as the Country parameter). |
+| Country          | String |        | The ISO2 or ISO3 country code of the number you are trying to validate (if provided in national format).                                                                                                                                        |
+| Iso3Country      | String |        | The option to return the ISO3 country code in the response, if the input Iso3Country is "True" or "Yes" (case insensitive).                                                                                                                     |
+| AdditionalFields | String |        | The option to return additional fields listed as '(Optional)' if the field value is "True" or "Yes" (case insensitive).                                                                                                                         |
+
+### Response
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+| Name                   | Type    | Example      | Description                                                                                                                                                                              |
+| ---------------------- | ------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------- |
+| PhoneNumber            | String  | 447528471411 | The recipient phone number in international format.                                                                                                                                      |
+| RequestProcessed       | Boolean | True         | Returns true if we managed to process the request on the network or false if the validation attempt was unsuccessful.                                                                    |
+| IsValid                | String  | Yes          | Whether the number is valid or not (Maybe is returned if full validation couldn't be performed. Cellular network issues can cause temporary failures in the validation procedure). ([Yes | No  | Maybe]) |
+| NetworkCode            | String  |              | The current operator serving the supplied number.                                                                                                                                        |
+| NetworkName            | String  |              | The name of the current operator serving the supplied number.                                                                                                                            |
+| NetworkCountry         | String  |              | The country code of the operator.                                                                                                                                                        |
+| NationalFormat         | String  | 07528 471411 | The domestic network format (useful for dialling from within the same country).                                                                                                          |
+| CountryPrefix          | Integer | 44           | The country prefix that must be prepended to the number when dialling internationally.                                                                                                   |
+| NumberType             | String  | Yes          | The type of number that was detected in the request (MOBILE, LANDLINE OR VOIP).                                                                                                          |
+| MccMnc                 | String  | 33801        | (Optional) The mobile country code and mobile network code concatenated.                                                                                                                 |
+| Ported                 | String  | True         | (Optional) Returns True if the number has been ported to another network.                                                                                                                |
+| PortedNetworkName      | String  |              | (Optional) The ported network name that the mobile number is registered with.                                                                                                            |
+| PortedNetworkCountry   | String  |              | (Optional) The country code of the network that the mobile number has been ported to.                                                                                                    |
+| Roaming                | String  | True         | (Optional) Returns True if the number is currently roaming in another country.                                                                                                           |
+| RoamingNetworkName     | String  |              | (Optional) The network name that the mobile number is currently registered with whilst roaming.                                                                                          |
+| RoamingNetworkCountry  | String  |              | (Optional) The network country that the mobile number is currently in whilst roaming.                                                                                                    |
+| OriginalNetworkName    | String  |              | (Optional) The original network name that the mobile number was registered with.                                                                                                         |
+| OriginalNetworkCountry | String  |              | (Optional) The original country code that the phone was registered with.                                                                                                                 |
+
+## Try it now
+
+Use the form below to test the service.
+
+<Note>
+  Note:there is a usage limit on the demo key, but you can swap it for one of
+  your own if you need to.
+</Note>
+
+Key _
+AA11-AA11-AA11-AA11 (Demo key)
+Phone _
+Country
+Iso3Country
+AdditionalFields
+Try it
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the list of common errors.
+
+| Id   | Error                       | Cause                                                                | Resolution                                                                                     |
+| ---- | --------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 1001 | Number Required             | The phone numbers is required.                                       | Please ensure that you supply a phone number and try again.                                    |
+| 1002 | Invalid phone number format | The phone number provided is not in a valid international format.    | Please ensure that you supply a phone number in a valid international format and try again.    |
+| 1003 | Invalid country code        | The country code supplied was not a valid ISO2 or ISO3 country code. | Please ensure that you supply a valid ISO2 or ISO3 country code and attempt the request again. |
+
+### Example requests
+
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Available endpoints
+
+Dataset (ADO.NET)
+
+### Example request
+
+```
+https://api.addressy.com/PhoneNumberValidation/Interactive/Validate/v2.20/dataset.ws?Key=AA11-AA11-AA11-AA11&Phone=+447528471411&Country=GB&Iso3Country=True&AdditionalFields=True
+```
+
+### Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Language
+
+```asp ASP function
+function PhoneNumberValidation_Interactive_Validate_v2_20(Key, Phone, Country, Iso3Country, AdditionalFields)
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/PhoneNumberValidation/Interactive/Validate/v2.20/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&Phone=" & Server.UrlEncode(Phone)
+      strUrl = strUrl & "&Country=" & Server.UrlEncode(Country)
+      strUrl = strUrl & "&Iso3Country=" & Server.UrlEncode(Iso3Country)
+      strUrl = strUrl & "&AdditionalFields=" & Server.UrlEncode(AdditionalFields)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set PhoneNumberValidation_Interactive_Validate_v2_20 = rst
+
+      'FYI: The recordset returns the following columns:
+      'PhoneNumber
+      'RequestProcessed
+      'IsValid
+      'NetworkCode
+      'NetworkName
+      'NetworkCountry
+      'NationalFormat
+      'CountryPrefix
+      'NumberType
+      'MccMnc
+      'Ported
+      'PortedNetworkName
+      'PortedNetworkCountry
+      'Roaming
+      'RoamingNetworkName
+      'RoamingNetworkCountry
+      'OriginalNetworkName
+      'OriginalNetworkCountry
+
+end function
+```
+
+## Example implementation
+
+Try our example of Address Verification in a website using our sandbox environment.
+
+See the Pen [AddressLookup](https://codepen.io/GBGLoqate/pen/MWVQrbN) by GBG Loqate ([@GBGLoqate](https://codepen.io/GBGLoqate)) on [CodePen](https://codepen.io/). Please note, you must [accept Functional Cookies](apis/phone-validation/interactive-validate-v2.2/#) to view the Pen here.

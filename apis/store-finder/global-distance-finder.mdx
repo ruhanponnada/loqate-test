@@ -1,0 +1,341 @@
+---
+title: "Global Distance Finder"
+description: ""
+sidebarTitle: "Global Distance Finder"
+---
+
+The Global Distance Finder API takes an input of an origin location and one or more destination locations, and returns road-based distance and travel times for each of them. When crossing bodies of water, ferry transport will be taken into consideration where data is available.
+
+Please note that there are no limits to how many points you can send us, however your results returned will be limited to the nearest 100 points within a maximum of a 500km radius. In general there is a linear correlation between number of points/distance and response times. Due to this we recommend limiting to the fewest points possible for your application.
+
+Travel times are calculated using historical traffic data.
+
+This API supports most international locations. Distance calculation is supported between countries (e.g. France to Germany) provided that those countries are within the same region (e.g. Europe, Africa, Asia).
+
+**This method will consume credit. It is charged per request regardless of the number of destinations.**
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response-fields)
+- [Errors](#errors)
+
+### Base URL
+
+```
+https:// api.addressy.com/LocationServices/DistanceFinder/Nearby/v1.00
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+### JSON
+
+```
+https://api.addressy.com/LocationServices/DistanceFinder/Nearby/v1.00/json4.ws
+```
+
+<Note>
+  Note: A REST endpoint with a JSON payload is the only call style supported.
+</Note>
+
+### Request
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.
+</Note>
+
+| Parameter      | Required | Type             | Description                                                                                                                                                                                                                                                                                                                                             |
+| -------------- | -------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key            | Required | String           | The key used to authenticate with the service. For example: `AA11-AA11-AA11-AA11`.                                                                                                                                                                                                                                                                      |
+| locationListID | Optional | String           | A GuID that identifies a list previously created using our Create List API. When this field is populated with a valid ID, the API will utilise the list for your destination locations.                                                                                                                                                                 |
+| locations      | Optional | Array of Strings | An array of strings that is populated with information about a location. Any points in the locations object will be used to calculate distances from your origin location. If not using a previously uploaded Location List then at least one location must be sent in the request.                                                                     |
+| originLocation | Required | Array of Strings | An array of strings that is populated with information about your origin location. This will be the starting point for all distances calculated via the API.                                                                                                                                                                                            |
+| maxDistance    | Optional | Integer          | The maximum straight line distance radius of results that will be returned, starting from the original location, in metres. For example, setting a maxDistance of 100000 will only return results within a 100km radius of the origin. By default this is set to 100km with a maximum value of 500km. A smaller search radius will improve performance. |
+| orderBy        | Optional | String           | The order in which you want results to be returned. By default this will return locations in ascending distance order (i.e. closest location first). Time can be passed instead, to return in order of ascending travel time.                                                                                                                           |
+| maxResults     | Optional | Integer          | The maximum number of locations you want returned. By default this is set to 10 with a maximum value of 100. Reducing the number of results returned will also improve performance.                                                                                                                                                                     |
+
+#### Locations/OriginLocation fields
+
+| Field       | Required | Type   | Description                                                                                     |
+| ----------- | -------- | ------ | ----------------------------------------------------------------------------------------------- |
+| id          | Required | String | Identifier for the location. This must be unique for each location provided within the request. |
+| latitude    | Required | String | The WGS 84 latitude in decimal degrees format.                                                  |
+| longitude   | Required | String | The WGS 84 longitude in decimal degrees format.                                                 |
+| name        | Optional | String | Name of the location.                                                                           |
+| description | Optional | String | Description of the location for display purposes.                                               |
+| address     | Optional | String | Address of the location for display purposes.                                                   |
+
+### Example request using Location List
+
+```
+POST https://api.addressy.com/LocationServices/DistanceFinder/Nearby/v1.00/json4.ws
+```
+
+Content-Type: application/json
+
+<Note>
+  Note: You must generate a list using our Location Management API (see the
+  Create List API) and have a valid ListID before using this method.
+</Note>
+
+Add your API key into the code below for a sample request:
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "locationListId": "b035b09f-e08f-4789-8224-0042a2dd4d36",
+  "originLocation": {
+    "id": "Loqate Office",
+    "name": "Loqate Worcester Office",
+    "description": "Loqate's Worcester Office. ",
+    "address": "Waterside, Basin Rd, Worcester WR5 3DA",
+    "latitude": "52.18291",
+    "longitude": "-2.22200"
+  },
+  "maxDistance": 500000,
+  "orderBy": "Distance",
+  "maxResults": 10
+}
+```
+
+### Example request using Locations
+
+```
+POST https://api.addressy.com/LocationServices/DistanceFinder/Nearby/v1.00/json4.ws
+```
+
+Content-Type: application/json
+
+Add your API key into the code below for a sample request:
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "locations": [
+    {
+      "id": "Point A",
+      "latitude": 52.47952,
+      "longitude": -1.89618,
+      "name": "Example Point A",
+      "address": "Example address 1",
+      "description": "An example description"
+    },
+    {
+      "id": "Point B",
+      "latitude": 52.05817,
+      "longitude": -2.71764,
+      "name": "Example Point B",
+      "address": "Example address 2",
+      "description": "An example description"
+    }
+  ],
+  "originLocation": {
+    "id": "Loqate Office",
+    "name": "Loqate Worcester Office",
+    "description": "Loqate's Worcester Office. ",
+    "address": "Waterside, Basin Rd, Worcester WR5 3DA",
+    "latitude": "52.18291",
+    "longitude": "-2.22200"
+  },
+  "maxDistance": 100000,
+  "orderBy": "Distance",
+  "maxResults": 10
+}
+```
+
+## Response
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+### Response fields
+
+| Field                | Type             | Description                                                                                         |
+| -------------------- | ---------------- | --------------------------------------------------------------------------------------------------- |
+| OriginLocation       | Array of strings | An array of strings containing the originLocation from the original request.                        |
+| DestinationLocations | Array of objects | An array of objects containing the destination locations and results for distance/time calculation. |
+
+#### DestinationLocations fields
+
+Further information on the fields contained within the DestinationLocations array.
+
+| Field               | Type             | Description                                                                                          |
+| ------------------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
+| DestinationLocation | Array of strings | This field contains the information provided as part of the locations array in the original request. |
+| Distance            | String           | The distance by road in kilometres returned as a string.                                             |
+| DistanceMeters      | Integer          | The distance by road in metres returned as an integer.                                               |
+| Time                | String           | The travel time displayed as seconds, minutes or hours.                                              |
+| TimeSeconds         | Integer          | The travel time displayed in seconds as an integer.                                                  |
+
+### Example response: Distance Finder request using Location List
+
+```json
+{
+  "OriginLocation": {
+    "Id": "Loqate Office",
+    "Name": "Loqate Worcester Office",
+    "Description": "Loqate's Worcester Office. ",
+    "Address": "Waterside, Basin Rd, Worcester WR5 3DA",
+    "Latitude": "52.18291",
+    "Longitude": "-2.22200"
+  },
+  "DestinationLocations": [
+    {
+      "DestinationLocation": {
+        "Id": "65e7e2bc-3586-4c45-a18c-2979474c06b2",
+        "Name": "Point A",
+        "Description": "A point",
+        "Address": "over there",
+        "Latitude": "51.5119437",
+        "Longitude": "-0.1279533"
+      },
+      "Distance": "219.96 km",
+      "DistanceMiles": "136.67 mi",
+      "DistanceMeters": 219964,
+      "Time": "182 mins",
+      "TimeSeconds": 10923
+    },
+    {
+      "DestinationLocation": {
+        "Id": "cc1f3a28-793d-4f72-ac20-87894e3ee3f7",
+        "Name": "Point B",
+        "Description": "B point",
+        "Latitude": "51.8119437",
+        "Longitude": "0.1279533"
+      },
+      "Distance": "253.53 km",
+      "DistanceMiles": "157.53 mi",
+      "DistanceMeters": 253529,
+      "Time": "189 mins",
+      "TimeSeconds": 11363
+    },
+    {
+      "DestinationLocation": {
+        "Id": "f2d71c98-e458-454a-8df7-4d0d7fa2e6b1",
+        "Name": "Point C",
+        "Description": "C point",
+        "Latitude": "52.5119437",
+        "Longitude": "-0.1274533"
+      },
+      "Distance": "193.25 km",
+      "DistanceMiles": "120.07 mi",
+      "DistanceMeters": 193254,
+      "Time": "176 mins",
+      "TimeSeconds": 10616
+    },
+    {
+      "DestinationLocation": {
+        "Id": "692ff52a-76f4-4c9d-8106-d16c3c466b54",
+        "Name": "Point D",
+        "Description": "D point",
+        "Latitude": "53.5119437",
+        "Longitude": "-1.1279533"
+      },
+      "Distance": "203.12 km",
+      "DistanceMiles": "126.21 mi",
+      "DistanceMeters": 203119,
+      "Time": "148 mins",
+      "TimeSeconds": 8912
+    },
+    {
+      "DestinationLocation": {
+        "Id": "7f0699c6-a89e-4443-bc7e-11c598dcab14",
+        "Name": "Point E",
+        "Description": "E point",
+        "Address": "over there",
+        "Latitude": "51.5889437",
+        "Longitude": "-0.9279533"
+      },
+      "Distance": "166.50 km",
+      "DistanceMiles": "103.45 mi",
+      "DistanceMeters": 166499,
+      "Time": "126 mins",
+      "TimeSeconds": 7591
+    }
+  ]
+}
+```
+
+#### Example response: Distance Finder request using Locations
+
+```json
+{
+  "OriginLocation": {
+    "Id": "Loqate Office",
+    "Name": "Loqate Worcester Office",
+    "Description": "Loqate's Worcester Office. ",
+    "Address": "Waterside, Basin Rd, Worcester WR5 3DA",
+    "Latitude": "52.18291",
+    "Longitude": "-2.22200"
+  },
+  "DestinationLocations": [
+    {
+      "DestinationLocation": {
+        "Id": "Point A",
+        "Name": "Example Point A",
+        "Description": "An example description",
+        "Address": "Example address 1",
+        "Latitude": "51.50893",
+        "Longitude": "-0.131387"
+      },
+      "Distance": "219.66 km",
+      "DistanceMiles": "136.49 mi",
+      "DistanceMeters": 219657,
+      "Time": "190 mins",
+      "TimeSeconds": 11439
+    },
+    {
+      "DestinationLocation": {
+        "Id": "Point B",
+        "Name": "Example Point B",
+        "Description": "An example description",
+        "Address": "Example address 2",
+        "Latitude": "51.50893",
+        "Longitude": "-0.131387"
+      },
+      "Distance": "219.66 km",
+      "DistanceMiles": "136.49 mi",
+      "DistanceMeters": 219657,
+      "Time": "190 mins",
+      "TimeSeconds": 11439
+    }
+  ]
+}
+```
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4-column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+Here's a generic example, for reference:
+
+```json
+{
+  "Items": [
+    {
+      "Error": "2",
+      "Description": "Unknown key",
+      "Cause": "The key you are using to access the service was not found.",
+      "Resolution": "Please check that the key is correct. It should be in the form AA11-AA11-AA11-AA11."
+    }
+  ]
+}
+```
+
+For a list of errors applicable to all APIs, have a look at the list of common errors.
+
+| Number | Description                 | Cause                                                        | Resolution                                                                                          |
+| ------ | --------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| 1001   | MissingOriginLocation       | Origin location Not Supplied                                 | Please supply Origin location                                                                       |
+| 1003   | MissingDestinationLocations | Destination Locations Not Supplied                           | Please supply one or more Destination Locations                                                     |
+| 1004   | InvalidOriginLatLong        | Invalid lat or long Supplied                                 | Check input data                                                                                    |
+| 1005   | InvalidOriginId             | Invalid Id Supplied for origin                               | Check input data                                                                                    |
+| 1006   | NoListFound                 | No list of that ID can be found associated with your account | Correct ListID and try again                                                                        |
+| 1007   | InvalidDestinationLatLong   | Invalid lat or long Supplied                                 | Check input data                                                                                    |
+| 1008   | InvalidDestinationId        | Invalid Id Supplied for destination                          | Check input data                                                                                    |
+| 1009   | DuplicateDestinationId      | Id Supplied for destination are not unique                   | Check input data                                                                                    |
+| 1010   | ProviderFailure             | Internal Server Error.                                       | Please try again later                                                                              |
+| 1011   | InvalidSearchArea           | Invalid search area provided                                 | Check that input origin and destinations are in the same country and that the origin is near a road |

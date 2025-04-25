@@ -1,0 +1,21 @@
+---
+title: "DuplicateHandlingMask Option"
+---
+
+Address elements that contain duplicates in input cause slower processing and complicate parsing. With this option set, GBG Loqate’s engine can handle some of the duplicate information that is encountered upon user input.
+
+Duplicate input handling is currently hidden behind an option (DuplicateHandlingMask) which is not enabled by default. The option can be configured by enabling various levels of handling duplicate inputs. When duplicates are removed at any level, the removed information is updated in an output structure called DuplicateInfo, for further inspection.
+
+This option allows users to specify the various levels at which duplicates can be removed. These levels are not mutually exclusive.
+
+The levels are as follows:
+
+If the DuplicateHandlingMask is set to 1 (called Single Field Level), the engine will pre-process the input and remove duplicates that occur within a single field.
+If the DuplicateHandlingMask is set to 2 (called Cross Field Level), the engine will pre-process the input and remove duplicates across all fields.
+If the DuplicateHandlingMask is set to 4 (called Tag Field Level), the engine will pre-process the input and remove duplicates in fields which have not been internally tagged.
+An input field is considered a tagged field if the field name is one of the standard address component field name (Locality, AdministrativeArea, Thoroughfare, etc.)
+
+If the DuplicateHandlingMask is set to 8 (called Field Status Level), the engine will post-process the output from verification and remove duplicates from non-verified fields.
+Since these values are non-exclusive, combinations may be enabled by adding the values. For instance, Single Field Level and Cross Field Level can be enabled by setting the DuplicateHandlingMask to 3. For best results, set the DuplicateHandlingMask to 11 which is a combination of Single Field Level, Cross Field Level, and Field Status Level.
+
+For level 1 and level 2, duplicate components must be a sequence of at least 4 consecutive address components before they can be removed as an actual duplicate. This is to prevent the engine from removing valid input and therefore minimizing false positive results.

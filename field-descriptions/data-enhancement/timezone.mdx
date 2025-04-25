@@ -1,0 +1,34 @@
+---
+title: "Time Zone Enhancement Dataset"
+---
+
+## What are Time Zones?
+
+Time Zone refers to the local time of a region or a country. The local time within a time zone is defined by its offset (difference) from Coordinated Universal Time (UTC), the world’s time standard, ranging from UTC-12:00 to UTC +14:00.
+Some countries or regions use Daylight Savings Time (DST) for part of the year during spring and summer. During DST, our clocks are forwarded an hour, so daylight ends at later time of the day.
+
+### Coverage and Data
+
+Loqate provide time zone information for world-wide countries. Most countries have a single time zone, there are 23 countries with at least two time zones, including Antarctica, Australia, Brazil, Canada, The Democratic Republic of the Congo, Ecuador, French Polynesia, Greenland, Indonesia, Kazakhstan, Kiribati, Mexico, Federated States of Micronesia, Mongolia, New Zealand, Papua New Guinea, Portugal, Russian Federation, Spain, Ukraine, United States Minor Outlying Islands, and United States.
+For countries with single time zone, Loqate engine will add the time zone fields using CountryName field. Whereas for countries with multiple time zones, Loqate will add the time zone fields using a combination of CountryName and Geographical fields – (SuperAdministrativeArea / AdministrativeArea / SubAdministrativeArea / Locality / or the combination of all of them).
+
+**The new Time Zone enhanced data is available by using the enhance option on the address verify requests. The following additional fields will be returned with the other address verification field**
+
+### Value Fields
+
+#### TimeZone_UTC
+
+UTC defines the Coordinated Universal Time.
+Example: 2869 S County Road 210, Knox IN 46534-7969, USA
+Returned UTC values: -05:00
+
+#### TimeZone_DST
+
+DST defines the Daylight Saving Time.
+Example: 2869 S County Road 210, Knox IN 46534-7969, USA
+Returned DST values: -06:00
+
+#### TimeZone_Name
+
+This is now available with 2022 Q1.1 Minor release.
+For more information about accessing or using the Time Zone data please contact you account manager or support.

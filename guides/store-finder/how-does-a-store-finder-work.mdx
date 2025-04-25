@@ -1,0 +1,181 @@
+---
+title: "How Does A Store Finder Work?"
+---
+
+import { CustomInfo } from "/snippets/CustomInfo.mdx";
+
+In principle, a Store Finder tool works by allowing you to combine precise
+location information for your organisation's stores and a customer's location,
+then determining the relationship between the two sets of information, and
+presenting the results in a visual fashion.
+
+The key elements that you need in order to make a Store Finder work are:
+
+- A list of locations (generally referring to your stores, but this could be any
+  other locations relevant to your business and your customers such as
+  collection points or drop-off lockers)
+- Additional (optional) useful information about each location
+- Your customer's current location
+- A method for identifying which of your locations are closest to your
+  customer - calculated using either distance or time metrics, depending on what
+  your customer wants
+- A method of visually presenting this information, and allowing the customer to
+  select specific locations and see relevant information about each one
+
+This sort of tool (or combinations of its components) can be used in lots of
+different ways, but for the purposes of this article we're going to focus on the
+Store Finder use case.
+
+### How do Loqate APIs interact to build a Store Finder?
+
+The Loqate Store Finder product is comprised of a series of APIs which interact
+with each other to fulfil all of the steps mentioned above. In this section
+we'll go into a little more detail about how this works.
+
+The APIs in question fall into the following categories (click on the links
+below if you want to read the relevant API reference documentation):
+
+- Location Management:
+
+  - [Create List](/apis/store-finder/location-management-create-list/ "Location Management Create List")
+  - [Update List or Point](/apis/store-finder/location-management-update-list-or-point/ "Location Management Update List or Point")
+  - [Delete List or Point](/apis/store-finder/location-management-delete-list-or-point/ "Location Management Delete List or Point")
+  - [Get List](/apis/store-finder/location-management-get-list/ "Location Management Get List")
+
+- [Global Geocoding](/apis/store-finder/global-geocoding/ "Global Geocoding")
+
+- [Distance Finder](/apis/store-finder/global-distance-finder/ "Global Distance Finder")
+
+- [Mapping](/apis/store-finder/map-tile-api/ "Map Tile API")
+
+Here's a diagram to show how the APIs fit together in a finished Store Finder:
+
+<Frame caption="Steps 1 - 4 for implementing a store finder">
+  <img src="/images/84c6174e-store-finder-overview-diagram.jpg" />
+</Frame>
+
+Let's take a closer look now at how they work.
+
+#### Location Management
+
+The first thing you need to decide where you will host your list of stores or
+locations that you want your customers to visit. There are three options for
+doing this:
+
+- Upload one or more lists in a CSV format via your account
+  ([www.account.loqate.com](http://www.account.loqate.com)). This method
+  requires no technical skills, and is generally better for lists that don't
+  need changing or updating frequently, and that you're happy to update manually
+- Upload one or more lists via the
+  [Create List API](/apis/store-finder/location-management-create-list/ "Location Management Create List").
+  This method is generally better if you have a list that requires updating
+  frequently, or you want to programmatically create and edit lists rather than
+  doing this manually
+- Host a list yourself or with a third party. If you don't want to send us your
+  locations, or you already have them stored elsewhere, you can simply pass the
+  co-ordinates of your locations (and any other optional information) to our
+  [Distance Finder API](/apis/store-finder/global-distance-finder/ "Global Distance Finder")
+  later on
+
+Regardless of which method you choose, this list will form the basis of your
+Store Finder. At this point you can also append information about each store,
+such as opening hours, or contact details - this information can then be
+displayed to your customers at a later point.
+
+<Warning>
+  It's crucial that we have co-ordinates for each of your stores, for use later
+  on in the process. If you have addresses but not co-ordinates, don't worry -
+  we can append them for you when you upload. You can either request this as a
+  parameter when you call the Create List API, or select it as an option in your
+  account.
+</Warning>
+If you need to make changes to any of your lists (or individual location points
+within one of them) then you can also do that, using one of the following APIs:
+
+- Make changes using the
+  [Update List or Point API](/apis/store-finder/location-management-update-list-or-point/ "Location Management Update List or Point")
+- Delete lists you don't want/need any more using the
+  [Delete List or Point API](/apis/store-finder/location-management-delete-list-or-point/ "Location Management Delete List or Point")
+- See the details of all the locations within a list using the
+  [Get List API](/apis/store-finder/location-management-get-list/ "Location Management Get List")
+
+<CustomInfo image="/images/1020137f-support-customer.svg" imageSize="120px">
+  If you have stores in multiple regions you can either create multiple lists
+  for each region, or combine them into one. Creating multiple smaller lists can
+  be beneficial to improve performance, and help manage different Store Finders
+  for different countries.
+</CustomInfo>
+
+#### Geocoding
+
+Once you have at least one list of your stores, the next thing to do is to
+identify your customer's current location.
+
+The
+[Global Geocoding API](/apis/store-finder/global-geocoding/ "Global Geocoding")
+takes a customer's address, post code or locality (inputted by the customer into
+an appropriate field on your website), and returns a set of co-ordinates
+identifying where that location is in the world.
+
+You can then take these co-ordinates and pass them into our Distance Finder API
+in the next step.
+
+#### Distance Finder
+
+At this point in the process you have the locations of each of your stores, and
+the location of your end user. The next task is to identify which of your stores
+are closest to your customer, so that you can (in the next step) present the
+most appropriate options back to them.
+
+We can can calculate this for you by passing the following two pieces of
+information into our
+[Global Distance Finder API](/apis/store-finder/global-distance-finder/ "Global Distance Finder"):
+
+- The co-ordinates of your customer that you received from our Geocoding API
+- Either the ID of your Location List, or the locations (via an array including
+  ID, name and lat/long co-ordinates for each) that you have passed to use as
+  part of the API request
+
+This API will return all the stores within a given radius, along with any other
+information you have chosen to supply about those stores. It will also provide
+the road-based distance and travel time between your customer and each of your
+stores.
+
+Road-based distances are preferential to straight line distance calculations, as
+they give a more realistic and precise view of how far away a store actually is.
+With straight line distances, geographic features such as bodies of water or
+non-traversable land are ignored, meaning that a customer could be pointed
+towards a store that isn't actually their closest one, giving them a worse
+experience.
+
+Travel time is also a useful metric for customers as it allows them to quickly
+relate to the distances being shown. For example, if a store is 15 minutes away
+a customer can quickly determine whether they could make it there and back on
+their lunch break, increasing their chances of visiting the store.
+
+You can then render these results as part of a side bar in your Store Finder,
+allowing users to see a list of your stores and any other relevant information.
+
+#### Mapping
+
+Lastly, you need a way of presenting this information to your end user on a map
+so that they can physically see where each store is located.
+
+The [Map Tile API](/apis/store-finder/map-tile-api/ "Map Tile API") allows you
+to retrieve map tiles for given co-ordinates. In combination with a map renderer
+library such as Maplibre or Leaflet this can be used to display your store
+locations on them. As we are only providing the basemap data and the tiles you
+are free to style your locations based on your own site design.
+
+#### Want to know more?
+
+We've linked out to the reference documentation for each API at the appropriate
+points on this page. Follow those links to read more about each of the
+individual APIs.
+
+If you're ready to get started setting up your own Store Finder, read the guide
+on
+[How to Implement a Store Finder](/guides/store-finder/how-to-implement-a-store-finder).
+
+For any further questions, please don't hesitate to contact the Loqate Support
+team.

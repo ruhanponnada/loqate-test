@@ -1,0 +1,3360 @@
+---
+title: "MultiDatabase Integration Guide"
+---
+
+This guide explains how to access GBGroup's MatchCode 360 MultiDatabase web service product using the Identity Management Platform (IdM), available via SOAP web services.
+
+The fundamentals of integrating with the service are described here: Integration Fundamentals
+
+Please note: Wherever `<LatestWSDLVersion>` is shown in Example Code below, please replace this with GlobalServices21a.wsdl.
+
+### Matchcode MultiDatabase Web Service Product Information
+
+Matchcode360 MultiDatabase is a tailored address management solution from GBG plc providing you with the ability to access industry-standard address sources from a number of suppliers such as Ordnance Survey, Royal Mail and Business Data
+
+Matchcode360 MultiDatabase has been configured in a way to provide you with access to the most complete database of the UK property stock from multiple address sources through a single lookup service.
+
+The address-reference data underpinning Matchcode360 MultiDatabase is thus presented as a single 'consolidated' database giving you a single logical view of a number of disparate data sources that have been matched and keyed together in a way to allow fast and flexible searching.
+
+These sources are as follows:-
+
+- Royal Mail PAF data (PAF)
+- Royal Mail Not Yet Built data (NYB)
+- Royal Mail Multi-Residence data (MRS)
+- OS AddressBase Premium data (ABP)
+- OS AddressBase Core data (ABC)
+- GEO+ data (GEOPLUS)
+- OSNI Pointer data (PNT)
+- Business File (BUSINESS_DATA_V2)
+
+The WebService is set-up in such a way that various combinations of these data sets can be used however we advise the following:
+
+- At least one of PAF, ABC, ABP or GEOPLUS should be enabled
+- Only one of ABP or ABC should be enabled
+  If this is not the case, then please contact your Account Manager or the Onboarding team (Customer.Care@gbgplc.com)
+
+The Matchcode MultiDatabase web service products are available via the Identity Management ExecuteCapture web service method.
+
+## Input Format
+
+The ExecuteCapture method takes in a ExecuteCaptureRequest data structure, which contains all the information neccessary to carry out the request.
+
+Type: ExecuteCaptureRequest
+
+| Field Name     | Type                  | Description                                                      |
+| -------------- | --------------------- | ---------------------------------------------------------------- |
+| securityHeader | SecurityHeader        | The username and authentication token used to access the system. |
+| profileRequest | ProfileRequestCapture | Details of the request                                           |
+
+The SecurityHeader structure holds security data to access products and services in the IdM Platform.
+
+The ProfileRequestCapture structure contains the criteria to identify the target product being called and the search data for the product request.
+
+Within the profileRequest element, the profileGuid element should contain the GUID value listed below:
+
+| Profile       | GUID                                 |
+| ------------- | ------------------------------------ |
+| MultiDatabase | C7547A80-79C9-4D43-9681-01098B045E9C |
+
+## Search Criteria
+
+The address search criteria should be entered into the IdmDataSearchAddress data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → address**
+
+**Alternative Search Criteria** <br/>
+Along with the standard address search criteria, this service supports address searching by one of the address identifiers listed below.
+
+This search criteria is specified by using the additionalItems property of the search address. To carry out a search with one of these identifiers, a key-value pair must be included in the additional items property, with the key being the identifier and the value being the search value. Only one identifier can be used in a search, if more than one are specified the others will be ignored.
+
+This alternative search criteria overrides the standard address search criteria, which will be ignored if a valid identifier is provided in the IDM request.
+
+| Key         | Description                                |
+| ----------- | ------------------------------------------ |
+| UPRN        | Unique property reference number           |
+| UDPRN       | Unique delivery point reference number     |
+| PARENT_UPRN | Parent Unique property reference number    |
+| LPI_KEY     | LPI Key                                    |
+| UMMRN       | Unique Multiple Residence Reference Number |
+| OWNINGUDPRN | Owning UDPRN                               |
+| UCRN        | Unique Company Registration Number         |
+| GBGURN_1    | Unique GBG Unique Record Number 1          |
+
+### Additional Request Options
+
+The additional search options, used for configuring options such as casing or transliteration of output results, can be set in the IdmRequestOptions structure located in the ProfileRequestCaptureData.options property.
+
+**Additional Return Data** <br/>
+Additional data can be returned, or excluded from being returned, for each address by providing one or more values in the IdmRequestOption.relatedDataItems property. Using this feature to reduce the amount of data request can often speed up searches. An example usage of this would be to perform an initial search which only requests certain keys be returned (e.g. UPRN), and then after selecting a record or records of interest perform a second lookup on the UPRN which returns more detailed information.
+
+For each value provided, the corresponding additional data is returned, and the corresponding additional data for all the values not provided, are not returned. If no values are provided, then the data marked as returned by default below, is returned.
+
+The following values are supported by this service.
+
+| Key Mnemonic | Description                                  | Returned By Default |
+| ------------ | -------------------------------------------- | ------------------- |
+| COUNTRYCODE  | Country code                                 | Yes                 |
+| UPRN         | Unique property reference number             | Yes                 |
+| ADDKEY       | Address key                                  | Yes                 |
+| ORGKEY       | Organisation key                             | Yes                 |
+| DATASOURCE   | Data source code for the returned address    | Yes                 |
+| PCNORTH      | 1m grid northing                             | Yes                 |
+| PCEAST       | 1m grid easting                              | Yes                 |
+| LATITUDE     | World geodetic standard 1984 datum latitude  | Yes                 |
+| LONGITUDE    | World geodetic standard 1984 datum longitude | Yes                 |
+
+**Additional Request Datasets**
+Data from additional datasets can be enabled or disabled for an address search, by populating the ProfileRequestCaptureData.additionalData property with key-value pairs from the applicable list table below. To use a particular dataset, the user must be subscribed to the dataset.
+
+This information should be entered into the IdmDataArrayAdditionalData data structure, which is located within the input details as follows:
+
+ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → additionalData
+
+| Key Mnemonic     | Possible Values | Description                                              |
+| ---------------- | --------------- | -------------------------------------------------------- |
+| PAF              | "Yes" or "No"   | Request Royal Mail PAF information to be returned        |
+| ABP              | "Yes" or "No"   | Request AddressBase Premium information to be returned   |
+| ABC              | "Yes" or "No"   | Request AddressBase Core information to be returned      |
+| GEOPLUS          | "Yes" or "No"   | Request Geo+ information to be returned                  |
+| MULTI_OCC        | "Yes" or "No"   | Request Multiple Occupancy information to be returned    |
+| MULTI_RES        | "Yes" or "No"   | Request Multiple Residency information to be returned    |
+| NOT_YET_BUILT    | "Yes" or "No"   | Request Not Yet Built information to be returned         |
+| BUSINESS_DATA_V2 | "Yes" or "No"   | Request Business Data information to be returned         |
+| POINTER          | "Yes" or "No"   | Request Pointer information to be returned               |
+| LOC_INT          | "Yes" or "No"   | Request Location Intelligence information to be returned |
+| PREMISE_GEOCODE  | "Yes" or "No"   | Request Premise Level Geocode information to be returned |
+| CONGESTION_ZONE  | "Yes" or "No"   | Request Congestion Zone information to be returned       |
+| RED_ROUTE        | "Yes" or "No"   | Request Red Route information to be returned             |
+
+Each dataset, when enabled, supports a set of values which can be used in the related data items property of the request options, these values are listed below.
+
+**PAF** <br/>
+
+| Key Mnemonic | Description                      | Returned By Default |
+| ------------ | -------------------------------- | ------------------- |
+| UDPRN        | Unique property reference number | Yes                 |
+| OSLAUA       | Local authority district Code    | Yes                 |
+
+**AddressBase Premium** <br/>
+
+| Key Mnemonic      | Description                                       | Returned By Default |
+| ----------------- | ------------------------------------------------- | ------------------- |
+| XREFMI            | XREFMI Transport Network TOID                     | Yes                 |
+| XREFMA            | XREFMA Address Layer 2 TOID                       | Yes                 |
+| XREFMT            | XREFMT Topography Layer TOID                      | Yes                 |
+| XREFVC            | XREFVC Council Tax                                | Yes                 |
+| XREFVN            | XREFVN Non-Domestic Rates                         | Yes                 |
+| RM_UDPRN          | Royal Mail Unique Delivery Point Reference Number | Yes                 |
+| BLPU_STATUS       | BLPU Logical Status                               | Yes                 |
+| BLPU_STATE        | BLPU State                                        | Yes                 |
+| BLPU_STATE_DATE   | BLPU State Date                                   | Yes                 |
+| PARENT_UPRN       | Parent UPRN                                       | Yes                 |
+| X_COORDINATE      | Easting                                           | Yes                 |
+| Y_COORDINATE      | Northing                                          | Yes                 |
+| RPC               | Representative Point Code                         | Yes                 |
+| BLPU_CUSTODIAN    | LLPG Custodian                                    | Yes                 |
+| BLPU_START_DATE   | BLPU Start Date                                   | Yes                 |
+| BLPU_END_DATE     | BLPU End Date                                     | Yes                 |
+| BLPU_UPDATE_DATE  | BLPU Update Date                                  | Yes                 |
+| BLPU_ENTRY_DATE   | BLPU Entry Date                                   | Yes                 |
+| POSTAL_ADDRESS    | Postal Address                                    | Yes                 |
+| MULTI_OCC_COUNT   | Multi-Occupancy Count                             | Yes                 |
+| CLASS_KEY         | Class Key                                         | Yes                 |
+| CLASS_CODE        | Class Code                                        | Yes                 |
+| CLASS_SCHEME      | Scheme                                            | Yes                 |
+| CLASS_START_DATE  | Class Start Date                                  | Yes                 |
+| CLASS_END_DATE    | Class End Date                                    | Yes                 |
+| CLASS_UPDATE_DATE | Class Update Date                                 | Yes                 |
+| CLASS_ENTRY_DATE  | Class Entry Date                                  | Yes                 |
+| CLASS_PRIMARY     | Class Primary                                     | Yes                 |
+| CLASS_SECONDARY   | Class Secondary                                   | Yes                 |
+| CLASS_TERTIARY    | Class Tertiary                                    | Yes                 |
+| CLASS_QUATERNARY  | Class Quaternary                                  | Yes                 |
+| LPI_KEY           | LPI Key                                           | Yes                 |
+| LANGUAGE          | Language                                          | Yes                 |
+| LPI_STATUS        | LPI Logical Status                                | Yes                 |
+| LPI_START_DATE    | LPI Start Date                                    | Yes                 |
+| LPI_END_DATE      | LPI End Date                                      | Yes                 |
+| LPI_UPDATE_DATE   | LPI Update Date                                   | Yes                 |
+| LPI_ENTRY_DATE    | LPI Entry Date                                    | Yes                 |
+| SAO_START_NUMBER  | SAO Start Number                                  | Yes                 |
+| SAO_START_SUFFIX  | SAO Start Suffix                                  | Yes                 |
+| SAO_END_NUMBER    | SAO End Number                                    | Yes                 |
+| SAO_END_SUFFIX    | SAO End Suffix                                    | Yes                 |
+| SAO_TEXT          | SAO Text                                          | Yes                 |
+| PAO_START_NUMBER  | PAO Start Number                                  | Yes                 |
+| PAO_START_SUFFIX  | PAO Start Suffix                                  | Yes                 |
+| PAO_END_NUMBER    | PAO End Number                                    | Yes                 |
+| PAO_END_SUFFIX    | PAO End Suffix                                    | Yes                 |
+| PAO_TEXT          | PAO Text                                          | Yes                 |
+| USRN              | Unique Street Reference Number                    | Yes                 |
+| USRN_MATCH_INDI   | USRN Match Indicator                              | Yes                 |
+| AREA_NAME         | Area Name                                         | Yes                 |
+| LEVEL             | Memorandum of Vertical Position                   | Yes                 |
+| OFFICIAL_FLAG     | Status of the Address                             | Yes                 |
+| ST_DESCRIPTION    | Street Name                                       | Yes                 |
+| ST_LOCALITY       | Street Locality Name                              | Yes                 |
+| ST_TOWN           | Street Town Name                                  | Yes                 |
+| ST_ADMIN_AREA     | Highway Authority Name                            | Yes                 |
+| ST_LANGUAGE       | Street Descriptor Language                        | Yes                 |
+| ST_TYPE           | Street Type                                       | Yes                 |
+| ST_NAMING_AUTH    | Street Naming Authority                           | Yes                 |
+| ST_STATE          | Street State                                      | Yes                 |
+| ST_STATE_DATE     | Street State Date                                 | Yes                 |
+| ST_SURFACE        | Street Surface Finish                             | Yes                 |
+| ST_CLASS          | Street Class                                      | Yes                 |
+| ST_VERSION        | Street Version                                    | Yes                 |
+| ST_UPDATE_DATE    | Street Update Date                                | Yes                 |
+| ST_ENTRY_DATE     | Street Entry Date                                 | Yes                 |
+| ST_START_DATE     | Street Start Date                                 | Yes                 |
+| ST_END_DATE       | Street End Date                                   | Yes                 |
+| ST_START_X        | Street Start X (Easting)                          | Yes                 |
+| ST_START_Y        | Street Start Y (Northing)                         | Yes                 |
+| ST_END_X          | Street End X (Easting)                            | Yes                 |
+| ST_END_Y          | Street End Y (Northing)                           | Yes                 |
+| ST_TOLERANCE      | Street Tolerance                                  | Yes                 |
+| ORG_ORGANISATION  | Organisation Name                                 | Yes                 |
+| ORG_LEGAL_NAME    | Organisation Registered Legal Name                | Yes                 |
+| ORG_KEY           | Organisation Key                                  |                     |
+| ORG_START_DATE    | Organisation Start Date                           | Yes                 |
+| ORG_END_DATE      | Organisation End Date                             | Yes                 |
+| ORG_UPDATE_DATE   | Organisation Update Date                          | Yes                 |
+| ORG_ENTRY_DATE    | Organisation Entry Date                           | Yes                 |
+
+**AddressBase Core** <br/>
+
+| Key Mnemonic     | Description                                       | Returned By Default |
+| ---------------- | ------------------------------------------------- | ------------------- |
+| COUNTRYCODE      | Country code                                      | Yes                 |
+| UPRN             | Unique property reference number                  | Yes                 |
+| UDPRN            | Royal Mail Unique Delivery Point Reference Number | Yes                 |
+| USRN             | Unique Street Reference Number                    | Yes                 |
+| PARENT_UPRN      | Parent UPRN                                       | Yes                 |
+| X_COORDINATE     | Easting                                           | Yes                 |
+| Y_COORDINATE     | Northing                                          | Yes                 |
+| OS_LATITUDE      | Easting                                           | Yes                 |
+| OS_LONGITUDE     | Northing                                          | Yes                 |
+| OS_ADDRESS_TOID  | OS Address Toid                                   | Yes                 |
+| RPC              | Representative Point Code                         | Yes                 |
+| OS_COUNTRY       | OS Country Code                                   | Yes                 |
+| OS_CLASS         | OS Class                                          | Yes                 |
+| LAST_UPDATE_DATE | Last Update Date                                  | Yes                 |
+| TOWN_NAME        | Town Name                                         | Yes                 |
+| PO_BOX           | PO Box                                            | Yes                 |
+| GSS_CODE         | ONS GSS Code                                      | Yes                 |
+| ISLAND           | Island                                            | Yes                 |
+
+**Geo+** <br/>
+
+| Key Mnemonic    | Description                                       | Returned By Default |
+| --------------- | ------------------------------------------------- | ------------------- |
+| COUNTRYCODE     | Country code                                      | Yes                 |
+| UPRN            | Unique property reference number                  | Yes                 |
+| UDPRN           | Royal Mail Unique Delivery Point Reference Number | Yes                 |
+| UMRRN           | Unique Multi Residence Reference Number           | Yes                 |
+| OWNING_UDPRN    | Owning UDPRN                                      | Yes                 |
+| PARENT_UPRN     | Parent UPRN                                       | Yes                 |
+| X_COORDINATE    | Easting                                           | Yes                 |
+| Y_COORDINATE    | Northing                                          | Yes                 |
+| OS_LATITUDE     | Easting                                           | Yes                 |
+| OS_LONGITUDE    | Northing                                          | Yes                 |
+| LARGESMALL      | Large/Small Flag                                  | Yes                 |
+| SMALLORGFLAG    | Small Organisation Flag                           | Yes                 |
+| UPRN_DERIVATION | UPRN Derivation                                   | Yes                 |
+| GEO_DERIVATION  | GEO Derivation                                    | Yes                 |
+| RM_AKOK         | Royal Mail Address/Organisation Key               | Yes                 |
+| NYB_FLAG        | Not Yet Built Flag                                | Yes                 |
+
+**Multi Occupancy** <br/>
+
+| Key Mnemonic | Description               | Returned By Default |
+| ------------ | ------------------------- | ------------------- |
+| MOI          | Multi occupancy indicator | Yes                 |
+
+**Multiple Residency** <br/>
+
+| Key Mnemonic | Description                                | Returned By Default |
+| ------------ | ------------------------------------------ | ------------------- |
+| UMRRN        | Unique multiple residence reference number | Yes                 |
+| OWNINGUDPRN  | UDPRN of owning delivery point             | Yes                 |
+| OWNINGAK     | Address key of owning delivery point       | Yes                 |
+| OWNINGOK     | Organisation key of owning delivery point  | Yes                 |
+
+**Not Yet Built** <br/>
+
+| Key Mnemonic | Description                                     | Returned By Default |
+| ------------ | ----------------------------------------------- | ------------------- |
+| NOTYETBUILT  | Flag set to 'Y' for all Not Yet Built addresses | Yes                 |
+
+**Business Data** <br/>
+
+| Key Mnemonic   | Description                        | Returned By Default |
+| -------------- | ---------------------------------- | ------------------- |
+| TEL            | Telephone Number                   | Yes                 |
+| FAX            | Fax Number                         | Yes                 |
+| SIC03          | UK 2003 SIC Code                   | Yes                 |
+| NUMEMPCO       | Employees at Company               | Yes                 |
+| NUMEMP         | Employees at Site                  | Yes                 |
+| HOF            | Head Office Flag                   | Yes                 |
+| TO             | Turnover                           | Yes                 |
+| YEARSTAR       | Year Started                       | Yes                 |
+| SIC03TEXT      | 2003 SIC Description               | Yes                 |
+| ExecutiveCount | Executive Count                    | Yes                 |
+| Ex1_Function   | Executive 1 - function             | Yes                 |
+| Ex1_FirstName  | Executive 1 - first name           | Yes                 |
+| Ex1_Surname    | Executive 1 - surname              | Yes                 |
+| Ex1_Salutation | Executive 1 - salutation           | Yes                 |
+| Ex1_Sex        | Executive 1 - gender               | Yes                 |
+| Ex2_Function   | Executive 2 - function             | Yes                 |
+| Ex2_FirstName  | Executive 2 - first name           | Yes                 |
+| Ex2_Surname    | Executive 2 - surname              | Yes                 |
+| Ex2_Salutation | Executive 2 - salutation           | Yes                 |
+| Ex2_Sex        | Executive 2 - gender               | Yes                 |
+| Ex3_Function   | Executive 3 - function             | Yes                 |
+| Ex3_FirstName  | Executive 3 - first name           | Yes                 |
+| Ex3_Surname    | Executive 3 - surname              | Yes                 |
+| Ex3_Salutation | Executive 3 - salutation           | Yes                 |
+| Ex3_Sex        | Executive 3 - gender               | Yes                 |
+| Ex4_Function   | Executive 4 - function             | Yes                 |
+| Ex4_FirstName  | Executive 4 - first name           | Yes                 |
+| Ex4_Surname    | Executive 4 - surname              | Yes                 |
+| Ex4_Salutation | Executive 4 - salutation           | Yes                 |
+| Ex4_Sex        | Executive 4 - gender               | Yes                 |
+| Ex5_Function   | Executive 5 - function             | Yes                 |
+| Ex5_FirstName  | Executive 5 - first name           | Yes                 |
+| Ex5_Surname    | Executive 5 - surname              | Yes                 |
+| Ex5_Salutation | Executive 5 - salutation           | Yes                 |
+| Ex5_Sex        | Executive 5 - gender               | Yes                 |
+| Ex6_Function   | Executive 6 - function             | Yes                 |
+| Ex6_FirstName  | Executive 6 - first name           | Yes                 |
+| Ex6_Surname    | Executive 6 - surname              | Yes                 |
+| Ex6_Salutation | Executive 6 - salutation           | Yes                 |
+| Ex6_Sex        | Executive 6 - gender               | Yes                 |
+| DecsFunction   | Resp Decisions function            | Yes                 |
+| DecsFirstName  | Resp Decisions first name          | Yes                 |
+| DecsSurname    | Resp Decisions surname             | Yes                 |
+| DecsSalutation | Resp Decisions salutation          | Yes                 |
+| DecsGender     | Resp Decisions gender              | Yes                 |
+| CroNumber      | Company Registration Number        | Yes                 |
+| Ucrn           | Unique Company Registration Number | Yes                 |
+
+**Pointer**
+
+| Key Mnemonic       | Description        | Returned By Default |
+| ------------------ | ------------------ | ------------------- |
+| TOWNLAND           | Townland Name      | Yes                 |
+| BLPU               | BLPU               | Yes                 |
+| UNIQUE_BUILDING_ID | Unique Building ID | Yes                 |
+| LOCAL_COUNCIL      | Local Council Name | Yes                 |
+| X_COR              | X Coordinate       | Yes                 |
+| Y_COR              | Y Coordinate       | Yes                 |
+| TEMP_COORDS        | Temp Coordinates   | Yes                 |
+| BUILDING_STATUS    | Building Status    | Yes                 |
+| ADDRESS_STATUS     | Address Status     | Yes                 |
+| CLASSIFICATION     | Classification     | Yes                 |
+| CREATION_DATE      | Creation Date      | Yes                 |
+| COMMENCEMENT_DATE  | Commencement Date  | Yes                 |
+| ARCHIVED_DATE      | Archived Date      | Yes                 |
+
+**Location Intelligence**<br/>
+The Location Intelligence Dataset is detailed here.
+
+**Premise Level Geocodes**<br/>
+The Premise Level Geocodes dataset is detailed here.
+
+**Congestion Zone**<br/>
+The Congestion Zone dataset is detailed here.
+
+**Red Route**<br/>
+The Red Route dataset is detailed here.
+
+**Address Filters**<br/>
+Addresses which have been found by the web service, which match a particular kind of address, can be filtered out from the search results by using the address filters functionality described here.
+
+### Output Format
+
+The results of the Matchcode Names web service search are returned in a ProfileResponseDetails structure with a ProfileResponseDetail.responseType of 'CAPTURE'.
+
+The ProfileResponseDetails structure contains a single CaptureResponse data structure which holds an array of IdmDataAddress records containing the returned address data.
+
+ExecuteCaptureResponse > ProfileResponse [0] > ProfileResponseDetails [0] > CaptureResponse > CaptureResponseData > IdmDataAddress [n]
+
+Additional data from a search may be returned in the additionalItems or the groupedAdditionalItems of the IdmDataAddress.
+
+**Address Source**
+The fields which are populated in the response data will depend on the source of the data for that record. This source information is returned in the ADDRESSSOURCE item in the additional items of the response.
+
+The possible values for this is given below.
+
+| Key Mnemonic     | Description                                               |
+| ---------------- | --------------------------------------------------------- |
+| PAF              | The address came from the PAF data source                 |
+| NYB              | The address came from the Not Yet Built data source       |
+| MRS              | The address came from the Multiple Residency data source  |
+| ABP              | The address came from the AddressBase Premium data source |
+| ABC              | The address came from the AddressBase Core data source    |
+| GEOPLUS          | The address came from the Geo+ data source                |
+| PNT              | The address came from the OSNI Pointer data source        |
+| BUSINESS_DATA_V2 | The address came from the Business data source            |
+
+Further details on each of the data sources can be found via the links below.
+
+- Royal Mail PAF data (PAF) - Names Integration Guide
+- Royal Mail Not Yet Built data (NYB) - Names Integration Guide
+- Royal Mail Multi-Residence data (MRS) - Names Integration Guide
+- OS AddressBase Premium data (ABP) - AddressBase Premium Integration Guide
+- OS AddressBase Core (ABC) - AddressBase Core Integration Guide
+- Geo+ data (GEOPLUS) - Geo+ Integration Guide
+- OSNI Pointer data (PNT) - IdmDataPointer
+- BUSINESS (BUSINESS_DATA_V2) - groupedAdditionalItems
+- Business Data uses the Grouped AdditionalItems with
+
+**Geographic Data**<br/>
+The geographic data which is returned will depend on the source of the data for that record. The easting and northing data may be come from either the AddressBase Premium, OSNI Pointer or PAF data sources, which may have different levels of accuracy. The web service will return the best, most accurate, values for the record, with precedence between the choices being the above order.
+
+### Output Fields
+
+Apart from the standard address fields, the following additional fields are returned by the service:
+
+| Field                                        | Related Data Item Key | Location In Response                                  |
+| -------------------------------------------- | --------------------- | ----------------------------------------------------- |
+| Unique property reference number             | UPRN                  | IdmDataAddress → additionalItems → UPRN               |
+| LPI Key                                      | LPI_KEY               | IdmDataAddress → additionalItems → LPI_KEY            |
+| Parent Unique property reference number      | PARENT_UPRN           | IdmDataAddress → additionalItems → PARENT_UPRN        |
+| Unique delivery point reference number       | UDPRN                 | IdmDataAddress → additionalItems → UDPRN              |
+| AddressBase Premium Organisation key         | ORG_KEY               | IdmDataAddress → additionalItems → ORG_KEY            |
+| Unique Building ID                           | UNIQUE_BUILDING_ID    | IdmDataAddress → additionalItems → UNIQUE_BUILDING_ID |
+| Unique GBG Unique Record Number 1            | N/A                   | IdmDataAddress → additionalItems → GBGURN_1           |
+| Address Source                               | N/A                   | IdmDataAddress → additionalItems → ADDRESSSOURCE      |
+| PAF Address Key                              | ADDKEY                | IdmDataAddress → additionalItems → ADDKEY             |
+| PAF Organisation Key                         | ORGKEY                | IdmDataAddress → additionalItems → ORGKEY             |
+| Northing                                     | PCNORTH               | IdmDataAddress → IdmDataGeographic → northing         |
+| Easting                                      | PCEAST                | IdmDataAddress → IdmDataGeographic → easting          |
+| World geodetic standard 1984 datum latitude  | LATITUDE              | IdmDataAddress → IdmDataGeographic → latitude         |
+| World geodetic standard 1984 datum longitude | LONGITUDE             | IdmDataAddress → IdmDataGeographic → longitude        |
+
+### Sample XML
+
+The following output XML demonstrates the ProfileResponse for the Multidatabase component. The component name is MultiDatabase and the response type is CAPTURE.
+
+The search results are contained in a single ProfileResponse structure, which in turn contains a single ProfileResponseDetails structure. The ProfileResponseDetails structure contains a single CaptureResponse data structure which holds an array of IdmDataAddress records containing the returned address data.
+
+```xml
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+   <SOAP-ENV:Header/>
+   <SOAP-ENV:Body>
+      <mes:ExecuteCaptureResponse xmlns:mes="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/" xmlns:alu="http://gbworld.gb.co.uk/types/core/request/alu/" xmlns:common="http://gbworld.gb.co.uk/types/common/" xmlns:comp="http://gbworld.gb.co.uk/types/component/" xmlns:data="http://gbworld.gb.co.uk/types/core/data/" xmlns:datatypes="http://gbworld.gb.co.uk/types/datatypes/" xmlns:faults="http://gbworld.gb.co.uk/types/faults/" xmlns:head="http://gbworld.gb.co.uk/types/header/" xmlns:prop="http://gbworld.gb.co.uk/idm-core/component/properties/" xmlns:req="http://gbworld.gb.co.uk/types/core/request/" xmlns:trace="http://gbworld.gb.co.uk/types/core/data/trace/" xmlns:ver="http://gbworld.gb.co.uk/types/core/request/verify/">
+         <mes:securityHeader>
+            <head:authenticationToken xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">34C625D3-22DB-446E-8187-3C8CA9C68F46</head:authenticationToken>
+            <head:authenticationTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">2016-02-25T14:05:17.000Z</head:authenticationTime>
+            <head:sessionExpiryTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">2016-02-25T15:05:30.850Z</head:sessionExpiryTime>
+         </mes:securityHeader>
+         <mes:transactionGuid>C9E0A1EA-9EB8-43D4-8D49-AC8E3DCE6FEA</mes:transactionGuid>
+         <mes:profileResponse>
+            <req:profileHeader>
+               <req:profileGuid>C7547A80-79C9-4D43-9681-01098B045E9C</req:profileGuid>
+               <req:profileName>MultiDatabase</req:profileName>
+               <req:transactionGuid>C9E0A1EA-9EB8-43D4-8D49-AC8E3DCE6FEA</req:transactionGuid>
+               <req:transactionTimeStamp>2016-02-25T14:05:30.859Z</req:transactionTimeStamp>
+               <req:profileStatus>SUCCESS</req:profileStatus>
+            </req:profileHeader>
+            <req:profileResponseDetails>
+               <req:transactionGuid>7315D53C-B37C-422C-9243-5A1D5B972FD9</req:transactionGuid>
+               <req:componentName>MultiDatabase Data</req:componentName>
+               <req:componentStatus>SUCCESS</req:componentStatus>
+               <req:componentAction>VERIFY</req:componentAction>
+               <req:responseType>CAPTURE</req:responseType>
+               <req:notes>[]</req:notes>
+               <req:invoice>
+                  <req:invoiceList>
+                     <req:invoiceGuid>3D5491F4-C07D-4191-B8CB-69DE03C77BA3</req:invoiceGuid>
+                     <req:billingInformationGuid>E3A1CC40-C326-453C-A56F-DD5AE1CD1E60</req:billingInformationGuid>
+                     <req:billingPoints>1</req:billingPoints>
+                     <req:dataSetInvoices>
+                        <req:dataSetCode>MULTIDATABASE</req:dataSetCode>
+                        <req:billingPoints>1</req:billingPoints>
+                        <req:recordsReturned>14</req:recordsReturned>
+                        <req:dataLicenceGuid>E3A1CC40-C326-453C-A56F-DD5AE1CD1E60</req:dataLicenceGuid>
+                     </req:dataSetInvoices>
+                  </req:invoiceList>
+               </req:invoice>
+               <req:captureResponse>
+                  <req:resultStatus>MULTIPLE</req:resultStatus>
+                  <req:recordsReturned>14</req:recordsReturned>
+                  <req:moreData>false</req:moreData>
+                  <req:totalRecordCount>14</req:totalRecordCount>
+                  <req:totalPages>1</req:totalPages>
+                  <req:matchScore>0</req:matchScore>
+                  <req:matchLevel>NA</req:matchLevel>
+                  <req:outputStatus>PARSED</req:outputStatus>
+                  <req:fieldStatus>55555555</req:fieldStatus>
+                  <req:responseCount>1</req:responseCount>
+                  <req:response>
+                     <req:address>
+                        <data:organisation>Capscan Parent Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Capscan Parent Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>70450343,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>70450343</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                             </data:item>
+                            </data:additionalItems>
+                                    <data:groupedAdditionalItems>
+                            <data:name>BusinessData</data:name>
+                            <data:item>
+                                <data:key>SIC03</data:key>
+                                <data:value>72100</data:value>
+                            </data:item>
+                     ...
+                            <data:item>
+                                <data:key>Ex5_Salutation</data:key>
+                                <data:value>Dear Mrs Burton</data:value>
+                            </data:item>
+                            <data:item>
+                                <data:key>Ex5_Sex</data:key>
+                                <data:value>F</data:value>
+                            </data:item>
+                         </data:groupedAdditionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Citizensafe Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Citizensafe Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>,72975453,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>72975453</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Data Discoveries Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Data Discoveries Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>72542099,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>72542099</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Eccleston</data:locality>
+                        <data:buildingName>Electricity Sub Station 15m From Gb Group Plc The</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Electricity Sub Station 15M From Gb Group Plc The,Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>339993.50</data:easting>
+                           <data:northing>363159.40</data:northing>
+                           <data:latitude>53.1621562490</data:latitude>
+                           <data:longitude>-2.8989592964</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>UPRN</data:key>
+                              <data:value>10025392709</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>ABP,22638640,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>ABP</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>22638640</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:uprn>10025392709</data:uprn>
+                        <data:lpi>
+                           <data:lpiKey>7655L101857831</data:lpiKey>
+                           <data:lpiLanguage>ENG</data:lpiLanguage>
+                           <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                           <data:lpiStartDate>
+                              <data:day>12</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2014</data:year>
+                           </data:lpiStartDate>
+                           <data:lpiLastUpdateDate>
+                              <data:day>12</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2014</data:year>
+                           </data:lpiLastUpdateDate>
+                           <data:lpiEntryDate>
+                              <data:day>12</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2014</data:year>
+                           </data:lpiEntryDate>
+                           <data:paoText>ELECTRICITY SUB STATION 15M FROM GB GROUP PLC, THE FOUNDATION HERONS WAY. 12M FROM HERONS</data:paoText>
+                           <data:usrn>6900860</data:usrn>
+                           <data:usrnMatchIndicator>2</data:usrnMatchIndicator>
+                           <data:officialFlag>N</data:officialFlag>
+                        </data:lpi>
+                        <data:blpu>
+                           <data:blpuLogicalStatus>1</data:blpuLogicalStatus>
+                           <data:easting>339993.5</data:easting>
+                           <data:northing>363159.4</data:northing>
+                           <data:rpc>1</data:rpc>
+                           <data:localCustodianCode>7655</data:localCustodianCode>
+                           <data:blpuStartDate>
+                              <data:day>30</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2011</data:year>
+                           </data:blpuStartDate>
+                           <data:blpuLastUpdateDate>
+                              <data:day>30</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2011</data:year>
+                           </data:blpuLastUpdateDate>
+                           <data:blpuEntryDate>
+                              <data:day>30</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2011</data:year>
+                           </data:blpuEntryDate>
+                           <data:postalAddressable>N</data:postalAddressable>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                           <data:multiOccCount>0</data:multiOccCount>
+                        </data:blpu>
+                        <data:streetDescriptor>
+                           <data:streetDescription>HERONS WAY</data:streetDescription>
+                           <data:locality>ECCLESTON</data:locality>
+                           <data:townName>CHESTER</data:townName>
+                           <data:administrativeArea>CHESHIRE WEST AND CHESTER</data:administrativeArea>
+                           <data:streetLanguage>ENG</data:streetLanguage>
+                        </data:streetDescriptor>
+                        <data:streetInformation>
+                           <data:streetType>1</data:streetType>
+                           <data:swaOrgRefNaming>665</data:swaOrgRefNaming>
+                           <data:streetState>2</data:streetState>
+                           <data:stateDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:stateDate>
+                           <data:streetSurface>1</data:streetSurface>
+                           <data:streetClassification>8</data:streetClassification>
+                           <data:streetVersion>0</data:streetVersion>
+                           <data:streetLastUpdateDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetLastUpdateDate>
+                           <data:streetEntryDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetEntryDate>
+                           <data:streetStartDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:streetStartDate>
+                           <data:streetStartEasting>339424.0</data:streetStartEasting>
+                           <data:streetStartNorthing>363080.0</data:streetStartNorthing>
+                           <data:streetEndEasting>339941.0</data:streetEndEasting>
+                           <data:streetEndNorthing>362918.0</data:streetEndNorthing>
+                           <data:streetTolerance>10</data:streetTolerance>
+                        </data:streetInformation>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification>
+                           <data:classKey>7655C000893781</data:classKey>
+                           <data:classificationCode>CU01</data:classificationCode>
+                           <data:classScheme>AddressBase Premium Classification Scheme</data:classScheme>
+                           <data:classStartDate>
+                              <data:day>30</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2011</data:year>
+                           </data:classStartDate>
+                           <data:classLastUpdateDate>
+                              <data:day>30</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2011</data:year>
+                           </data:classLastUpdateDate>
+                           <data:entryDate>
+                              <data:day>30</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2011</data:year>
+                           </data:entryDate>
+                           <data:classPrimaryText>Commercial</data:classPrimaryText>
+                           <data:classSecondaryText>Utility</data:classSecondaryText>
+                           <data:classTertiaryText>Electricity Sub-Station</data:classTertiaryText>
+                        </data:classification>
+                        <data:osAl2Toid>osgb5000000014649476</data:osAl2Toid>
+                        <data:osItnToid>osgb4000000013090730</data:osItnToid>
+                        <data:osTopoToid>osgb1000000235909281</data:osTopoToid>
+                     </req:address>
+                     <req:address>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Eccleston</data:locality>
+                        <data:buildingName>Electricity Sub Station 24m From Gb Group Plc The</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Electricity Sub Station 24M From Gb Group Plc The,Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340004.50</data:easting>
+                           <data:northing>363153.70</data:northing>
+                           <data:latitude>53.1621035639</data:latitude>
+                           <data:longitude>-2.8987936684</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>UPRN</data:key>
+                              <data:value>10024793359</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>ABP,22101844,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>ABP</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>22101844</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:uprn>10024793359</data:uprn>
+                        <data:lpi>
+                           <data:lpiKey>7655L101277506</data:lpiKey>
+                           <data:lpiLanguage>ENG</data:lpiLanguage>
+                           <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                           <data:lpiStartDate>
+                              <data:day>12</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2014</data:year>
+                           </data:lpiStartDate>
+                           <data:lpiLastUpdateDate>
+                              <data:day>12</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2014</data:year>
+                           </data:lpiLastUpdateDate>
+                           <data:lpiEntryDate>
+                              <data:day>12</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2014</data:year>
+                           </data:lpiEntryDate>
+                           <data:paoText>ELECTRICITY SUB STATION 24M FROM GB GROUP PLC, THE FOUNDATION HERONS WAY. IN CHESTER BUSIN</data:paoText>
+                           <data:usrn>6900860</data:usrn>
+                           <data:usrnMatchIndicator>2</data:usrnMatchIndicator>
+                           <data:officialFlag>N</data:officialFlag>
+                        </data:lpi>
+                        <data:blpu>
+                           <data:blpuLogicalStatus>1</data:blpuLogicalStatus>
+                           <data:easting>340004.5</data:easting>
+                           <data:northing>363153.7</data:northing>
+                           <data:rpc>1</data:rpc>
+                           <data:localCustodianCode>7655</data:localCustodianCode>
+                           <data:blpuStartDate>
+                              <data:day>1</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2011</data:year>
+                           </data:blpuStartDate>
+                           <data:blpuLastUpdateDate>
+                              <data:day>1</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2011</data:year>
+                           </data:blpuLastUpdateDate>
+                           <data:blpuEntryDate>
+                              <data:day>1</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2011</data:year>
+                           </data:blpuEntryDate>
+                           <data:postalAddressable>N</data:postalAddressable>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                           <data:multiOccCount>0</data:multiOccCount>
+                        </data:blpu>
+                        <data:streetDescriptor>
+                           <data:streetDescription>HERONS WAY</data:streetDescription>
+                           <data:locality>ECCLESTON</data:locality>
+                           <data:townName>CHESTER</data:townName>
+                           <data:administrativeArea>CHESHIRE WEST AND CHESTER</data:administrativeArea>
+                           <data:streetLanguage>ENG</data:streetLanguage>
+                        </data:streetDescriptor>
+                        <data:streetInformation>
+                           <data:streetType>1</data:streetType>
+                           <data:swaOrgRefNaming>665</data:swaOrgRefNaming>
+                           <data:streetState>2</data:streetState>
+                           <data:stateDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:stateDate>
+                           <data:streetSurface>1</data:streetSurface>
+                           <data:streetClassification>8</data:streetClassification>
+                           <data:streetVersion>0</data:streetVersion>
+                           <data:streetLastUpdateDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetLastUpdateDate>
+                           <data:streetEntryDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetEntryDate>
+                           <data:streetStartDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:streetStartDate>
+                           <data:streetStartEasting>339424.0</data:streetStartEasting>
+                           <data:streetStartNorthing>363080.0</data:streetStartNorthing>
+                           <data:streetEndEasting>339941.0</data:streetEndEasting>
+                           <data:streetEndNorthing>362918.0</data:streetEndNorthing>
+                           <data:streetTolerance>10</data:streetTolerance>
+                        </data:streetInformation>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification>
+                           <data:classKey>7655C000476964</data:classKey>
+                           <data:classificationCode>CU01</data:classificationCode>
+                           <data:classScheme>AddressBase Premium Classification Scheme</data:classScheme>
+                           <data:classStartDate>
+                              <data:day>1</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2011</data:year>
+                           </data:classStartDate>
+                           <data:classLastUpdateDate>
+                              <data:day>1</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2011</data:year>
+                           </data:classLastUpdateDate>
+                           <data:entryDate>
+                              <data:day>1</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2011</data:year>
+                           </data:entryDate>
+                           <data:classPrimaryText>Commercial</data:classPrimaryText>
+                           <data:classSecondaryText>Utility</data:classSecondaryText>
+                           <data:classTertiaryText>Electricity Sub-Station</data:classTertiaryText>
+                        </data:classification>
+                        <data:osAl2Toid>osgb5000000000335681</data:osAl2Toid>
+                        <data:osItnToid>osgb4000000013090730</data:osItnToid>
+                        <data:osTopoToid>osgb1000035247632</data:osTopoToid>
+                     </req:address>
+                     <req:address>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Eccleston</data:locality>
+                        <data:buildingName>Electricity Sub Station</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Electricity Sub Station,Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>339993.00</data:easting>
+                           <data:northing>363161.00</data:northing>
+                           <data:latitude>53.1621742246</data:latitude>
+                           <data:longitude>-2.8989596721</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>UPRN</data:key>
+                              <data:value>200000988309</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>ABP,28493831,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>ABP</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>28493831</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:uprn>200000988309</data:uprn>
+                        <data:lpi>
+                           <data:lpiKey>0605L000007037</data:lpiKey>
+                           <data:lpiLanguage>ENG</data:lpiLanguage>
+                           <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                           <data:lpiStartDate>
+                              <data:day>7</data:day>
+                              <data:month>12</data:month>
+                              <data:year>2001</data:year>
+                           </data:lpiStartDate>
+                           <data:lpiLastUpdateDate>
+                              <data:day>3</data:day>
+                              <data:month>9</data:month>
+                              <data:year>2007</data:year>
+                           </data:lpiLastUpdateDate>
+                           <data:lpiEntryDate>
+                              <data:day>7</data:day>
+                              <data:month>12</data:month>
+                              <data:year>2001</data:year>
+                           </data:lpiEntryDate>
+                           <data:paoText>ELECTRICITY SUB STATION</data:paoText>
+                           <data:usrn>6900860</data:usrn>
+                           <data:usrnMatchIndicator>1</data:usrnMatchIndicator>
+                           <data:officialFlag>N</data:officialFlag>
+                        </data:lpi>
+                        <data:blpu>
+                           <data:blpuLogicalStatus>1</data:blpuLogicalStatus>
+                           <data:blpuState>2</data:blpuState>
+                           <data:blpuStateDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:blpuStateDate>
+                           <data:easting>339993.0</data:easting>
+                           <data:northing>363161.0</data:northing>
+                           <data:rpc>1</data:rpc>
+                           <data:localCustodianCode>665</data:localCustodianCode>
+                           <data:blpuStartDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:blpuStartDate>
+                           <data:blpuLastUpdateDate>
+                              <data:day>14</data:day>
+                              <data:month>7</data:month>
+                              <data:year>2015</data:year>
+                           </data:blpuLastUpdateDate>
+                           <data:blpuEntryDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:blpuEntryDate>
+                           <data:postalAddressable>N</data:postalAddressable>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                           <data:multiOccCount>0</data:multiOccCount>
+                        </data:blpu>
+                        <data:streetDescriptor>
+                           <data:streetDescription>HERONS WAY</data:streetDescription>
+                           <data:locality>ECCLESTON</data:locality>
+                           <data:townName>CHESTER</data:townName>
+                           <data:administrativeArea>CHESHIRE WEST AND CHESTER</data:administrativeArea>
+                           <data:streetLanguage>ENG</data:streetLanguage>
+                        </data:streetDescriptor>
+                        <data:streetInformation>
+                           <data:streetType>1</data:streetType>
+                           <data:swaOrgRefNaming>665</data:swaOrgRefNaming>
+                           <data:streetState>2</data:streetState>
+                           <data:stateDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:stateDate>
+                           <data:streetSurface>1</data:streetSurface>
+                           <data:streetClassification>8</data:streetClassification>
+                           <data:streetVersion>0</data:streetVersion>
+                           <data:streetLastUpdateDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetLastUpdateDate>
+                           <data:streetEntryDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetEntryDate>
+                           <data:streetStartDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:streetStartDate>
+                           <data:streetStartEasting>339424.0</data:streetStartEasting>
+                           <data:streetStartNorthing>363080.0</data:streetStartNorthing>
+                           <data:streetEndEasting>339941.0</data:streetEndEasting>
+                           <data:streetEndNorthing>362918.0</data:streetEndNorthing>
+                           <data:streetTolerance>10</data:streetTolerance>
+                        </data:streetInformation>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification>
+                           <data:classKey>0665C000153985</data:classKey>
+                           <data:classificationCode>CU01</data:classificationCode>
+                           <data:classScheme>AddressBase Premium Classification Scheme</data:classScheme>
+                           <data:classStartDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:classStartDate>
+                           <data:classLastUpdateDate>
+                              <data:day>11</data:day>
+                              <data:month>5</data:month>
+                              <data:year>2011</data:year>
+                           </data:classLastUpdateDate>
+                           <data:entryDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:entryDate>
+                           <data:classPrimaryText>Commercial</data:classPrimaryText>
+                           <data:classSecondaryText>Utility</data:classSecondaryText>
+                           <data:classTertiaryText>Electricity Sub-Station</data:classTertiaryText>
+                        </data:classification>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Eware Interactive Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>Winster House</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Eware Interactive Ltd,Winster House,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>72940396,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>72940396</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Gb Datacare Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Gb Datacare Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>72892955,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>72892955</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Gb Group Plc</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>1AR</data:dpsZipPlus>
+                        <data:formattedAddress>Gb Group Plc,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009.00</data:easting>
+                           <data:northing>363191.00</data:northing>
+                           <data:latitude>53.1624456651</data:latitude>
+                           <data:longitude>-2.8987260320</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>UPRN</data:key>
+                              <data:value>10012220430</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>UDPRN</data:key>
+                              <data:value>04624695</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>PAF,61847546,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>PAF</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>61847546</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:uprn>10012220430</data:uprn>
+                        <data:lpi>
+                           <data:lpiKey>0605L000032936</data:lpiKey>
+                           <data:lpiLanguage>ENG</data:lpiLanguage>
+                           <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                           <data:lpiStartDate>
+                              <data:day>6</data:day>
+                              <data:month>2</data:month>
+                              <data:year>2007</data:year>
+                           </data:lpiStartDate>
+                           <data:lpiLastUpdateDate>
+                              <data:day>9</data:day>
+                              <data:month>4</data:month>
+                              <data:year>2010</data:year>
+                           </data:lpiLastUpdateDate>
+                           <data:lpiEntryDate>
+                              <data:day>6</data:day>
+                              <data:month>2</data:month>
+                              <data:year>2007</data:year>
+                           </data:lpiEntryDate>
+                           <data:paoText>GB HOUSE</data:paoText>
+                           <data:usrn>6903078</data:usrn>
+                           <data:usrnMatchIndicator>1</data:usrnMatchIndicator>
+                           <data:officialFlag>Y</data:officialFlag>
+                        </data:lpi>
+                        <data:blpu>
+                           <data:blpuLogicalStatus>1</data:blpuLogicalStatus>
+                           <data:blpuState>2</data:blpuState>
+                           <data:blpuStateDate>
+                              <data:day>7</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:blpuStateDate>
+                           <data:easting>340009.0</data:easting>
+                           <data:northing>363191.0</data:northing>
+                           <data:rpc>1</data:rpc>
+                           <data:localCustodianCode>665</data:localCustodianCode>
+                           <data:blpuStartDate>
+                              <data:day>7</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:blpuStartDate>
+                           <data:blpuLastUpdateDate>
+                              <data:day>14</data:day>
+                              <data:month>7</data:month>
+                              <data:year>2015</data:year>
+                           </data:blpuLastUpdateDate>
+                           <data:blpuEntryDate>
+                              <data:day>7</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:blpuEntryDate>
+                           <data:postalAddressable>S</data:postalAddressable>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                           <data:multiOccCount>0</data:multiOccCount>
+                        </data:blpu>
+                        <data:streetDescriptor>
+                           <data:streetDescription>KINGSFIELD COURT</data:streetDescription>
+                           <data:locality>ECCLESTON</data:locality>
+                           <data:townName>CHESTER</data:townName>
+                           <data:administrativeArea>CHESHIRE WEST AND CHESTER</data:administrativeArea>
+                           <data:streetLanguage>ENG</data:streetLanguage>
+                        </data:streetDescriptor>
+                        <data:streetInformation>
+                           <data:streetType>1</data:streetType>
+                           <data:swaOrgRefNaming>665</data:swaOrgRefNaming>
+                           <data:streetState>2</data:streetState>
+                           <data:stateDate>
+                              <data:day>30</data:day>
+                              <data:month>11</data:month>
+                              <data:year>2002</data:year>
+                           </data:stateDate>
+                           <data:streetSurface>1</data:streetSurface>
+                           <data:streetClassification>8</data:streetClassification>
+                           <data:streetVersion>0</data:streetVersion>
+                           <data:streetLastUpdateDate>
+                              <data:day>11</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2006</data:year>
+                           </data:streetLastUpdateDate>
+                           <data:streetEntryDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetEntryDate>
+                           <data:streetStartDate>
+                              <data:day>30</data:day>
+                              <data:month>11</data:month>
+                              <data:year>2002</data:year>
+                           </data:streetStartDate>
+                           <data:streetStartEasting>339974.0</data:streetStartEasting>
+                           <data:streetStartNorthing>363225.0</data:streetStartNorthing>
+                           <data:streetEndEasting>340079.0</data:streetEndEasting>
+                           <data:streetEndNorthing>363206.0</data:streetEndNorthing>
+                           <data:streetTolerance>10</data:streetTolerance>
+                        </data:streetInformation>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification>
+                           <data:classKey>0665C000157389</data:classKey>
+                           <data:classificationCode>CO01</data:classificationCode>
+                           <data:classScheme>AddressBase Premium Classification Scheme</data:classScheme>
+                           <data:classStartDate>
+                              <data:day>7</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:classStartDate>
+                           <data:classLastUpdateDate>
+                              <data:day>11</data:day>
+                              <data:month>5</data:month>
+                              <data:year>2011</data:year>
+                           </data:classLastUpdateDate>
+                           <data:entryDate>
+                              <data:day>7</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:entryDate>
+                           <data:classPrimaryText>Commercial</data:classPrimaryText>
+                           <data:classSecondaryText>Office</data:classSecondaryText>
+                           <data:classTertiaryText>Office / Work Studio</data:classTertiaryText>
+                        </data:classification>
+                        <data:osAl2Toid>osgb1000002166526075</data:osAl2Toid>
+                        <data:osItnToid>osgb4000000013090730</data:osItnToid>
+                        <data:osTopoToid>osgb1000035247650</data:osTopoToid>
+                        <data:voaNdrRecord>5346851000</data:voaNdrRecord>
+                        <data:rmUDPRN>04624695</data:rmUDPRN>
+                     </req:address>
+                     <req:address>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Eccleston</data:locality>
+                        <data:buildingName>Land Parcel C 1100</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Land Parcel C,1100 Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340053.00</data:easting>
+                           <data:northing>363228.00</data:northing>
+                           <data:latitude>53.1627831788</data:latitude>
+                           <data:longitude>-2.8980749673</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>UPRN</data:key>
+                              <data:value>200000988299</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>ABP,28493820,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>ABP</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>28493820</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:uprn>200000988299</data:uprn>
+                        <data:lpi>
+                           <data:lpiKey>0605L000007029</data:lpiKey>
+                           <data:lpiLanguage>ENG</data:lpiLanguage>
+                           <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                           <data:lpiStartDate>
+                              <data:day>7</data:day>
+                              <data:month>12</data:month>
+                              <data:year>2001</data:year>
+                           </data:lpiStartDate>
+                           <data:lpiLastUpdateDate>
+                              <data:day>21</data:day>
+                              <data:month>12</data:month>
+                              <data:year>2001</data:year>
+                           </data:lpiLastUpdateDate>
+                           <data:lpiEntryDate>
+                              <data:day>7</data:day>
+                              <data:month>12</data:month>
+                              <data:year>2001</data:year>
+                           </data:lpiEntryDate>
+                           <data:paoText>LAND PARCEL C 1100</data:paoText>
+                           <data:usrn>6900860</data:usrn>
+                           <data:usrnMatchIndicator>1</data:usrnMatchIndicator>
+                        </data:lpi>
+                        <data:blpu>
+                           <data:blpuLogicalStatus>1</data:blpuLogicalStatus>
+                           <data:blpuState>2</data:blpuState>
+                           <data:blpuStateDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:blpuStateDate>
+                           <data:easting>340053.0</data:easting>
+                           <data:northing>363228.0</data:northing>
+                           <data:rpc>1</data:rpc>
+                           <data:localCustodianCode>665</data:localCustodianCode>
+                           <data:blpuStartDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:blpuStartDate>
+                           <data:blpuLastUpdateDate>
+                              <data:day>14</data:day>
+                              <data:month>7</data:month>
+                              <data:year>2015</data:year>
+                           </data:blpuLastUpdateDate>
+                           <data:blpuEntryDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:blpuEntryDate>
+                           <data:postalAddressable>N</data:postalAddressable>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                           <data:multiOccCount>0</data:multiOccCount>
+                        </data:blpu>
+                        <data:streetDescriptor>
+                           <data:streetDescription>HERONS WAY</data:streetDescription>
+                           <data:locality>ECCLESTON</data:locality>
+                           <data:townName>CHESTER</data:townName>
+                           <data:administrativeArea>CHESHIRE WEST AND CHESTER</data:administrativeArea>
+                           <data:streetLanguage>ENG</data:streetLanguage>
+                        </data:streetDescriptor>
+                        <data:streetInformation>
+                           <data:streetType>1</data:streetType>
+                           <data:swaOrgRefNaming>665</data:swaOrgRefNaming>
+                           <data:streetState>2</data:streetState>
+                           <data:stateDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:stateDate>
+                           <data:streetSurface>1</data:streetSurface>
+                           <data:streetClassification>8</data:streetClassification>
+                           <data:streetVersion>0</data:streetVersion>
+                           <data:streetLastUpdateDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetLastUpdateDate>
+                           <data:streetEntryDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetEntryDate>
+                           <data:streetStartDate>
+                              <data:day>10</data:day>
+                              <data:month>9</data:month>
+                              <data:year>1998</data:year>
+                           </data:streetStartDate>
+                           <data:streetStartEasting>339424.0</data:streetStartEasting>
+                           <data:streetStartNorthing>363080.0</data:streetStartNorthing>
+                           <data:streetEndEasting>339941.0</data:streetEndEasting>
+                           <data:streetEndNorthing>362918.0</data:streetEndNorthing>
+                           <data:streetTolerance>10</data:streetTolerance>
+                        </data:streetInformation>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification>
+                           <data:classKey>0665C000153555</data:classKey>
+                           <data:classificationCode>L</data:classificationCode>
+                           <data:classScheme>AddressBase Premium Classification Scheme</data:classScheme>
+                           <data:classStartDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:classStartDate>
+                           <data:classLastUpdateDate>
+                              <data:day>12</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2012</data:year>
+                           </data:classLastUpdateDate>
+                           <data:entryDate>
+                              <data:day>19</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2003</data:year>
+                           </data:entryDate>
+                           <data:classPrimaryText>Land</data:classPrimaryText>
+                        </data:classification>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Loqate Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Loqate Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>74076872,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>74076872</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:street>Kingsfield Court</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Eccleston</data:locality>
+                        <data:buildingName>Street Record</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Street Record,Kingsfield Court,Eccleston,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>339976.00</data:easting>
+                           <data:northing>363225.00</data:northing>
+                           <data:latitude>53.1627475247</data:latitude>
+                           <data:longitude>-2.8992259275</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>UPRN</data:key>
+                              <data:value>10034099386</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>ABP,23265785,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>ABP</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>23265785</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:uprn>10034099386</data:uprn>
+                        <data:lpi>
+                           <data:lpiKey>0605L000073835</data:lpiKey>
+                           <data:lpiLanguage>ENG</data:lpiLanguage>
+                           <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                           <data:lpiStartDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:lpiStartDate>
+                           <data:lpiLastUpdateDate>
+                              <data:day>6</data:day>
+                              <data:month>7</data:month>
+                              <data:year>2012</data:year>
+                           </data:lpiLastUpdateDate>
+                           <data:lpiEntryDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:lpiEntryDate>
+                           <data:paoText>STREET RECORD</data:paoText>
+                           <data:usrn>6903078</data:usrn>
+                           <data:usrnMatchIndicator>1</data:usrnMatchIndicator>
+                           <data:officialFlag>N</data:officialFlag>
+                        </data:lpi>
+                        <data:blpu>
+                           <data:blpuLogicalStatus>1</data:blpuLogicalStatus>
+                           <data:blpuState>2</data:blpuState>
+                           <data:blpuStateDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:blpuStateDate>
+                           <data:easting>339976.0</data:easting>
+                           <data:northing>363225.0</data:northing>
+                           <data:rpc>4</data:rpc>
+                           <data:localCustodianCode>665</data:localCustodianCode>
+                           <data:blpuStartDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:blpuStartDate>
+                           <data:blpuLastUpdateDate>
+                              <data:day>14</data:day>
+                              <data:month>7</data:month>
+                              <data:year>2015</data:year>
+                           </data:blpuLastUpdateDate>
+                           <data:blpuEntryDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:blpuEntryDate>
+                           <data:postalAddressable>N</data:postalAddressable>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                           <data:multiOccCount>0</data:multiOccCount>
+                        </data:blpu>
+                        <data:streetDescriptor>
+                           <data:streetDescription>KINGSFIELD COURT</data:streetDescription>
+                           <data:locality>ECCLESTON</data:locality>
+                           <data:townName>CHESTER</data:townName>
+                           <data:administrativeArea>CHESHIRE WEST AND CHESTER</data:administrativeArea>
+                           <data:streetLanguage>ENG</data:streetLanguage>
+                        </data:streetDescriptor>
+                        <data:streetInformation>
+                           <data:streetType>1</data:streetType>
+                           <data:swaOrgRefNaming>665</data:swaOrgRefNaming>
+                           <data:streetState>2</data:streetState>
+                           <data:stateDate>
+                              <data:day>30</data:day>
+                              <data:month>11</data:month>
+                              <data:year>2002</data:year>
+                           </data:stateDate>
+                           <data:streetSurface>1</data:streetSurface>
+                           <data:streetClassification>8</data:streetClassification>
+                           <data:streetVersion>0</data:streetVersion>
+                           <data:streetLastUpdateDate>
+                              <data:day>11</data:day>
+                              <data:month>10</data:month>
+                              <data:year>2006</data:year>
+                           </data:streetLastUpdateDate>
+                           <data:streetEntryDate>
+                              <data:day>2</data:day>
+                              <data:month>3</data:month>
+                              <data:year>2005</data:year>
+                           </data:streetEntryDate>
+                           <data:streetStartDate>
+                              <data:day>30</data:day>
+                              <data:month>11</data:month>
+                              <data:year>2002</data:year>
+                           </data:streetStartDate>
+                           <data:streetStartEasting>339974.0</data:streetStartEasting>
+                           <data:streetStartNorthing>363225.0</data:streetStartNorthing>
+                           <data:streetEndEasting>340079.0</data:streetEndEasting>
+                           <data:streetEndNorthing>363206.0</data:streetEndNorthing>
+                           <data:streetTolerance>10</data:streetTolerance>
+                        </data:streetInformation>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification>
+                           <data:classKey>0665C000162004</data:classKey>
+                           <data:classificationCode>PS</data:classificationCode>
+                           <data:classScheme>AddressBase Premium Classification Scheme</data:classScheme>
+                           <data:classStartDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:classStartDate>
+                           <data:classLastUpdateDate>
+                              <data:day>11</data:day>
+                              <data:month>5</data:month>
+                              <data:year>2011</data:year>
+                           </data:classLastUpdateDate>
+                           <data:entryDate>
+                              <data:day>12</data:day>
+                              <data:month>8</data:month>
+                              <data:year>2005</data:year>
+                           </data:entryDate>
+                           <data:classPrimaryText>Parent Shell</data:classPrimaryText>
+                           <data:classSecondaryText>Street Record</data:classSecondaryText>
+                        </data:classification>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Telme Com Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Telme Com Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>72542376,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>72542376</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                     <req:address>
+                        <data:organisation>Telme Global Traveller Ltd</data:organisation>
+                        <data:street>Herons Way</data:street>
+                        <data:town>CHESTER</data:town>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:locality>Chester Business Park</data:locality>
+                        <data:buildingName>The Foundation</data:buildingName>
+                        <data:stateRegion>Cheshire</data:stateRegion>
+                        <data:countryCode>GBR</data:countryCode>
+                        <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                        <data:formattedAddress>Telme Global Traveller Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                        <data:geographicInformation>
+                           <data:easting>340009</data:easting>
+                           <data:northing>363192</data:northing>
+                           <data:latitude>53.1624546529</data:latitude>
+                           <data:longitude>-2.8987262198</data:longitude>
+                        </data:geographicInformation>
+                        <data:additionalItems>
+                           <data:item>
+                              <data:key>GBGURN_1</data:key>
+                              <data:value>72976429,00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDRESSSOURCE</data:key>
+                              <data:value>BUSINESS_DATA_V2</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ORGKEY</data:key>
+                              <data:value>00000000</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>ADDKEY</data:key>
+                              <data:value>72976429</data:value>
+                           </data:item>
+                           <data:item>
+                              <data:key>DATASOURCE</data:key>
+                              <data:value>MULTIDATABASE</data:value>
+                           </data:item>
+                        </data:additionalItems>
+                        <data:lpi/>
+                        <data:blpu>
+                           <data:postcodeLocator>CH4 9GB</data:postcodeLocator>
+                        </data:blpu>
+                        <data:streetDescriptor/>
+                        <data:streetInformation/>
+                        <data:companyInformation/>
+                        <data:onsPointerInformation/>
+                        <data:classification/>
+                     </req:address>
+                  </req:response>
+               </req:captureResponse>
+            </req:profileResponseDetails>
+         </mes:profileResponse>
+      </mes:ExecuteCaptureResponse>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+```json
+{
+   "profileHeader":    {
+      "profileGuid": "C7547A80-79C9-4D43-9681-01098B045E9C",
+      "profileName": "MultiDatabase",
+      "transactionGuid": "22D5051E-B847-402A-88D4-D45487EDD2B8",
+      "transactionTimeStamp": 1456409355900,
+      "profileStatus": "SUCCESS"
+   },
+   "profileResponseDetails": [   {
+      "transactionGuid": "DFB643F7-5B43-4623-80AA-6D5FCC48CD83",
+      "componentName": "MultiDatabase Data",
+      "componentStatus": "SUCCESS",
+      "componentAction": "VERIFY",
+      "responseType": "CAPTURE",
+      "notes": "[]",
+      "invoice": {"invoiceList": [      {
+         "invoiceGuid": "D7C9A007-1797-4FF0-956C-9642345F2629",
+         "billingInformationGuid": "90F7976E-95DA-4EE9-9A4A-2A72290F0D54",
+         "billingPoints": 1,
+         "creditsUsed": 1,
+         "dataSetInvoices": [         {
+            "dataSetCode": "MULTIDATABASE",
+            "billingPoints": 1,
+            "recordsReturned": 14,
+            "dataLicenceGuid": "90F7976E-95DA-4EE9-9A4A-2A72290F0D54"
+         }]
+      }]},
+      "captureResponse":       {
+         "resultStatus": "MULTIPLE",
+         "recordsReturned": 14,
+         "moreData": false,
+         "totalRecordCount": 14,
+         "totalPages": 1,
+         "matchScore": 0,
+         "matchLevel": "NA",
+         "outputStatus": "PARSED",
+         "fieldStatus": "55555555",
+         "responseCount": 1,
+         "response": [         {
+            "address":             [
+                              {
+                  "organisation": "Capscan Parent Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Capscan Parent Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "70450343,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "70450343"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "organisation": "Citizensafe Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Citizensafe Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                         {
+                        "key": "GBGURN_1",
+                        "value": "72975453,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "72975453"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "organisation": "Data Discoveries Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Data Discoveries Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "72542099,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "72542099"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Eccleston",
+                  "buildingName": "Electricity Sub Station 15m From Gb Group Plc The",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Electricity Sub Station 15M From Gb Group Plc The,Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "339993.50",
+                     "northing": "363159.40",
+                     "latitude": "53.1621562490",
+                     "longitude": "-2.8989592964"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "UPRN",
+                        "value": "10025392709"
+                     },
+                                          {
+                        "key": "LPI_KEY",
+                        "value": "7655L101857831"
+                     },
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "ABP,22638640,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "ABP"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "22638640"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "uprn": "10025392709",
+                  "lpi":                   {
+                     "lpiKey": "7655L101857831",
+                     "lpiLanguage": "ENG",
+                     "lpiLogicalStatus": 1,
+                     "lpiStartDate":                      {
+                        "day": 12,
+                        "month": 9,
+                        "year": 2014
+                     },
+                     "lpiLastUpdateDate":                      {
+                        "day": 12,
+                        "month": 9,
+                        "year": 2014
+                     },
+                     "lpiEntryDate":                      {
+                        "day": 12,
+                        "month": 9,
+                        "year": 2014
+                     },
+                     "paoText": "ELECTRICITY SUB STATION 15M FROM GB GROUP PLC, THE FOUNDATION HERONS WAY. 12M FROM HERONS",
+                     "usrn": "6900860",
+                     "usrnMatchIndicator": 2,
+                     "officialFlag": "N"
+                  },
+                  "blpu":                   {
+                     "blpuLogicalStatus": 1,
+                     "easting": 339993.5,
+                     "northing": 363159.4,
+                     "rpc": 1,
+                     "localCustodianCode": 7655,
+                     "blpuStartDate":                      {
+                        "day": 30,
+                        "month": 10,
+                        "year": 2011
+                     },
+                     "blpuLastUpdateDate":                      {
+                        "day": 30,
+                        "month": 10,
+                        "year": 2011
+                     },
+                     "blpuEntryDate":                      {
+                        "day": 30,
+                        "month": 10,
+                        "year": 2011
+                     },
+                     "postalAddressable": "N",
+                     "postcodeLocator": "CH4 9GB",
+                     "multiOccCount": 0
+                  },
+                  "streetDescriptor":                   {
+                     "streetDescription": "HERONS WAY",
+                     "locality": "ECCLESTON",
+                     "townName": "CHESTER",
+                     "administrativeArea": "CHESHIRE WEST AND CHESTER",
+                     "streetLanguage": "ENG"
+                  },
+                  "streetInformation":                   {
+                     "streetType": 1,
+                     "swaOrgRefNaming": 665,
+                     "streetState": 2,
+                     "stateDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetSurface": 1,
+                     "streetClassification": 8,
+                     "streetVersion": 0,
+                     "streetLastUpdateDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetEntryDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetStartDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetStartEasting": 339424,
+                     "streetStartNorthing": 363080,
+                     "streetEndEasting": 339941,
+                     "streetEndNorthing": 362918,
+                     "streetTolerance": 10
+                  },
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification":                   {
+                     "classKey": "7655C000893781",
+                     "classificationCode": "CU01",
+                     "classScheme": "AddressBase Premium Classification Scheme",
+                     "classStartDate":                      {
+                        "day": 30,
+                        "month": 10,
+                        "year": 2011
+                     },
+                     "classLastUpdateDate":                      {
+                        "day": 30,
+                        "month": 10,
+                        "year": 2011
+                     },
+                     "entryDate":                      {
+                        "day": 30,
+                        "month": 10,
+                        "year": 2011
+                     },
+                     "classPrimaryText": "Commercial",
+                     "classSecondaryText": "Utility",
+                     "classTertiaryText": "Electricity Sub-Station"
+                  },
+                  "osAl2Toid": "osgb5000000014649476",
+                  "osItnToid": "osgb4000000013090730",
+                  "osTopoToid": "osgb1000000235909281"
+               },
+                              {
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Eccleston",
+                  "buildingName": "Electricity Sub Station 24m From Gb Group Plc The",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Electricity Sub Station 24M From Gb Group Plc The,Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340004.50",
+                     "northing": "363153.70",
+                     "latitude": "53.1621035639",
+                     "longitude": "-2.8987936684"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "UPRN",
+                        "value": "10024793359"
+                     },
+                                          {
+                        "key": "LPI_KEY",
+                        "value": "7655L101277506"
+                     },
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "ABP,22101844,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "ABP"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "22101844"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "uprn": "10024793359",
+                  "lpi":                   {
+                     "lpiKey": "7655L101277506",
+                     "lpiLanguage": "ENG",
+                     "lpiLogicalStatus": 1,
+                     "lpiStartDate":                      {
+                        "day": 12,
+                        "month": 9,
+                        "year": 2014
+                     },
+                     "lpiLastUpdateDate":                      {
+                        "day": 12,
+                        "month": 9,
+                        "year": 2014
+                     },
+                     "lpiEntryDate":                      {
+                        "day": 12,
+                        "month": 9,
+                        "year": 2014
+                     },
+                     "paoText": "ELECTRICITY SUB STATION 24M FROM GB GROUP PLC, THE FOUNDATION HERONS WAY. IN CHESTER BUSIN",
+                     "usrn": "6900860",
+                     "usrnMatchIndicator": 2,
+                     "officialFlag": "N"
+                  },
+                  "blpu":                   {
+                     "blpuLogicalStatus": 1,
+                     "easting": 340004.5,
+                     "northing": 363153.7,
+                     "rpc": 1,
+                     "localCustodianCode": 7655,
+                     "blpuStartDate":                      {
+                        "day": 1,
+                        "month": 9,
+                        "year": 2011
+                     },
+                     "blpuLastUpdateDate":                      {
+                        "day": 1,
+                        "month": 9,
+                        "year": 2011
+                     },
+                     "blpuEntryDate":                      {
+                        "day": 1,
+                        "month": 9,
+                        "year": 2011
+                     },
+                     "postalAddressable": "N",
+                     "postcodeLocator": "CH4 9GB",
+                     "multiOccCount": 0
+                  },
+                  "streetDescriptor":                   {
+                     "streetDescription": "HERONS WAY",
+                     "locality": "ECCLESTON",
+                     "townName": "CHESTER",
+                     "administrativeArea": "CHESHIRE WEST AND CHESTER",
+                     "streetLanguage": "ENG"
+                  },
+                  "streetInformation":                   {
+                     "streetType": 1,
+                     "swaOrgRefNaming": 665,
+                     "streetState": 2,
+                     "stateDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetSurface": 1,
+                     "streetClassification": 8,
+                     "streetVersion": 0,
+                     "streetLastUpdateDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetEntryDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetStartDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetStartEasting": 339424,
+                     "streetStartNorthing": 363080,
+                     "streetEndEasting": 339941,
+                     "streetEndNorthing": 362918,
+                     "streetTolerance": 10
+                  },
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification":                   {
+                     "classKey": "7655C000476964",
+                     "classificationCode": "CU01",
+                     "classScheme": "AddressBase Premium Classification Scheme",
+                     "classStartDate":                      {
+                        "day": 1,
+                        "month": 9,
+                        "year": 2011
+                     },
+                     "classLastUpdateDate":                      {
+                        "day": 1,
+                        "month": 9,
+                        "year": 2011
+                     },
+                     "entryDate":                      {
+                        "day": 1,
+                        "month": 9,
+                        "year": 2011
+                     },
+                     "classPrimaryText": "Commercial",
+                     "classSecondaryText": "Utility",
+                     "classTertiaryText": "Electricity Sub-Station"
+                  },
+                  "osAl2Toid": "osgb5000000000335681",
+                  "osItnToid": "osgb4000000013090730",
+                  "osTopoToid": "osgb1000035247632"
+               },
+                              {
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Eccleston",
+                  "buildingName": "Electricity Sub Station",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Electricity Sub Station,Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "339993.00",
+                     "northing": "363161.00",
+                     "latitude": "53.1621742246",
+                     "longitude": "-2.8989596721"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "UPRN",
+                        "value": "200000988309"
+                     },
+                                          {
+                        "key": "LPI_KEY",
+                        "value": "0605L000007037"
+                     },
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "ABP,28493831,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "ABP"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "28493831"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "uprn": "200000988309",
+                  "lpi":                   {
+                     "lpiKey": "0605L000007037",
+                     "lpiLanguage": "ENG",
+                     "lpiLogicalStatus": 1,
+                     "lpiStartDate":                      {
+                        "day": 7,
+                        "month": 12,
+                        "year": 2001
+                     },
+                     "lpiLastUpdateDate":                      {
+                        "day": 3,
+                        "month": 9,
+                        "year": 2007
+                     },
+                     "lpiEntryDate":                      {
+                        "day": 7,
+                        "month": 12,
+                        "year": 2001
+                     },
+                     "paoText": "ELECTRICITY SUB STATION",
+                     "usrn": "6900860",
+                     "usrnMatchIndicator": 1,
+                     "officialFlag": "N"
+                  },
+                  "blpu":                   {
+                     "blpuLogicalStatus": 1,
+                     "blpuState": 2,
+                     "blpuStateDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "easting": 339993,
+                     "northing": 363161,
+                     "rpc": 1,
+                     "localCustodianCode": 665,
+                     "blpuStartDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "blpuLastUpdateDate":                      {
+                        "day": 14,
+                        "month": 7,
+                        "year": 2015
+                     },
+                     "blpuEntryDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "postalAddressable": "N",
+                     "postcodeLocator": "CH4 9GB",
+                     "multiOccCount": 0
+                  },
+                  "streetDescriptor":                   {
+                     "streetDescription": "HERONS WAY",
+                     "locality": "ECCLESTON",
+                     "townName": "CHESTER",
+                     "administrativeArea": "CHESHIRE WEST AND CHESTER",
+                     "streetLanguage": "ENG"
+                  },
+                  "streetInformation":                   {
+                     "streetType": 1,
+                     "swaOrgRefNaming": 665,
+                     "streetState": 2,
+                     "stateDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetSurface": 1,
+                     "streetClassification": 8,
+                     "streetVersion": 0,
+                     "streetLastUpdateDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetEntryDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetStartDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetStartEasting": 339424,
+                     "streetStartNorthing": 363080,
+                     "streetEndEasting": 339941,
+                     "streetEndNorthing": 362918,
+                     "streetTolerance": 10
+                  },
+                  "companyInformation": {},
+                 "onsPointerInformation": {},
+                  "classification":                   {
+                     "classKey": "0665C000153985",
+                     "classificationCode": "CU01",
+                     "classScheme": "AddressBase Premium Classification Scheme",
+                     "classStartDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "classLastUpdateDate":                      {
+                        "day": 11,
+                        "month": 5,
+                        "year": 2011
+                     },
+                     "entryDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "classPrimaryText": "Commercial",
+                     "classSecondaryText": "Utility",
+                     "classTertiaryText": "Electricity Sub-Station"
+                  }
+               },
+                              {
+                  "organisation": "Eware Interactive Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "Winster House",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Eware Interactive Ltd,Winster House,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "72940396,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "72940396"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "organisation": "Gb Datacare Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Gb Datacare Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "72892955,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "72892955"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "organisation": "Gb Group Plc",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "1AR",
+                  "formattedAddress": "Gb Group Plc,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009.00",
+                     "northing": "363191.00",
+                     "latitude": "53.1624456651",
+                     "longitude": "-2.8987260320"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "UPRN",
+                        "value": "10012220430"
+                     },
+                                          {
+                        "key": "LPI_KEY",
+                        "value": "0605L000032936"
+                     },
+                                          {
+                        "key": "UDPRN",
+                        "value": "04624695"
+                     },
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "PAF,61847546,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "PAF"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "61847546"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "uprn": "10012220430",
+                  "lpi":                   {
+                     "lpiKey": "0605L000032936",
+                     "lpiLanguage": "ENG",
+                     "lpiLogicalStatus": 1,
+                     "lpiStartDate":                      {
+                        "day": 6,
+                        "month": 2,
+                        "year": 2007
+                     },
+                     "lpiLastUpdateDate":                      {
+                        "day": 9,
+                        "month": 4,
+                        "year": 2010
+                     },
+                     "lpiEntryDate":                      {
+                        "day": 6,
+                        "month": 2,
+                        "year": 2007
+                     },
+                     "paoText": "GB HOUSE",
+                     "usrn": "6903078",
+                     "usrnMatchIndicator": 1,
+                     "officialFlag": "Y"
+                  },
+                  "blpu":                   {
+                     "blpuLogicalStatus": 1,
+                     "blpuState": 2,
+                     "blpuStateDate":                      {
+                        "day": 7,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "easting": 340009,
+                     "northing": 363191,
+                     "rpc": 1,
+                     "localCustodianCode": 665,
+                     "blpuStartDate":                      {
+                        "day": 7,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "blpuLastUpdateDate":                      {
+                        "day": 14,
+                        "month": 7,
+                        "year": 2015
+                     },
+                     "blpuEntryDate":                      {
+                        "day": 7,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "postalAddressable": "S",
+                     "postcodeLocator": "CH4 9GB",
+                     "multiOccCount": 0
+                  },
+                  "streetDescriptor":                   {
+                     "streetDescription": "KINGSFIELD COURT",
+                     "locality": "ECCLESTON",
+                     "townName": "CHESTER",
+                     "administrativeArea": "CHESHIRE WEST AND CHESTER",
+                     "streetLanguage": "ENG"
+                  },
+                  "streetInformation":                   {
+                     "streetType": 1,
+                     "swaOrgRefNaming": 665,
+                     "streetState": 2,
+                     "stateDate":                      {
+                        "day": 30,
+                        "month": 11,
+                        "year": 2002
+                     },
+                     "streetSurface": 1,
+                     "streetClassification": 8,
+                     "streetVersion": 0,
+                     "streetLastUpdateDate":                      {
+                        "day": 11,
+                        "month": 10,
+                        "year": 2006
+                     },
+                     "streetEntryDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetStartDate":                      {
+                        "day": 30,
+                        "month": 11,
+                        "year": 2002
+                     },
+                     "streetStartEasting": 339974,
+                     "streetStartNorthing": 363225,
+                     "streetEndEasting": 340079,
+                     "streetEndNorthing": 363206,
+                     "streetTolerance": 10
+                  },
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification":                   {
+                     "classKey": "0665C000157389",
+                     "classificationCode": "CO01",
+                     "classScheme": "AddressBase Premium Classification Scheme",
+                     "classStartDate":                      {
+                        "day": 7,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "classLastUpdateDate":                      {
+                        "day": 11,
+                        "month": 5,
+                        "year": 2011
+                     },
+                     "entryDate":                      {
+                        "day": 7,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "classPrimaryText": "Commercial",
+                     "classSecondaryText": "Office",
+                     "classTertiaryText": "Office / Work Studio"
+                  },
+                  "osAl2Toid": "osgb1000002166526075",
+                  "osItnToid": "osgb4000000013090730",
+                  "osTopoToid": "osgb1000035247650",
+                  "voaNdrRecord": "5346851000",
+                  "rmUDPRN": "04624695"
+               },
+                              {
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Eccleston",
+                  "buildingName": "Land Parcel C 1100",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Land Parcel C,1100 Herons Way,Eccleston,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340053.00",
+                     "northing": "363228.00",
+                     "latitude": "53.1627831788",
+                     "longitude": "-2.8980749673"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "UPRN",
+                        "value": "200000988299"
+                     },
+                                          {
+                        "key": "LPI_KEY",
+                        "value": "0605L000007029"
+                     },
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "ABP,28493820,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "ABP"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "28493820"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "uprn": "200000988299",
+                  "lpi":                   {
+                     "lpiKey": "0605L000007029",
+                     "lpiLanguage": "ENG",
+                     "lpiLogicalStatus": 1,
+                     "lpiStartDate":                      {
+                        "day": 7,
+                        "month": 12,
+                        "year": 2001
+                     },
+                     "lpiLastUpdateDate":                      {
+                        "day": 21,
+                        "month": 12,
+                        "year": 2001
+                     },
+                     "lpiEntryDate":                      {
+                        "day": 7,
+                        "month": 12,
+                        "year": 2001
+                     },
+                     "paoText": "LAND PARCEL C 1100",
+                     "usrn": "6900860",
+                     "usrnMatchIndicator": 1
+                  },
+                  "blpu":                   {
+                     "blpuLogicalStatus": 1,
+                     "blpuState": 2,
+                     "blpuStateDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "easting": 340053,
+                     "northing": 363228,
+                     "rpc": 1,
+                     "localCustodianCode": 665,
+                     "blpuStartDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "blpuLastUpdateDate":                      {
+                        "day": 14,
+                        "month": 7,
+                        "year": 2015
+                     },
+                     "blpuEntryDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "postalAddressable": "N",
+                     "postcodeLocator": "CH4 9GB",
+                     "multiOccCount": 0
+                  },
+                  "streetDescriptor":                   {
+                     "streetDescription": "HERONS WAY",
+                     "locality": "ECCLESTON",
+                     "townName": "CHESTER",
+                     "administrativeArea": "CHESHIRE WEST AND CHESTER",
+                     "streetLanguage": "ENG"
+                  },
+                  "streetInformation":                   {
+                     "streetType": 1,
+                     "swaOrgRefNaming": 665,
+                     "streetState": 2,
+                     "stateDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetSurface": 1,
+                     "streetClassification": 8,
+                     "streetVersion": 0,
+                     "streetLastUpdateDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetEntryDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetStartDate":                      {
+                        "day": 10,
+                        "month": 9,
+                        "year": 1998
+                     },
+                     "streetStartEasting": 339424,
+                     "streetStartNorthing": 363080,
+                     "streetEndEasting": 339941,
+                     "streetEndNorthing": 362918,
+                     "streetTolerance": 10
+                  },
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification":                   {
+                     "classKey": "0665C000153555",
+                     "classificationCode": "L",
+                     "classScheme": "AddressBase Premium Classification Scheme",
+                     "classStartDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "classLastUpdateDate":                      {
+                        "day": 12,
+                        "month": 3,
+                        "year": 2012
+                     },
+                     "entryDate":                      {
+                        "day": 19,
+                        "month": 3,
+                        "year": 2003
+                     },
+                     "classPrimaryText": "Land"
+                  }
+               },
+                              {
+                  "organisation": "Loqate Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Loqate Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "74076872,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "74076872"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "street": "Kingsfield Court",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Eccleston",
+                  "buildingName": "Street Record",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Street Record,Kingsfield Court,Eccleston,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "339976.00",
+                     "northing": "363225.00",
+                     "latitude": "53.1627475247",
+                     "longitude": "-2.8992259275"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "UPRN",
+                        "value": "10034099386"
+                     },
+                                          {
+                        "key": "LPI_KEY",
+                        "value": "0605L000073835"
+                     },
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "ABP,23265785,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "ABP"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "23265785"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "uprn": "10034099386",
+                  "lpi":                   {
+                     "lpiKey": "0605L000073835",
+                     "lpiLanguage": "ENG",
+                     "lpiLogicalStatus": 1,
+                     "lpiStartDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "lpiLastUpdateDate":                      {
+                        "day": 6,
+                        "month": 7,
+                        "year": 2012
+                     },
+                     "lpiEntryDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "paoText": "STREET RECORD",
+                     "usrn": "6903078",
+                     "usrnMatchIndicator": 1,
+                     "officialFlag": "N"
+                  },
+                  "blpu":                   {
+                     "blpuLogicalStatus": 1,
+                     "blpuState": 2,
+                     "blpuStateDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "easting": 339976,
+                     "northing": 363225,
+                     "rpc": 4,
+                     "localCustodianCode": 665,
+                     "blpuStartDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "blpuLastUpdateDate":                      {
+                        "day": 14,
+                        "month": 7,
+                        "year": 2015
+                     },
+                     "blpuEntryDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "postalAddressable": "N",
+                     "postcodeLocator": "CH4 9GB",
+                     "multiOccCount": 0
+                  },
+                  "streetDescriptor":                   {
+                     "streetDescription": "KINGSFIELD COURT",
+                     "locality": "ECCLESTON",
+                     "townName": "CHESTER",
+                     "administrativeArea": "CHESHIRE WEST AND CHESTER",
+                     "streetLanguage": "ENG"
+                  },
+                  "streetInformation":                   {
+                     "streetType": 1,
+                     "swaOrgRefNaming": 665,
+                     "streetState": 2,
+                     "stateDate":                      {
+                        "day": 30,
+                        "month": 11,
+                        "year": 2002
+                     },
+                     "streetSurface": 1,
+                     "streetClassification": 8,
+                     "streetVersion": 0,
+                     "streetLastUpdateDate":                      {
+                        "day": 11,
+                        "month": 10,
+                        "year": 2006
+                     },
+                     "streetEntryDate":                      {
+                        "day": 2,
+                        "month": 3,
+                        "year": 2005
+                     },
+                     "streetStartDate":                      {
+                        "day": 30,
+                        "month": 11,
+                        "year": 2002
+                     },
+                     "streetStartEasting": 339974,
+                     "streetStartNorthing": 363225,
+                     "streetEndEasting": 340079,
+                     "streetEndNorthing": 363206,
+                     "streetTolerance": 10
+                  },
+                  "companyInformation": {},
+                 "onsPointerInformation": {},
+                  "classification":                   {
+                     "classKey": "0665C000162004",
+                     "classificationCode": "PS",
+                     "classScheme": "AddressBase Premium Classification Scheme",
+                     "classStartDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "classLastUpdateDate":                      {
+                        "day": 11,
+                        "month": 5,
+                        "year": 2011
+                     },
+                     "entryDate":                      {
+                        "day": 12,
+                        "month": 8,
+                        "year": 2005
+                     },
+                     "classPrimaryText": "Parent Shell",
+                     "classSecondaryText": "Street Record"
+                  }
+               },
+                              {
+                  "organisation": "Telme Com Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Telme Com Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "72542376,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "72542376"
+                     }
+                  ]},
+                  "groupedAdditionalItems": [],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               },
+                              {
+                  "organisation": "Telme Global Traveller Ltd",
+                  "street": "Herons Way",
+                  "town": "CHESTER",
+                  "postCode": "CH4 9GB",
+                  "locality": "Chester Business Park",
+                  "buildingName": "The Foundation",
+                  "stateRegion": "Cheshire",
+                  "countryCode": "GBR",
+                  "dpsZipPlus": "9ZI",
+                  "formattedAddress": "Telme Global Traveller Ltd,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+                  "geographicInformation":                   {
+                     "easting": "340009",
+                     "northing": "363192",
+                     "latitude": "53.1624546529",
+                     "longitude": "-2.8987262198"
+                  },
+                  "additionalItems": {"item":                   [
+                                          {
+                        "key": "GBGURN_1",
+                        "value": "72976429,00000000"
+                     },
+                                          {
+                        "key": "ADDRESSSOURCE",
+                        "value": "BUSINESS_DATA_V2"
+                     },
+                                          {
+                        "key": "DATASOURCE",
+                        "value": "MULTIDATABASE"
+                     },
+                                          {
+                        "key": "ORGKEY",
+                        "value": "00000000"
+                     },
+                                          {
+                        "key": "ADDKEY",
+                        "value": "72976429"
+                     }
+                  ]},
+                 "groupedAdditionalItems": [ {
+                        "name": "BusinessData",
+                        "item": [
+                    {
+                        "key": "SIC03",
+                        "value": "9999"
+                    },
+                    ...
+                    {
+                        "key": "CRONUMBER",
+                        "value": "01183941"
+                    },
+                    {
+                        "key": "UCRN",
+                        "value": "UK00854709"
+                    }
+                  ]
+                  }],
+                  "lpi": {},
+                  "blpu": {"postcodeLocator": "CH4 9GB"},
+                  "streetDescriptor": {},
+                  "streetInformation": {},
+                  "companyInformation": {},
+                  "onsPointerInformation": {},
+                  "classification": {}
+               }
+            ],
+            "groupedRelatedData": []
+         }]
+      }
+   }]
+}
+```
+
+### Error Information
+
+Information on possible error codes is given here: [Error Code Information](/product-support/matchcode/general-information/error-codes/)

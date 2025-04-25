@@ -1,0 +1,82 @@
+export const ImageCard = ({
+  title,
+  children,
+  href,
+  image,
+  imageSize = "60px",
+}) => {
+  return (
+    <div
+      className="image-card"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        border: "1px solid #e0e0e0",
+        borderRadius: "8px",
+        overflow: "hidden",
+        height: "100%",
+        transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+        backgroundColor: "white",
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <a
+        href={href}
+        style={{
+          textDecoration: "none",
+          color: "inherit",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            padding: "20px 20px 10px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          {image && (
+            <img
+              src={image}
+              style={{ width: imageSize, height: "auto", objectFit: "contain" }}
+            />
+          )}
+        </div>
+        <div
+          style={{
+            padding: "0 16px 12px",
+            fontWeight: "bold",
+            fontSize: "18px",
+            textAlign: "center",
+          }}
+        >
+          {title}
+        </div>
+        <div style={{ padding: "0 16px 16px", flexGrow: 1 }}>{children}</div>
+      </a>
+    </div>
+  );
+};
+
+export const ImageCardGroup = ({ children }) => {
+  return (
+    <div
+      className="image-card-group"
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+        gap: "16px",
+        margin: "24px 0",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Remove the client-side JavaScript to avoid MDX processing issues // The hover
+effect can be added with CSS instead
+
+// Fix the export to work with named imports export default ImageCard;

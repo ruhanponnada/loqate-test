@@ -1,0 +1,89 @@
+---
+title: "Address Matching Approval System (AMAS)"
+---
+
+### What is AMAS
+
+The Address Matching Approval System (AMAS) is a certification program used to correct and match addresses against the Australia Post Postal Address File (PAF). AMAS also adds a unique Delivery Point Identifier (DPID) to each address record in order to generate a barcode for mail. Additional information about AMAS can be found on the Australian Post website [here](https://auspost.com.au/business/marketing-and-communications/business-letter-services/barcoding-process/address-matching-approval-system-amas?fm=search-organic:amas:2).
+
+Platform Availability
+
+AMAS is currently available for the following platforms:
+
+- Windows 32
+- Windows 64
+- Linux 64
+- AIX 64
+
+Release Information
+
+Please check the latest release notes for expiration information.
+
+### AMAS Installation
+
+Please ensure Loqate is installed **outside** of Program Files. Even if you enable read/write permissions while inside Program Files, there may still be permissions issues.
+
+The installation for AMAS requires installation of the API and AMAS data packs. The AMAS API and AMAS Data are platform dependent.
+
+- **AMAS API:&#xA0;**&#x54;he respective library files for corresponding platform must be uploaded in the same location as the Loqate API installation directory. For Windows platforms, you would also need the VC71 redistributable libraries found in (VC71) folder.
+
+* **AMAS data:&#xA0;**&#x41;MAS data are platform specific. Therefore, respective data for the corresponding platform must be uploaded. The data files should end up inside data amas subdirectory where ‘data’ is the Loqate data installation directory.
+
+To check if AMAS is installed using command line:
+
+Navigate to your Loqate installation folder (where Loqate API file: lqtBatch is located)
+
+1. Run the following command (the dot at the end is mandatory) to set the environmentpath to that folder:\
+   `export LD_LIBRARY_PATH=.`
+2. Then run the below command: (Replacethe directory path value with your Loqate data folder location)\
+   `./lqtbatch -d <your data folder>`
+
+- If AMAS is active, your console will display similar to the following (you may need to search for “AMAS” if the console output is very long):
+
+`AMAS Connection Status : Success`
+
+Build date : 23-08-2018
+
+Data Version: V2018_4
+
+Expiry Date: 31-12-2018
+
+Name: AMASInfo
+
+- If AMAS is expired, your console will return the error message “AMAS connection status: AMAS Error (503) : PAF expired”:
+
+`AMAS Connection Status : AMAS Error (503):PAF not found`
+
+Name: AMASInfo
+
+To check if AMAS is installed using Windows:
+
+Open lqtDemo.exe (Windows only), click on the tab labelled “GKR”, click “Browse” and select your Loqate Data folder. When the file drop-down has populated, scroll through the list and select “AMASInfo”. The expiry date will be on the output.
+
+<Frame caption="">
+  <img src="/images/3f903ebf-AMAS_demo_expirydate-300x223.png" />
+</Frame>
+
+Updating AMAS
+
+To update AMAS,run Install Manager following the instructions on the support site listed [here](/installers/data-installation-and-update-process/).
+
+On the data pack selection screen below, you will need to select both the AMAS Data and AMAS Library. Please select the corresponding data and library for the platform you’re using.
+
+Input Requirements
+
+As AMAS is a certified product, the AMAS process requires input addresses to be in one of the following input formats. The input headers must also match Loqate address fields, found on the support site [here](/field-descriptions/addfields/).
+
+**Format 1:** Address1, Address2, Address3(optional) and Country
+
+|                 |                 |         |
+| --------------- | --------------- | ------- |
+| Address1        | Address2        | Country |
+| 35 Stirling Hwy | Crawley WA 6009 | AUS     |
+
+**Format 2:** Address1, Locality, AdministrativeArea, PostalCode and Country
+
+|                 |          |                    |            |         |
+| --------------- | -------- | ------------------ | ---------- | ------- |
+| Address1        | Locality | AdministrativeArea | PostalCode | Country |
+| 35 Stirling Hwy | Crawley  | WA                 | 6009       | AUS     |

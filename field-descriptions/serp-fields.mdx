@@ -1,0 +1,86 @@
+---
+title: "SERP Fields"
+---
+
+The table below displays the SERP verification codes currently available in the Loqate API.
+
+|                      |                                                                                                                                                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field                | Definition                                                                                                                                                                                                                    |
+| SerpStatusEx         | V (Valid) C (Correctable) : Correctable fields will have been corrected to their right values in the output. N (Invalid)                                                                                                      |
+| Questionable         | QR (for “Questionable-Rural”) QU (for “Questionable-Urban”) Empty-It means that the address is not questionable.                                                                                                              |
+| Result               | “VALID” for valid addresses. Otherwise, internal error code.                                                                                                                                                                  |
+| GeneralDelivery      | This field is available when adding “SERP” to the Loqate engine. It identifies a General Delivery type address – Example value: GD                                                                                            |
+| DeliveryInstallation | This field is available when adding “SERP” to the Loqate engine. It contains the Station Information to direct mail to the proper postal installation for non-civic addresses. Example value: STN A                           |
+| Route                | This field is available when adding “SERP” to the Loqate engine. It identifies a Route Address, such as Rural Route, Military Route. Example value: RR 6                                                                      |
+| AdditionalContent    | This field is available when adding “SERP” to the Loqate engine. Sometimes a site specification and compartment is assigned for delivery to a rural address that does not have a civic address. Example value: SITE 6 COMP 10 |
+|                      |                                                                                                                                                                                                                               |
+
+## **Notes:**
+
+For output field RESULT, it will either be “VALID”, or an address classification and series of three character codes indicating the status of individual address components. Each code will be a two-digit numeric that identify the address component plus one character status indicator. There can be many of these three character codes.
+
+For example a RESULT of ‘C17M’ indicates:
+
+- C = Invalid Correctable Address
+- 17M = The Suite Identifier is missing.
+
+Another example, a RESULT of ‘N10I11I62M’ indicates:
+
+- N = Invalid Non-Correctable Address
+- 10I = Complete street information is Inconsistent/Incorrect
+- 11I = Civic Number is Inconsistent/Incorrect
+- 62M = Province is Missing
+
+Here are the classification, address components, and address components status:
+
+|                                         |
+| --------------------------------------- |
+| **Address Classification:**             |
+| VALID = Valid address,                  |
+| C = Invalid correctable address,        |
+| N = Invalid Non-Correctable Address, or |
+| I = Invalid Address                     |
+| O = Optional (correctable)              |
+| Q = Questionable                        |
+
+|                                                              |
+| ------------------------------------------------------------ |
+| **The following numbers identify the address component(s):** |
+| 00 Complete Address                                          |
+| 01 Addressee and/or Additional Delivery Information          |
+| 10 Complete Street Information                               |
+| 11 Civic number                                              |
+| 12 Civic number suffix                                       |
+| 13 Street name                                               |
+| 14 Street type                                               |
+| 15 Street direction                                          |
+| 16 Suite keyword                                             |
+| 17 Suite identifier                                          |
+| 19 Delivery Information                                      |
+| 20 Complete Route Service Information                        |
+| 22 Route Service keyword                                     |
+| 24 Route Service identifier                                  |
+| 30 Complete PO Box/Bag Information                           |
+| 32 PO Box/Bag keyword                                        |
+| 34 PO Box/Bag identifier                                     |
+| 40 Complete General Delivery Information                     |
+| 42 General Delivery keyword                                  |
+| 50 Complete Delivery Installation Information                |
+| 52 Delivery Installation Area Name                           |
+| 54 Delivery Installation Type                                |
+| 56 Delivery Installation Qualifier                           |
+| 60 Municipality                                              |
+| 62 Province                                                  |
+| 64 Postal Code                                               |
+| 81 Typo                                                      |
+| 98 Too Many Errors                                           |
+| 99 Correction does not fit                                   |
+
+|                            |
+| -------------------------- |
+| **Status:**                |
+| M = Missing                |
+| I = Inconsistent/Incorrect |
+| T = Typo                   |
+| Blank                      |

@@ -1,0 +1,118 @@
+---
+title: "Address Verification Code (AVC)"
+sidebarTitle: "Address Verification Code"
+---
+
+The accuracy code is made up of the following values:
+
+- The verification status
+- The post-processed verification match level
+- The pre-processed verification match level
+- The parsing status
+- The lexicon identification matchlevel
+- The context identification match level
+- The postcode status
+- The matchscore
+
+e.g. V44-I44-P3-100 implies:
+
+- Verification Status = V (Verified)
+- Post-Processed Verification Match Level = 4 (Premise)
+- Pre-Processed Verification Match Level = 4 (Premise)
+- Parsing Status = I (Identified and Parsed)
+- Lexicon Identification Match Level = 4 (Premise)
+- Context Identification Match Level = 4 (Premise)
+- Postcode Status = P3 (Added)
+- Matchscore = 100 (Complete similarity)
+
+## Verification Status
+
+- V: Verified
+  A complete match was made between the input data and a single record from the available reference data
+- P: Partially Verified
+  A partial match was made between the input data and a single record from the available reference data
+- A: Ambiguous
+  More than one close reference data match
+- R: Reverted
+  Record could not be verified to the specified minimum acceptable level. The output fields will contain the input data
+- U: Unverified
+  Unable to verify. The output fields will contain the input data
+
+## Post-Processed Verification Match Level
+
+The post-processed verification match level gives the level to which the input data matches the available reference data once all changes and additions performed during the verification process have been taken into account.
+
+- 5: Delivery Point (PostBox or SubBuilding)
+- 4: Premise (Premise orBuilding)
+- 3: Thoroughfare
+- 2: Locality or PostalCode
+- 1: AdministrativeArea
+- 0: None
+
+## Pre-Processed Verification Match Level
+
+The pre-processed verification match level gives the level to which the input data matches the available reference data prior to any changes or additions performed during the verification process.
+
+- 5: Delivery Point (PostBox or SubBuilding)
+- 4: Premise (Premise orBuilding)
+- 3: Thoroughfare
+- 2: Locality
+- 1: AdministrativeArea
+- 0: None
+
+## Parsing Status
+
+- I: Identified and Parsed
+  All input data has been able to be identified and placed into components
+- U: Unable to parse
+  Not all input data has been able to be identified and parsed
+
+## LexiconIdentificationMatch Level
+
+The lexicon identification match level gives the level to which the output data has some recognized form, through the use of pattern matching (e.g. a numeric value could be a premise number) and lexicon matching (e.g. ‘rd’ could be a ThoroughfareType, ‘Road’; ‘London’ could be a Locality)
+
+- 5: Delivery Point (PostBox or SubBuilding)
+- 4: Premise (Premise orBuilding)
+- 3: Thoroughfare
+- 2: Locality
+- 1: AdministrativeArea
+- 0: None
+
+## Context Identification Match Level
+
+The context identification match level gives the level to which the output data can be recognized based on the context in which it appears. This is the least accurate form of matching and is based on identifying a word as, for instance, a Thoroughfare based on it being preceded by something that could be a Premise, and followed by something that could be a Locality, the latter items being identified through a match against the reference data or the lexicon.
+
+- 5: Delivery Point (PostBox or SubBuilding)
+- 4: Premise (Premise orBuilding)
+- 3: Thoroughfare
+- 2: Locality
+- 1: AdministrativeArea
+- 0: None
+
+## Postcode Status
+
+- P8: PostalCodePrimary and PostalCodeSecondary verified
+- P7: PostalCodePrimary verified, PostalCodeSecondary added or changed
+- P6: PostalCodePrimary verified
+- P5: PostalCodePrimary verified with small change
+- P4: PostalCodePrimary verified with large change
+- P3: PostalCodePrimary added
+- P2: PostalCodePrimary identified by lexicon
+- P1: PostalCodePrimary identified by context
+- P0: PostalCodePrimary empty
+
+## Matchscore
+
+The matchscore indicates how much the input data has been changed during the verification process in order to achieve the post-processed verification match level. 100% means no changes have been made. Data additions are not measured by the matchscore, only changes. Generally a matchscore of 95 or above indicates only a character or two have been changed during the process. If the input data is less clean a threshold of 80 might be considered, since significantly larger changes to the input data will then be allowed. Please note that this value gives no indication of the level of verification, that is given by the post-processed verification match level.
+
+###
+
+### Recommendationsto consider if an address output is an acceptable result:
+
+**Matchscore**– indicates the similarity between the input data and closest reference data match as a percentage between 0 and 100. 100% means complete similarity. When a matchscore is not 100, processing has changed the data. The lower the match score, the bigger the change. Generally a matchscore of 95 or above indicates only a character or two have been changed during the process. If the input data is less clean a threshold of 80 might be considered, since significantly larger changes to the input data will then be allowed. Acceptable Matchscore varies by application. For direct mail, a Matchscore below 95 could be questionable. For other applications where data is aggregated, 80 may be acceptable. The business need drives the acceptance level.
+
+**Post-Processed Verification Match Level**– For example: value: 4 means the output address is verified to premise.
+
+**Comparison between “Pre-Processed Verification Match Level” and Post-Processed Verification Match Level-**If different. ie if the AVC is V41, “4” (premise level) is the Post-Processed Verification Match Level, indicating the verification level reached after engine processing; “1” (AdministrativeArea level) is the Pre-Processed Verification Match Level, indicating the verification level reached before engine processing, signify the output could have undergone significant change and addition to reach verification level 4.
+
+**ThoroughfareStatus, LocalityStatus and AdministrativeAreaStatus-**If they are “VerifiedLargeChange” (4), then it is possible the output address is a completely different address from the input address, even when the matchscore is high and Post-Processed Verification Match Level is verified to level 4 or above.

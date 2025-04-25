@@ -1,0 +1,45 @@
+---
+title: "Setting Up Store Finder Keys"
+---
+
+All of our services require API keys in order to work, which you can create in
+[your account](https://account.loqate.com/) - see the
+[Creating API Keys page](# "Creating API Keys") for full details of how to do
+this.
+
+In this article we'll quickly explain the specifics of creating API keys for use
+with a Store Finder.
+
+#### Store Finder API keys
+
+You need to create a dedicated service for your Store Finder. On the _Add
+service_ page you'll see a **Store Finder** option - click on this to get
+started.
+
+<Frame caption="">
+  <img src="/images/5f33e3fa-add-a-location-list.png" />
+</Frame>
+
+This will then create two keys for you:
+
+- A **Service** key, which should be used for all of the public-facing aspects
+  of a Store Finder such as your calls to our Geocoding, Distance Finder and
+  Mapping APIs
+- A **Management** key, which should be kept private and only used to access our
+  Location Management APIs for creating, editing and deleting your lists
+
+Here's an example of how those keys will look:
+
+<Frame caption="">
+  <img src="/images/259d14cd-edit-store-finder.png" />
+</Frame>
+
+You can now edit the settings for your keys (such as name, daily limit and
+security restrictions), or just get started with adding a Store Finder to your
+site.
+
+Before you get coding, you will want to add a list of Locations that you can
+use. You can do this either
+[in your account](/guides/store-finder/creating-and-managing-location-lists "Creating and managing location lists")
+or via our
+[Create List API](/apis/store-finder/location-management-create-list/ "Location Management Create List").

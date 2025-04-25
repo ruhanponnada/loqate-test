@@ -1,0 +1,148 @@
+---
+title: "Interactive Test Client Guide"
+sidebarTitle: "LQT Inter Guide"
+---
+
+## What is lqtInter:
+
+lqtInter is a tool used to provide platform agnostics. This is an interactive address testing facility for a command-line based tool that can run single addresses. It is similar to lqtDemo.exe but in the form of a simple “SQL-like” interface.
+
+You can specify the path to the loqate Global Knowledge Repository via the command line. You can also specify server options via the command line. If run without specifying the Global Knowledge Repository lqtinter will prompt for the path on start up. A valid path must be specified and lqtinter will exit if a valid repository is not found.
+
+`Usage: lqtinter‹options›
+–d :directory containing the loqate data
+–o : Server options to set ″option=value″`
+
+### Windows
+
+Please ensure lqtcr.dll is located in the same directory as lqtinter or add the path to lqtcr.dll to the PATH environment variable. If lqtinter is 64bit then lqtcr.dll must also be 64bit.
+
+Lqtinter can be invoked from windows explorer or the command prompt. Users may experience an issue with non ascii text. To display it properly please configure the command prompt to use a compatible font. Lqtinter will attempt to output UTF-8, we have found that “NSIM sun” seems to work for many countries. Older versions of windows may not be able to display non ascii text.
+
+### Linux
+
+Please set LD_LIBRARY_PATH to point to the folder that contains the Loqate library. Then lqtinter can be run from the command prompt. If lqtinter is 64bit then the loqate library must be 64bit also.
+
+In order to display UTF-8 character properly set the command window to a suitable font.
+
+### AIX
+
+Please set LD_LIBRARY_PATH to point to the folder that contains the Loqate library. Then run lqtinter from the command prompt. If lqtinter is 64bit then the loqate library must be 64bit also.
+
+In order to display UTF-8 character properly set the command window to a suitable font.
+
+### LqtInter Commands
+
+Commands to lqtinter are specified by “#” followed by the command and can be entered at any of the normal prompts (OPTIONS, SELECT, FROM, WHERE).
+
+|                                    |                                                 |
+| ---------------------------------- | ----------------------------------------------- |
+| **Command**                        | **Description**                                 |
+| #?                                 | Displays the command help.                      |
+| #EXIT                              | Exits the application.                          |
+| #OPTIONS                           | Set loqate server options.                      |
+| #RESET                             | Abandons the current search and starts again.   |
+| # key followed by the first letter | Used as a shortcut key for any of the commands. |
+
+###
+
+### Input Syntax Queries
+
+A query, to the loqate engine, consists of three parts: the output fields, the tools to use, and the input data. Once the input data is specified, then the selected tools are run and the requested fields are output. It is possible to get multiple results; each set of results will be displayed.
+
+#### Example:
+
+SELECT AVC
+FROM Search
+WHERE Address1=”The Foundation,Heronsway,Chester Business Park,Chester”,Country=”UK”
+Results 0:
+AVC=”V54-I55-P3-100″
+Results 1:
+AVC=”V54-I55-P3-100″
+
+### The Select prompt
+
+The SELECT prompt is used to specify the Loqate output fields to be displayed for the query.To display the quick help menu, enter “?” (this can be used at any of the prompts).
+
+Please note field names are case sensitive. To display all output fields, enter “_” at the select prompt. Using “_” will return multiple results, it is recommended to specify the fields of interests in order to display the expected results.
+
+_See Appendix A for a list of common field names._
+
+SELECT ?
+Enter a comma separated list of fields to output. Enter \* to output all fields.
+Note field names are case sensitive.
+
+**Example:** SELECT Address,AVC
+
+<Frame caption="">
+  <img src="/images/4f7d5739-SELECT-1-300x47.png" />
+</Frame>
+
+### The From prompt
+
+The FROM prompt is used to select the tool of choice, i.e Verify, Geocode, etc. You can enter “?” to obtain quick help (this can be used at any of the prompts)._See Appendix C for a list of common tools._
+
+FROM ?
+_Enter a comma separated list of tools._ **Example:** Verify, Geocode
+
+**Example Statement:** FROM Verify
+
+<Frame caption="">
+  <img src="/images/a4548c4b-FROM-1-300x37.png" />
+</Frame>
+
+### The Where prompt
+
+There WHERE prompt is where you specify the input fields to Loqate. This is usually the address as address lines or elements. Please note the field names are case sensitive.To obtain quick help enter “?” (this can be used at any of the prompts).
+
+WHERE ?
+_Enter a comma separated list of input fields of format fieldname=”value”._
+
+**Example Statement**:
+
+WHERE Address1=”The Foundation,Heronsway,Chester Business Park,Chester CH4 9GB”,Country=”UK”
+
+<Frame caption="">
+  <img src="/images/a225fb97-WHERE-300x33.png" />
+</Frame>
+
+Setting Server Options
+
+Server options can be specified by entering the #OPTIONS (shortcut #O). This will bring up the options prompt. _See Fig. 6 for sample screenshot. See Appendix B for a list of commonly used server options._
+
+Once a server option is set it will stay in effect for the current session of lqtinter or until overridden with a new value. Setting server options does not carry over between sessions.Once server options have been specified (or nothing entered) lqtinter will return to the point it was invoked from.
+
+To obtain quick help enter “?” (this can be used at any of the prompts).
+
+OPTIONS ?
+_Enter a comma separated list of server options of format option=value._
+
+**Example Statement**:
+OPTIONS OutputCasing=Lower,DefaultCountry=UK
+
+<Frame caption="">
+  <img src="/images/f57ed559-OPTIONS-300x83.png" />
+</Frame>
+----------------------------------------------------------------------------
+
+### Appendix A: field list
+
+A list of Loqate fields can be found [here](/field-descriptions/addfields/). Please note that field names are case sensitive and should be specified exactly as shown.
+
+### Appendix B: Server option list
+
+A list of server options can be found [here](documentation/server-options/).
+
+### Appendix C: Tool list
+
+The following is a list of commonly used tools. It is not a full list.
+
+|         |
+| ------- |
+| Parse   |
+| Match   |
+| Format  |
+| Verify  |
+| Search  |
+| Geocode |
+| Enhance |

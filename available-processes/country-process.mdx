@@ -1,0 +1,20 @@
+---
+title: "Country Process"
+---
+
+## Overview
+
+The Country process is designed to attempt to identify a country from supplied input data. It performs the following processes:
+
+1. Check the ForceCountry option. If set, use this.
+2. Check each of the fields specified in the CountryFields option. If a valid country is found, use this.
+3. Check the DefaultCountry option. If set, use this as a candidate.
+4. Check the address fields for potential candidates and duplicates identified through the previous processes.
+
+## Relevant Options
+
+- ForceCountry
+- CountryFields
+- DefaultCountry
+
+[Click here](/available-processes/) for the full list of supported options and their descriptions.

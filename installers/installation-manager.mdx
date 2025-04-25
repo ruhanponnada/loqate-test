@@ -1,0 +1,198 @@
+---
+title: "Installation Manager install options"
+---
+
+Install Manager can be used to do a fresh install of data packs or update existing data packs. When you install the data packs using the Install Manager, you will need to enter a license key for the data files. Please email us at support@loqate.com for a license key.
+
+Install Manager is written using Java and requires a Java Runtime Environment 1.7 (JRE 1.7). In addition, if you have not installed the Loqate Java API Library as part of the Loqate Engine Installation, you also need to install those Java API libraries in order for the Install Manager to work.
+
+## Windows Platform
+
+```java
+set path=<path to JRE Folder>\bin;%path%
+
+cd <Loqate Installation Folder>
+
+java -jar InstallManager.jar mode=gui
+```
+
+## Linux Platform
+
+```java
+export LD_LIBRARY_PATH=<PATH to Loqate Install Folder>/bin
+
+export PATH=$PATH;< path to JRE Folder >
+
+java -d64 -Djava.library.path=. -jar InstallManager.jar mode=commandline
+```
+
+## Silent Mode
+
+Install Manager can be run in silent configuration using the available set of silent setting options. Using these options Install Manager can be set up to run such that there is no user interaction required.
+
+### Silent mode settings file options
+
+The full sets of options that are allowed to be defined are the following:
+
+- LICENSE_KEY=`<License Key value>` <br/>
+- LICENSE_PACK_PATH=`<Full path to the license pack file>` <br/>
+- INSTALL_FOLDER=`<Full path to the installation folder>` <br/>
+- DOWNLOAD_FOLDER=`<Full path to the download folder>` <br/>
+- PRODUCTS=`<Comma separated list of product names>` <br/>
+- MOVE_OLD_DATA_TO_SUBFOLDER=`<yes or no>` <br/>
+- DOWNLOAD_OPTION=`<yes or no>` <br/>
+- INSTALL_NEEDED=`<yes or no>` <br/>
+- PROXY_SERVER_NAME=`<Name of the Proxy Server>` <br/>
+- PROXY_PORT=`<Proxy port number>` <br/>
+
+Here are some tips on using silent mode:
+Either the **`LICENSE_KEY`** or the **`LICENSE_PACK_PATH`** is needed.
+**`PRODUCTS`** will equal the comma separated list of product names. Set the **`PRODUCTS`** to `all` in order to install the full set of products allowed in the license
+If installation is done over an existing data folder, it is useful to move the old files to sub folder. This option can specified by setting **`MOVE_OLD_DATA_TO_SUBFOLDER`** to `yes`
+If data packs are to be downloaded, then the option **`DOWNLOAD_OPTION`** should be set to `yes`. If local data packs are to be used, the option **`DOWNLOAD_OPTION`** should be set to `no`.
+If only data packs are to be downloaded and not installed, **`INSTALL_NEEDED`** should be set to `no`. If the downloaded or local data packs should be installed, **`INSTALL_NEEDED`** should be set to `yes`.
+**`PROXY_SERVER_NAME`** & **`PROXY_PORT`** should both be set if proxy server settings are needed.
+
+Here is an example that specifies the license pack path and requires download of the data packs
+
+```java
+LICENSE_PACK_PATH=c:\loqate\loqateLicense
+INSTALL_FOLDER=C:\loqate\data
+DOWNLOAD_FOLDER=C:\tmp\DL
+PRODUCTS=all
+MOVE_OLD_DATA_TO_SUBFOLDER=yes
+DOWNLOAD_OPTION=yes
+INSTALL_NEEDED=yes
+```
+
+Here is a second example that specifies license key and requires installation by using local data packs available at c:\DL
+
+```java
+LICENSE_KEY=1111111-523d-4ff2-8558-222222222
+INSTALL_FOLDER=C:\loqate\data
+DOWNLOAD_FOLDER=C:\DL
+PRODUCTS=all
+MOVE_OLD_DATA_TO_SUBFOLDER=yes
+DOWNLOAD_OPTION=no
+INSTALL_NEEDED=yes
+```
+
+A **log file** is written to the folder containing the Install Manager with the date and time stamp corresponding to the execution of the silent mode. The log file will have output indicating success or failure of the execution.
+
+### Preparing silent settings file
+
+Silent mode settings file can be any text file with a set of the options defined above.
+
+### Running Install manager in Silent mode
+
+Install Manager can be run in silent mode by providing the command line options
+`mode=silent silentInstallSettingsPath=<full path to file with settings for silent install>`
+
+On Linux/Unix platforms, Install Manager can be launched by running the script InstallManager.sh. On windows silent mode can be launched by executing the InstallManager.bar with the above command line option.
+
+## Config Mode
+
+Install Manager can be run in custom configuration using the available set of config options. Using these config options Install Manager can be set up to run such that certain UI options are not presented to the user and certain fields are pre-populated.
+
+### Config file options
+
+The full sets of options that are allowed to be defined are the following:
+
+- OPTION_BRAND_TITLE = `<Company name>` <br/>
+- OPTION_SKIP_DOWNLOAD = `<yes or no>` <br/>
+  When set to yes, local data packs will be used for installation.
+- OPTION_DOWNLOAD_FOLDER = `<Full path to the folder where data packs are available>` <br/>
+- OPTION_INSTALL_FOLDER = `<Full path to the folder where data packs are to be installed>` <br/>
+- OPTION_LOCAL_LICENSE_PATH = `<Full path to the license pack file>` <br/>
+- OPTION_LICENSE_AGREEMENT_PATH = `<Full path to license agreement file in HTML format>` <br/>
+  You can specify the path to your custom license agreement file.
+- OPTION_DOWNLOAD_BASE_URL = `<Base URL of the server to download data>` <br/>
+- OPTION_SKIP_LICENSE_REVIEW = `<yes or no>` <br/>
+  When set to **yes**, the following License Review will be skipped
+- GUI screen
+
+<Frame caption="">
+  <img src="/images/IM_Config_image1.png" />
+</Frame>
+
+- Commandline
+
+<Frame caption="">
+  <img src="/images/IM_Config_image2.png" />
+</Frame>
+
+- OPTION_SELECT_FOLDER_DISABLE = `<yes or no>`
+  When set to yes, the folder selection option will be disabled
+- GUI screen
+
+<Frame caption="">
+  <img src="/images/IM_Config_image3.png" />
+</Frame>
+
+- Commandline
+
+<Frame caption="">
+  <img src="/images/IM_Config_image4.png" />
+</Frame>
+
+When set to no, folder selection option will be enabled
+
+- GUI screen
+
+<Frame caption="">
+  <img src="/images/IM_Config_image5.png" />
+</Frame>
+
+- Commandline
+
+<Frame caption="">
+  <img src="/images/IM_Config_image6.png" />
+</Frame>
+
+- OPTION_MANDATORY_PRODUCTS = `<Comma separated list of product codes>`
+  Datapacks that need to be installed mandatory can be mentioned in this list enabling the user installs all the required files. For example, KBCOMMON is a must in the Loqate data directory along with other country files.
+
+Here is an example for the config file:
+
+```java
+OPTION_SKIP_LICENSE_REVIEW=yes
+OPTION_SKIP_DOWNLOAD=yes
+OPTION_INSTALL_FOLDER=C:\\Loqate\\data
+OPTION_DOWNLOAD_FOLDER= C:\\Loqate\\data
+OPTION_LICENSE_AGREEMENT_PATH=C:\\Documents\ License_Agreement.txt
+OPTION_LOCAL_LICENSE_PATH=C:\\Loqate\\data\\loqateLicense
+OPTION_BRAND_TITLE=Loqate
+OPTION_MANDATORY_PRODUCTS=KBCOMMON
+```
+
+### Preparing config file
+
+Config mode settings file needs to be an encrypted file for use at Install Manager run time.
+The text file containing the config options (similar to above example) can be encrypted by running Install Manager with -encrypt command line parameter.
+
+Command for encrypting config file:
+
+```bash
+PATH=.\jre6;.\jre6\bin;.;%PATH%
+start /MIN java -D64 -classpath ".;loqate.jar;InstallManager.jar;.\lib\*" com.loqate.licensemanager.integration.LicenseApplication –encrypt <inputfilename>
+```
+
+The above will output an encrypted config file `<inputfilename>.enc` in the same folder as the input config file. This encrypted file should be bundled with the Installers for executing Install Manager in config mode at the time of Installation.
+
+### Running Install Manager in Config mode
+
+Install Manager can be run in config mode by providing the command line options
+
+`mode=<gui or commandline> configPath=<full path to the file with settings for config install>`
+
+On Linux/Unix platforms, Install Manager can be launched by running the script InstallManager.sh. On windows config mode can be launched by executing the InstallManager.bat with the above command line option.
+
+NOTE:
+
+- While specifying the File or Folder path in Windows, please use double backslash “\\” in the path.
+- All default error messages refer to Loqate, if you wish to have your company name to be shown, please specify the Brand title option.
+  For example, “There was an error during the installation. Please contact Loqate technical support”.
+  When _OPTION_BRAND_TITLE=XXX_, the message will be:
+  “There was an error during the installation. Please contact XXX technical support”.
+- By default Loqate license agreement will be shown if the required license agreement file and path are not provided in the config file.
+- By default the base URL is https://download.loqate.com

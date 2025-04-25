@@ -1,0 +1,471 @@
+---
+title: Business Data Integration Guide
+---
+
+This guide explains how to access GBGroup's MatchCode 360 Business Data web service product using the Identity Management Platform (IdM), available via SOAP web services.
+
+The fundamentals of integrating with the service are described here: Integration Fundamentals
+
+**Please note:** Wherever `<LatestWSDLVersion>` is shown in Example Code below, please replace this with GlobalServices21a.wsdl.
+
+### Matchcode Business Data Web Service Product Information
+
+The Matchcode Business Data web Service service allows searching on UK Business Data.
+
+The Matchcode Business Data web service products are available via the Identity Management ExecuteCapture web service method.
+
+#### Input Format
+
+The ExecuteCapture method takes in a ExecuteCaptureRequest data structure, which contains all the information necessary to carry out the request.
+
+Type: ExecuteCaptureRequest
+
+| Field Name     | Type                  | Description                                                      |
+| -------------- | --------------------- | ---------------------------------------------------------------- |
+| securityHeader | SecurityHeader        | The username and authentication token used to access the system. |
+| profileRequest | ProfileRequestCapture | Details of the request                                           |
+
+The SecurityHeader structure holds security data to access products and services in the IdM Platform.
+
+The ProfileRequestCapture structure contains the criteria to identify the target product being called and the search data for the product request.
+
+Within the profileRequest element, the profileGuid element should contain the GUID value listed below:
+
+| Profile       | GUID                                 |
+| ------------- | ------------------------------------ |
+| Business Data | 7C779053-F673-4903-9366-87ED5B1D3448 |
+
+#### Search Criteria
+
+The address search criteria should be entered into the IdmDataSearchAddress data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → address**
+
+### Additional Request Options
+
+The additional search options, used for configuring options such as casing or transliteration of output results, can be set in the IdmRequestOptions structure located in the ProfileRequestCaptureData.options property.
+
+**Additional Return Data**
+Additional data can be returned, or excluded from being returned, for each address by providing one or more values in the IdmRequestOption.relatedDataItems property. Using this feature to reduce the amount of data request can often speed up searches. An example usage of this would be to perform an initial search which only requests certain keys be returned (e.g. UPRN), and then after selecting a record or records of interest perform a second lookup on the UPRN which returns more detailed information.
+
+For each value provided, the corresponding additional data is returned, and the corresponding additional data for all the values not provided, are not returned. If no values are provided, then the data marked as returned by default below, is returned.
+
+The following values are supported by this service.
+
+| Key Mnemonic   | Description                                  | Returned By Default |
+| -------------- | -------------------------------------------- | ------------------- |
+| TEL            | Telephone Number                             | Yes                 |
+| FAX            | Fax Number                                   | Yes                 |
+| SIC03          | UK 2003 SIC Code                             | Yes                 |
+| NUMEMPCO       | Employees at Company                         | Yes                 |
+| NUMEMP         | Employees at Site                            | Yes                 |
+| HOF            | Head Office Flag                             | Yes                 |
+| TO             | Turnover                                     | Yes                 |
+| YEARSTAR       | Year Started                                 | Yes                 |
+| SIC03TEXT      | 2003 SIC Description                         | Yes                 |
+| ExecutiveCount | Executive Cout                               | Yes                 |
+| Ex1_Function   | Executive 1 - function                       | Yes                 |
+| Ex1_FirstName  | Executive 1 - first name                     | Yes                 |
+| Ex1_Surname    | Executive 1 - surname                        | Yes                 |
+| Ex1_Salutation | Executive 1 - salutation                     | Yes                 |
+| Ex1_Sex        | Executive 1 - gender                         | Yes                 |
+| Ex2_Function   | Executive 2 - function                       | Yes                 |
+| Ex2_FirstName  | Executive 2 - first name                     | Yes                 |
+| Ex2_Surname    | Executive 2 - surname                        | Yes                 |
+| Ex2_Salutation | Executive 2 - salutation                     | Yes                 |
+| Ex2_Sex        | Executive 2 - gender                         | Yes                 |
+| Ex3_Function   | Executive 3 - function                       | Yes                 |
+| Ex3_FirstName  | Executive 3 - first name                     | Yes                 |
+| Ex3_Surname    | Executive 3 - surname                        | Yes                 |
+| Ex3_Salutation | Executive 3 - salutation                     | Yes                 |
+| Ex3_Sex        | Executive 3 - gender                         | Yes                 |
+| Ex4_Function   | Executive 4 - function                       | Yes                 |
+| Ex4_FirstName  | Executive 4 - first name                     | Yes                 |
+| Ex4_Surname    | Executive 4 - surname                        | Yes                 |
+| Ex4_Salutation | Executive 4 - salutation                     | Yes                 |
+| Ex4_Sex        | Executive 4 - gender                         | Yes                 |
+| Ex5_Function   | Executive 5 - function                       | Yes                 |
+| Ex5_FirstName  | Executive 5 - first name                     | Yes                 |
+| Ex5_Surname    | Executive 5 - surname                        | Yes                 |
+| Ex5_Salutation | Executive 5 - salutation                     | Yes                 |
+| Ex5_Sex        | Executive 5 - gender                         | Yes                 |
+| Ex6_Function   | Executive 6 - function                       | Yes                 |
+| Ex6_FirstName  | Executive 6 - first name                     | Yes                 |
+| Ex6_Surname    | Executive 6 - surname                        | Yes                 |
+| Ex6_Salutation | Executive 6 - salutation                     | Yes                 |
+| Ex6_Sex        | Executive 6 - gender                         | Yes                 |
+| DecsFunction   | Resp Decisions function                      | Yes                 |
+| DecsFirstName  | Resp Decisions first name                    | Yes                 |
+| DecsSurname    | Resp Decisions surname                       | Yes                 |
+| DecsSalutation | Resp Decisions salutation                    | Yes                 |
+| DecsGender     | Resp Decisions gender                        | Yes                 |
+| UCRN           | Unique Company Registration Number           | Yes                 |
+| CroNumber      | Company Registration Number                  | Yes                 |
+| PCNORTH        | 1m grid northing                             | Yes                 |
+| PCEAST         | 1m grid easting                              | Yes                 |
+| LATITUDE       | World geodetic standard 1984 datum latitude  | Yes                 |
+| LONGITUDE      | World geodetic standard 1984 datum longitude | Yes                 |
+
+### Output Format
+
+The results of the Matchcode Names web service search are returned in a ProfileResponseDetails structure with a ProfileResponseDetail.responseType of 'CAPTURE'.
+
+The ProfileResponseDetails structure contains a single CaptureResponse data structure which holds an array of IdmDataAddress records containing the returned address data.
+
+ExecuteCaptureResponse > ProfileResponse [0] > ProfileResponseDetails [0] > CaptureResponse > CaptureResponseData > IdmDataAddress [n]
+
+Additional data from a search may be returned in the additionalItems or the groupedAdditionalItems of the IdmDataAddress.
+
+#### Output Fields
+
+Apart from the standard address fields, the following additional fields are returned by the service:
+
+| Field                                        | Related Data Item Key | Location In Response                           |
+| -------------------------------------------- | --------------------- | ---------------------------------------------- |
+| Telephone Number                             | TEL                   | IdmDataAddress → groupedAdditionalItems        |
+| Fax Number                                   | FAX                   | IdmDataAddress → groupedAdditionalItems        |
+| UK 2003 SIC Code                             | SIC03                 | IdmDataAddress → groupedAdditionalItems        |
+| Employees at Company                         | NUMEMPCO              | IdmDataAddress → groupedAdditionalItems        |
+| Employees at Site                            | NUMEMP                | IdmDataAddress → groupedAdditionalItems        |
+| Head Office Flag                             | HOF                   | IdmDataAddress → groupedAdditionalItems        |
+| Turnover                                     | TO                    | IdmDataAddress → groupedAdditionalItems        |
+| Year Started                                 | YEARSTAR              | IdmDataAddress → groupedAdditionalItems        |
+| 2003 SIC Description                         | SIC03TEXT             | IdmDataAddress → groupedAdditionalItems        |
+| Executive Count                              | ExecutiveCount        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 1 - Function                       | Ex1_Function          | IdmDataAddress → groupedAdditionalItems        |
+| Executive 1 - First Name                     | Ex1_FirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Executive 1 - Surname                        | Ex1_Surname           | IdmDataAddress → groupedAdditionalItems        |
+| Executive 1 - Salutation                     | Ex1_Salutation        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 1 - Gender                         | Ex1_Sex               | IdmDataAddress → groupedAdditionalItems        |
+| Executive 2 - Function                       | Ex2_Function          | IdmDataAddress → groupedAdditionalItems        |
+| Executive 2 - First Name                     | Ex2_FirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Executive 2 - Surname                        | Ex2_Surname           | IdmDataAddress → groupedAdditionalItems        |
+| Executive 2 - Salutation                     | Ex2_Salutation        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 2 - Gender                         | Ex2_Sex               | IdmDataAddress → groupedAdditionalItems        |
+| Executive 3 - Function                       | Ex3_Function          | IdmDataAddress → groupedAdditionalItems        |
+| Executive 3 - First Name                     | Ex3_FirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Executive 3 - Surname                        | Ex3_Surname           | IdmDataAddress → groupedAdditionalItems        |
+| Executive 3 - Salutation                     | Ex3_Salutation        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 3 - Gender                         | Ex3_Sex               | IdmDataAddress → groupedAdditionalItems        |
+| Executive 4 - Function                       | Ex4_Function          | IdmDataAddress → groupedAdditionalItems        |
+| Executive 4 - First Name                     | Ex4_FirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Executive 4 - Surname                        | Ex4_Surname           | IdmDataAddress → groupedAdditionalItems        |
+| Executive 4 - Salutation                     | Ex4_Salutation        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 4 - Gender                         | Ex4_Sex               | IdmDataAddress → groupedAdditionalItems        |
+| Executive 5 - Function                       | Ex5_Function          | IdmDataAddress → groupedAdditionalItems        |
+| Executive 5 - First Name                     | Ex5_FirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Executive 5 - Surname                        | Ex5_Surname           | IdmDataAddress → groupedAdditionalItems        |
+| Executive 5 - Salutation                     | Ex5_Salutation        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 5 - Gender                         | Ex5_Sex               | IdmDataAddress → groupedAdditionalItems        |
+| Executive 6 - Function                       | Ex6_Function          | IdmDataAddress → groupedAdditionalItems        |
+| Executive 6 - First Name                     | Ex6_FirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Executive 6 - Surname                        | Ex6_Surname           | IdmDataAddress → groupedAdditionalItems        |
+| Executive 6 - Salutation                     | Ex6_Salutation        | IdmDataAddress → groupedAdditionalItems        |
+| Executive 6 - Gender                         | Ex6_Sex               | IdmDataAddress → groupedAdditionalItems        |
+| Resp Decisions Function                      | DecsFunction          | IdmDataAddress → groupedAdditionalItems        |
+| Resp Decisions First Name                    | DecsFirstName         | IdmDataAddress → groupedAdditionalItems        |
+| Resp Decisions SurName                       | DecsSurname           | IdmDataAddress → groupedAdditionalItems        |
+| Resp Decisions Salutation                    | DecsSalutation        | IdmDataAddress → groupedAdditionalItems        |
+| Resp Decisions Gender                        | DecsGender            | IdmDataAddress → groupedAdditionalItems        |
+| Unique Company Registration Number           | UCRN                  | IdmDataAddress → groupedAdditionalItems        |
+| Company Registration Number                  | CRONUMBER             | IdmDataAddress → groupedAdditionalItems        |
+| 1m grid northing                             | PCNORTH               | IdmDataAddress → IdmDataGeographic → northing  |
+| 1m grid easting                              | PCEAST                | IdmDataAddress → IdmDataGeographic → easting   |
+| World geodetic standard 1984 datum latitude  | LATITUDE              | IdmDataAddress → IdmDataGeographic → latitude  |
+| World geodetic standard 1984 datum longitude | LONGITUDE             | IdmDataAddress → IdmDataGeographic → longitude |
+
+#### Field Value Mappings
+
+Below are listed the mappings for certain fields, specifying what each possible value of the field means.
+
+Head Office Flag
+
+| Value | Description |
+| ----- | ----------- |
+| B     | Branch      |
+| H     | Head office |
+| S     | Single site |
+
+### Example Requests & Responses
+
+#### Example Requests
+
+```xml SOAP
+<soapenv:envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:a="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/"
+                  xmlns:head="http://gbworld.gb.co.uk/types/header/"
+                  xmlns:req="http://gbworld.gb.co.uk/types/core/request/"
+                  xmlns:data="http://gbworld.gb.co.uk/types/core/data/">
+    <soapenv:header/>
+    <soapenv:body>
+        <a:executecapturerequest>
+            <a:securityheader>
+                <head:authenticationtoken>C18AB65D-85A0-4C48-81A9-C5E23058C819</head:authenticationtoken>
+                <head:username>CENSORED</head:username>
+            </a:securityheader>
+            <a:profilerequest>
+                <req:customerreference>Sample Business Lookup</req:customerreference>
+                <req:profileguid>7C779053-F673-4903-9366-87ED5B1D3448</req:profileguid>
+                <req:configurationid>1</req:configurationid>
+                <req:requestdata>
+                    <req:address>
+                        <data:organisation>GB Group plc</data:organisation>
+                        <data:postCode>CH4 9GB</data:postCode>
+                        <data:countryCode>GBR</data:countryCode>
+                    </req:address>
+                    <req:filters tmp="?"/>
+                    <req:options>
+                        <req:addressenvelopeformat>A4P</req:addressenvelopeformat>
+                        <req:offset>0</req:offset>
+                        <req:maxreturn>50</req:maxreturn>
+                        <req:transliteration>NATIVE</req:transliteration>
+                        <req:countrycodeformat>ISO3</req:countrycodeformat>
+                    </req:options>
+                    <req:additionaldata tmp="?"/>
+                </req:requestdata>
+            </a:profilerequest>
+        </a:executecapturerequest>
+    </soapenv:body>
+</soapenv:envelope>
+```
+
+```json REST
+{
+  "customerReference": "Test",
+  "profileGuid": "7C779053-F673-4903-9366-87ED5B1D3448",
+  "configurationId": "1",
+  "requestData": {
+    "address": {
+      "organisation": "GB Group plc",
+      "postCode": "CH4 9GB",
+      "countryCode": "GBR"
+    },
+    "options": {
+      "offset": "0",
+      "maxReturn": "50"
+    },
+    "additionalData": {}
+  }
+}
+```
+
+**Example Responses**
+
+```xml SOAP
+<soap-env:envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap-env:header/>
+    <soap-env:body>
+        <ns5:executecaptureresponse xmlns:ns5="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/"
+                                    xmlns:data="http://gbworld.gb.co.uk/types/core/data/"
+                                    xmlns:head="http://gbworld.gb.co.uk/types/header/"
+                                    xmlns:req="http://gbworld.gb.co.uk/types/core/request/">
+            <ns5:securityheader>
+                <head:authenticationtoken>1273F4FA-3AE7-4742-A0C6-626D006A445A</head:authenticationtoken>
+                <head:authenticationtime>2014-02-14T13:05:11.000Z</head:authenticationtime>
+                <head:sessionexpirytime>2014-02-14T13:35:20.449Z</head:sessionexpirytime>
+            </ns5:securityheader>
+            <ns5:transactionguid>8F9F9258-E772-45FC-B486-7F09FD3F067B</ns5:transactionguid>
+            <ns5:profileresponse>
+                <req:profileHeader>
+                    <req:profileGuid>7C779053-F673-4903-9366-87ED5B1D3448</req:profileGuid>
+                    <req:profileName>Business Data</req:profileName>
+                    <req:transactionGuid>A9663B88-224C-4279-9E2C-B3DD4FFA831C</req:transactionGuid>
+                    <req:transactionTimeStamp>2016-02-23T15:35:42.061Z</req:transactionTimeStamp>
+                    <req:profileStatus>SUCCESS</req:profileStatus>
+                </req:profileHeader>
+                <req:profileResponseDetails>
+                    <req:transactionGuid>56C16127-A22E-4E39-A6A0-E6A8FBC453CB</req:transactionGuid>
+                    <req:componentName>Matchcode Business Data</req:componentName>
+                    <req:componentStatus>SUCCESS</req:componentStatus>
+                    <req:componentAction>VERIFY</req:componentAction>
+                    <req:responseType>CAPTURE</req:responseType>
+                    <req:notes>[]</req:notes>
+                    <req:invoice>
+                        <req:invoiceList>
+                            <req:invoiceGuid>5BD50A02-FF5B-4199-BA17-0606555E622B</req:invoiceGuid>
+                            <req:billingInformationGuid>21C213F0-401B-4177-8D0C-D129B0D1254A</req:billingInformationGuid>
+                            <req:billingPoints>1</req:billingPoints>
+                            <req:creditsUsed>1</req:creditsUsed>
+                            <req:dataSetInvoices>
+                                <req:dataSetCode>BUSINESS_DATA_V2</req:dataSetCode>
+                                <req:billingPoints>1</req:billingPoints>
+                                <req:recordsReturned>1</req:recordsReturned>
+                                <req:dataLicenceGuid>21C213F0-401B-4177-8D0C-D129B0D1254A</req:dataLicenceGuid>
+                            </req:dataSetInvoices>
+                        </req:invoiceList>
+                    </req:invoice>
+                    <req:captureResponse>
+                        <req:resultStatus>SINGLE</req:resultStatus>
+                        <req:recordsReturned>1</req:recordsReturned>
+                        <req:moreData>false</req:moreData>
+                        <req:totalRecordCount>1</req:totalRecordCount>
+                        <req:totalPages>1</req:totalPages>
+                        <req:matchScore>0</req:matchScore>
+                        <req:matchLevel>NA</req:matchLevel>
+                        <req:outputStatus>NOTMATCHED</req:outputStatus>
+                        <req:fieldStatus>55555555</req:fieldStatus>
+                        <req:responseCount>1</req:responseCount>
+                        <req:response>
+                            <req:address>
+                                <data:organisation>Gb Group Plc</data:organisation>
+                                <data:street>Herons Way</data:street>
+                                <data:town>CHESTER</data:town>
+                                <data:postCode>CH4 9GB</data:postCode>
+                                <data:locality>Chester Business Park</data:locality>
+                                <data:buildingName>The Foundation</data:buildingName>
+                                <data:stateRegion>Cheshire</data:stateRegion>
+                                <data:dpsZipPlus>9ZI</data:dpsZipPlus>
+                                <data:formattedAddress>Gb Group Plc,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB</data:formattedAddress>
+                                <data:geographicInformation>
+                                    <data:easting>340009</data:easting>
+                                    <data:northing>363192</data:northing>
+                                    <data:latitude>53.1624456651</data:latitude>
+                                    <data:longitude>-2.8987260320</data:longitude>
+                                </data:geographicInformation>
+                                <data:additionalItems>
+                                    <data:item>
+                                        <data:key>DATASOURCE</data:key>
+                                        <data:value>BUSINESS_DATA_V2</data:value>
+                                    </data:item>
+                                </data:additionalItems>
+                                <data:groupedAdditionalItems>
+                                 <data:name>BusinessData</data:name>
+                                 <data:item>
+                                    <data:key>Ex1_Function</data:key>
+                                    <data:value>Director</data:value>
+                                 </data:item>
+                                 <data:item>
+                                    <data:key>Ex1_FirstName</data:key>
+                                    <data:value>David</data:value>
+                                 </data:item>
+                                 <data:item>
+                                    <data:key>Ex1_Surname</data:key>
+                                    <data:value>Ward</data:value>
+                                 </data:item>
+                 ....
+                                 <data:item>
+                                    <data:key>Ex5_Salutation</data:key>
+                                    <data:value>Dear Mr C.G. Clark</data:value>
+                                 </data:item>
+                                 <data:item>
+                                    <data:key>Ex5_Sex</data:key>
+                                    <data:value>Male</data:value>
+                                 </data:item>
+                              </data:groupedAdditionalItems>
+                            </req:address>
+                        </req:response>
+                    </req:captureResponse>
+                </req:profileResponseDetails>
+            </ns5:profileresponse>
+        </ns5:executecaptureresponse>
+    </soap-env:body>
+</soap-env:envelope>
+```
+
+```json REST
+{
+  "profileResponse": {
+    "profileHeader": {
+      "profileGuid": "7C779053-F673-4903-9366-87ED5B1D3448",
+      "profileName": "Business Data",
+      "transactionGuid": "A9663B88-224C-4279-9E2C-B3DD4FFA831C",
+      "transactionTimeStamp": "2016-02-23T15:35:42.061Z",
+      "profileStatus": "SUCCESS"
+    },
+    "profileResponseDetails": {
+      "transactionGuid": "56C16127-A22E-4E39-A6A0-E6A8FBC453CB",
+      "componentName": "Matchcode Business Data",
+      "componentStatus": "SUCCESS",
+      "componentAction": "VERIFY",
+      "responseType": "CAPTURE",
+      "notes": "[]",
+      "invoice": {
+        "invoiceList": {
+          "invoiceGuid": "5BD50A02-FF5B-4199-BA17-0606555E622B",
+          "billingInformationGuid": "21C213F0-401B-4177-8D0C-D129B0D1254A",
+          "billingPoints": "1",
+          "creditsUsed": "1",
+          "dataSetInvoices": {
+            "dataSetCode": "BUSINESS_DATA_V2",
+            "billingPoints": "1",
+            "recordsReturned": "1",
+            "dataLicenceGuid": "21C213F0-401B-4177-8D0C-D129B0D1254A"
+          }
+        }
+      },
+      "captureResponse": {
+        "resultStatus": "SINGLE",
+        "recordsReturned": "1",
+        "moreData": "false",
+        "totalRecordCount": "1",
+        "totalPages": "1",
+        "matchScore": "0",
+        "matchLevel": "NA",
+        "outputStatus": "NOTMATCHED",
+        "fieldStatus": "55555555",
+        "responseCount": "1",
+        "response": {
+          "address": {
+            "organisation": "Gb Group Plc",
+            "street": "Herons Way",
+            "town": "CHESTER",
+            "postCode": "CH4 9GB",
+            "locality": "Chester Business Park",
+            "buildingName": "The Foundation",
+            "stateRegion": "Cheshire",
+            "dpsZipPlus": "9ZI",
+            "formattedAddress": "Gb Group Plc,The Foundation,Herons Way Chester Business Park,CHESTER,Cheshire,CH4 9GB",
+            "geographicInformation": {
+              "easting": "340009",
+              "northing": "363192",
+              "latitude": "53.1624456651",
+              "longitude": "-2.8987260320"
+            },
+            "additionalItems": {
+              "item": {
+                "key": "DATASOURCE",
+                "value": "BUSINESS_DATA_V2"
+              }
+            },"groupedAdditionalItems": [
+              {
+                "name": "BusinessData",
+                "item": [
+                  {
+                    "key": "SIC03",
+                    "value": "9999"
+                  },
+                  {
+                    "key": "HOF",
+                    "value": "Branch"
+                  },
+                  {
+                    "key": "YEARSTAR",
+                    "value": "1974"
+                  },
+                  ...
+                  {
+                    "key": "SIC03TEXT",
+                    "value": "DORMANT COMPANY L ORGANISATIONS NG ACTIVITIES OF PRIVATE HOUSEHOLDS FOR OWN USE OR TOBACCO PREDOMINATING"
+                  },
+                  {
+                    "key": "CRONUMBER",
+                    "value": "01183941"
+                  },
+                  {
+                    "key": "UCRN",
+                    "value": "UK00854709"
+                  }
+                ]
+              }
+            ],
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Error Information
+
+Information on possible error codes is given here: [Error Code Information](/product-support/matchcode/general-information/error-codes/)

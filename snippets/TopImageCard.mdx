@@ -1,0 +1,87 @@
+export const TopImageCard = ({
+  title,
+  children,
+  href,
+  image,
+  imageSize = '60px',
+}) => {
+  return (
+    <div
+      className="top-image-card"
+      style={{
+        border: '1px solid #e0e0e0',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        height: '100%',
+        transition: 'all 0.2s ease',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        background: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <a
+        href={href}
+        style={{
+          textDecoration: 'none',
+          color: 'inherit',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}
+      >
+        <div
+          style={{
+            padding: '20px 20px 10px',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          {image && (
+            <img src={image} style={{ width: imageSize, height: 'auto' }} />
+          )}
+        </div>
+
+        <div
+          style={{
+            padding: '0 16px 8px',
+            fontWeight: 'bold',
+            fontSize: '16px',
+            textAlign: 'center',
+          }}
+        >
+          {title}
+        </div>
+
+        <div
+          style={{
+            padding: '0 16px 16px',
+            flexGrow: 1,
+          }}
+        >
+          {children}
+        </div>
+      </a>
+    </div>
+
+); };
+
+export const TopImageCardGroup = ({ children }) => {
+  return (
+    <div
+      className="top-image-card-group"
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+        gap: "16px",
+        margin: "24px 0",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export default { TopImageCard, TopImageCardGroup };
+
+;

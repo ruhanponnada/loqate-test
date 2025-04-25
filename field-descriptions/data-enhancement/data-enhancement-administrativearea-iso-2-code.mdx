@@ -1,0 +1,27 @@
+---
+title: "What are ISO2 codes for Administrative Areas?"
+---
+
+**ISO 3166-2** is part of the [ISO 3166](http://en.wikipedia.org/wiki/ISO_3166) standard published by the International Organization for Standardization (ISO), and defines codes for identifying the principal subdivisions (e.g., provinces or states) of all countries coded in ISO 3166-1. The official name of the standard is _Codes for the representation of names of countries and their subdivisions – Part 2: Country subdivision code. It was first published in 1998._
+
+The purpose of ISO 3166-2 is to establish an international standard of short and unique alphanumeric codes to represent the relevant administrative divisions and dependent territories of all countries in a more convenient and less ambiguous form than their full names. Each complete ISO 3166-2 code consists of two parts, separated by a hyphen:
+
+- The first part is the code of the country
+- The second part is a string of up to three alphanumeric characters, which is usually obtained from national sources and stems from coding systems already in use in the country concerned, but may also be developed by the ISO itself.
+
+Each complete ISO 3166-2 code can then be used to uniquely identify a country subdivision in a global context.
+
+## Coverage and Data
+
+Loqate previously supplied [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) values for administrative areas in the United States, Canada, Germany, Brazil, Colombia, France, and Argentina.
+
+From the 2022Q2.1 release onwards, **rd_WW_enh_ISO_ADMIN file will cover 171 countries in total**, which includes:
+AD, AE, AF, AG, AL, AM, AO, AR, AT, AU, AZ, BD, BE, BF, BG, BI, BJ, BN, BQ, BR, BS, BT, BW, BY, BZ, CA, CG, CH, CI, CL, CN, CO, CR, CU, CV, CY, CZ, DE, DJ, DK, DM, DO, DZ, EC, EE, EG, ER, ES, ET, FI, FJ, FR, GA, GB\*, GD, GE, GH, GL, GM, GN, GQ, GR, GT, GW, GY, HN, HR, HT, HU, ID, IE, IL, IN, IQ, IR, IS, IT, JM, JO, JP, KE, KG, KH, KM, KN, KP, KR, KW, KZ, LA, LB, LI, LK, LR, LS, LT, LU, LV, LY, MD, ME, MM, MN, MU, MV, MW, MX, MY, MZ, NA, NG, NI, NL, NO, NP, NR, NZ, OM, PA, PE, PG, PH, PK, PL, PT, PY, QA, RO, RS, RU, SA, SB, SC, SD, SE, SH, SK, SM, SN, SO, SR, SS, SV, SY, SZ, TD, TH, TJ, TL, TM, TN, TO, TR, TT, TV, TW, TZ, UA, UG, US, UY, UZ, VC, VE, VN, VU, WS, YE, ZA, ZM, ZW
+
+Using a combination of the CountryName and AdministrativeArea fields, the Loqate engine will add the ISO 3166-2 code to a field called **AdministrativeAreaISO2**. Each **AdministrativeAreaISO2** value refers to a unique combination of country and administrative area.
+
+The value in the **AdministrativeAreaISO2** consists of two parts, separated by a hyphen. The first part is the ISO 3166-1 alpha-2 code of the Country. The second part is multiple letters or numbers representing the AdministrativeArea.
+
+The Loqate engine will also return a field status for **AdministrativeAreaISO2**. For a valid code the field status will read fsAdded.
+
+\*Note that for GB, the ISO code returned is based on Royal Mail former postal county that they have declared static (see page 70 of https://www.poweredbypaf.com/wp-content/uploads/2024/11/Latest-Programmers_guide_Edition-7-Version-6-2.pdf). Because of that, North Northamptonshire and West Northamptonshire will return the AdministrativeArea of Northamptonshire with code GB-NTH.

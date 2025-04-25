@@ -1,0 +1,28 @@
+---
+title: "lqtInputRecord"
+sidebarTitle: "LQT Input Record"
+---
+
+## Static Public Member Functions
+
+### static lqtInputRecord\* create ()
+
+This member function returns a pointer to a newly created lqtInputRecord instance.
+
+### static void destroy (lqtInputRecord\* pInputRecord)
+
+This member function destroys all resources associated with the supplied lqtInputRecord pointer.
+
+## Public Member Functions
+
+### const char* get (const char* field)
+
+This member function returns the string value associated with the supplied field name.
+
+### void set (const char* field, const char* value)
+
+This member function sets the supplied field name with the supplied field value
+
+### void clear ()
+
+This member function clears the contents of the lqtInputRecord.

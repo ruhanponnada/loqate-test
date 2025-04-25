@@ -1,0 +1,24 @@
+---
+title: "lqtProcessOptions"
+sidebarTitle: "LQT Process Options"
+---
+
+## Static Public Member Functions
+
+### static lqtProcessOptions\* create ()
+
+This member function returns a pointer to a newly created lqtProcessOptions instance.
+
+### static void destroy (lqtProcessOptions\* pProcessOptions)
+
+This member function destroys all resources associated with the supplied lqtProcessOptions pointer.
+
+## Public Member Functions
+
+### const char* get (const char* option)
+
+This member function returns the string value associated with the supplied option name.
+
+### void set (const char* option, const char* value)
+
+This member function sets the supplied option name with the supplied option value.

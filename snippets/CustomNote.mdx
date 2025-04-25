@@ -1,0 +1,32 @@
+export const CustomNote = ({
+  title,
+  children,
+  image,
+  imageSize = "50px",
+  border = "12px",
+}) => {
+  return (
+    <div className="custom-styled-note">
+      <Note>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
+          {image && (
+            <img
+              src={image}
+              style={{ width: imageSize, height: "auto", marginTop: "0" }}
+            />
+          )}
+          <div>
+            {title && (
+              <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
+                {title}
+              </div>
+            )}
+            <div>{children}</div>
+          </div>
+        </div>
+      </Note>
+    </div>
+  );
+};
+
+export default CustomNote;

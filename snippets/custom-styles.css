@@ -1,0 +1,28 @@
+/* Custom styles for the Warning, Note, and Info components */
+
+/* Hide the default icons */
+.custom-styled-warning .warning-icon,
+.custom-styled-warning [data-warning-icon],
+.custom-styled-warning svg:first-child,
+.custom-styled-note .note-icon,
+.custom-styled-note [data-note-icon],
+.custom-styled-note svg:first-child,
+.custom-styled-info .info-icon,
+.custom-styled-info [data-info-icon],
+.custom-styled-info svg:first-child {
+  display: none !important;
+}
+
+/* Adjust padding to remove space for the missing icons */
+.custom-styled-warning > div,
+.custom-styled-note > div,
+.custom-styled-info > div {
+  padding-left: 16px !important;
+}
+
+/* Style the components */
+.custom-styled-warning,
+.custom-styled-note,
+.custom-styled-info {
+  margin: 24px 0;
+} 

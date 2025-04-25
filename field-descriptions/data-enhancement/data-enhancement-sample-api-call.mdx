@@ -1,0 +1,136 @@
+---
+title: "Data Enhancement: Sample API Call"
+---
+
+## Overview
+
+Enhance is a follow-up process that can be called to append enhanced data to a verified address. The process will call up different enhancement data packs depending on how the API call is setup. The example below shows a Java API call appending the ISO 3166-2 field to Loqate’s business address.
+
+## Sample Java API Call
+
+```java
+import com.loqate.*;
+
+import java.io.*;
+import java.net.*;
+
+public class lqtSample
+{
+static
+{
+System.loadLibrary(“lqtjava”);
+}
+
+public static void main(String args[])
+{
+// Loqate objects
+lqtServer srv = lqtServer.create();
+lqtInputRecord rec = lqtInputRecord.create();
+lqtProcessResult res = lqtProcessResult.create();
+
+// Initialize the server
+if (args.length > 0)
+srv.init(args[0]);
+else
+srv.init(“./data”);
+
+// Create the process list
+lqtProcessList lst = lqtProcessList.create();
+lqtProcessOptions opts = lqtProcessOptions.create();
+lst.add(“Verify”, opts);
+lst.add(“Geocode”, opts);
+lst.add(“Enhance”, opts);
+
+try
+{
+// Open the Loqate session
+int session = srv.open();
+
+// Process data
+try
+{
+// Set the relevant Loqate values
+rec.set(“Address1”, “999 baker way ste 320 san mateo ca 94404 usa”);
+//rec.set(“Address2”, “usa”);
+
+// Process the record
+srv.process(rec, lst, res);
+
+// Output the result
+System.out.println(“Found ” + res.getCount() + ” records”);
+for (int i = 0; i < res.getCount(); i++)
+{
+System.out.println(“Output record ” + i);
+for (int j = 0; j < res.getFieldCount(i); j++)
+{
+System.out.println(res.getFieldName(i, j) + ” : ” + res.getField(i, j));
+}
+}
+System.out.flush();
+}
+catch (Exception e)
+{
+System.out.println(“Exception: ” + e);
+}
+
+// Close the session
+srv.close(session);
+}
+catch (Exception e)
+{
+System.out.println(“Exception: ” + e);
+}
+
+// Destroy the process list
+lqtProcessList.destroy(lst);
+lqtProcessOptions.destroy(opts);
+
+// Tidy up
+srv.shutdown();
+lqtInputRecord.destroy(rec);
+lqtProcessResult.destroy(res);
+lqtServer.destroy(srv);
+}
+}
+```
+
+## Output
+
+( <span style={{ color: "blue" }}>blue entries are census output</span>, <span style={{ color: "red" }}>Red entries are ISO-2 Administrative Area code</span>, empty fields have been omitted )
+
+AQI : A <br/>
+AVC : V55-I55-P7-100 <br/>
+Address : 999 Baker Way Ste 320\<BR>San Mateo CA 94404-1566 <br/>
+Address1 : 999 Baker Way Ste 320 <br/>
+Address2 : San Mateo CA 94404-1566 <br/>
+AdministrativeArea : CA <br />
+
+<span style={{ color: "red" }}>AdministrativeAreaISO2 : US-CA </span> <br />
+<span style={{ color: "blue" }}>CensusClassCode : C1 </span> <br />
+<span style={{ color: "blue" }}>CensusCode : 68252 </span> <br />
+<span style={{ color: "blue" }}>CensusIndicator : Locality </span> <br />
+CountryName : United States <br />
+DeliveryAddress : 999 Baker Way Ste 320 <br />
+DeliveryAddress1 : 999 Baker Way Ste 320 <br />
+<span style={{ color: "blue" }}>GNISFeatureID : 2411800 </span> <br />
+GeoAccuracy : P4 <br />
+GeoDistance : 0.0 <br />
+ISO3166-2 : US <br />
+ISO3166-3 : USA <br />
+ISO3166-N : 840 <br />
+Latitude : 37.560210 <br />
+Locality : San Mateo <br />
+Longitude : -122.285640 <br />
+MatchRuleLabel : 1 <br />
+PostalCode : 94404-1566 <br />
+PostalCodePrimary : 94404 <br />
+PostalCodeSecondary : 1566 <br />
+Premise : 999 <br />
+PremiseNumber : 999 <br />
+SubAdministrativeArea : San Mateo <br />
+SubBuilding : Ste 320 <br />
+SubBuildingLeadingType : Ste <br />
+SubBuildingNumber : 320 <br />
+Thoroughfare : Baker Way <br />
+Verify|Country|Parse|Lexicon:TABLE=lx_US3|RefLex:TABLE=rd_US_vfy;POSTCODECHECK=Yes;POSTCODEFIELD=PostalCodeIndex|Signal:MATCHTYPES=Address
+<br />

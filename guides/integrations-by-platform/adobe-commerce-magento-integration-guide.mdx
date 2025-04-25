@@ -1,0 +1,529 @@
+---
+title: "Adobe Commerce (Magento) Integration Guide "
+sidebarTitle: "Adobe Commerce (Magento)"
+---
+
+import { CustomNote } from "/snippets/CustomNote.mdx";
+
+[Get the Adobe Commerce integration](https://commercemarketplace.adobe.com/gbg-loqate-loqate-integration.html)
+
+<CustomNote image="/images/f0291a6f-plugin-integration.svg" imageSize="50px">
+  This guide will help you install, configure and utilise the Loqate Adobe
+  Commerce Integration from the Adobe Commerce Marketplace.
+  <br />
+  Throughout the guide, we will be referencing Adobe Commerce as the formerly
+  named ‘Magento’.
+</CustomNote>
+
+The Loqate Adobe Commerce integration is a simple package that contains our
+market leading services designed to allow you to improve your end user
+experience, reduce failed deliveries and improve data quality for you and your
+Adobe Commerce customers.
+
+We have added best-in-class customer experience optimisations for you to
+customise your business requirements that best serve your operations.
+
+The integration we have designed includes the following services in one simple
+package:
+
+- **Address Capture:** our real-time address validation speeds up address entry,
+  eliminates errors and ensures that your customer database stays up to date and
+  accurate. Our single-line type ahead search uses location biasing to return
+  the address closest to the customer based on their physical location, within
+  just a few keystrokes
+
+- **Address Verify:** Verify corrects and enriches your customer address data to
+  the highest level of precision and confidence, globally and at scale
+
+- **Email Validation:** quickly validate email addresses at the point of capture
+  and deliver efficient communications with customers whilst maintaining an
+  up-to-date customer database
+
+- **Phone Validation:&#x20;**&#x71;uickly validate mobile and landline numbers
+  at the point of capture and deliver efficient communications with customers
+  whilst maintaining an up-to-date customer database
+
+The integration allows you to install the above services for a number of use
+cases, in the most important places within your Adobe Commerce environment,
+including:
+
+- Store checkout pages
+
+- Registration pages
+
+- Customer account
+
+* Creation of customers (admin panel)
+
+* Order creation (admin panel)
+
+* Customer address importation
+
+## Who is this guide for?
+
+There are two primary sections within this guide, listed below:
+
+- **Installation:** this is aimed at your technical users with Adobe Commerce
+  knowledge who will be installing the integration into your environment
+
+- **Using the Integration:** this is aimed at any user (no high level technical
+  knowledge required) who wishes to use this integration or make configurations
+  for your business to your Adobe Commerce store
+
+### **Prerequisites&#xA0;**
+
+For the Loqate integration to work on your Adobe Commerce store there are two
+prerequisites:
+
+- An active Loqate account using the Classic account experience\* (available at
+  [account.loqate.com](https://account.loqate.com/))
+- A valid API key
+
+\*The Adobe Commerce integration is not available via the New account experience
+([https://app-us.platform.loqate.com/)](<https://app-us.platform.loqate.com/)>),
+so if you already have an account that you log into via this URL, you'll need to
+create a new Classic account to use this integration.
+
+Please follow the instructions in
+our [Getting Started guide](/loqate-basics/), paying
+particular attention to the following:
+
+- If you don’t already have a Classic account, follow the instructions in the
+  section titled**1. Create a Loqate account**
+- Then follow the instructions in the section titled **3. Create an API
+  key&#x20;** (we recommend you create a generic API key, and make sure you
+  include ‘Adobe Commerce’ in the name you choose)
+- You can skip the remaining steps, although you may want to return to the
+  section titled **5. Check your usage** once you’ve completed the Adobe Commerce
+  integration
+
+**Please note**
+
+Your new API key will need to be fully enabled for use with a specific set of
+features in order to work with this integration.
+
+If you created a Classic account specifically for this integration, your API key
+will automatically be fully enabled and you can move on to the next section of
+this guide:
+
+If not, please follow these instructions:
+
+- Once you have created a new API key, or if you want to use an existing key, in
+  your Account Section go to the
+  [Your Services page](https://account.loqate.com/account#/Dashboard/)
+- Select the key you want to use and look for the **Advanced** menu option
+
+<Frame caption="">
+  <img src="/images/00d3e6ef-api-key-headings.png" />
+</Frame>
+
+- If you **can** see the Advance&#x64;**&#x20;**&#x6F;ption, your key is fully
+  enabled and you can proceed with your integration
+- If you **cannot** see the Advanced option, please contact our Support team
+  ([on this page](https://www.loqate.com/en-us/contact/), or via
+  [LoqateSupport@gbgplc.com](mailto:%20LoqateSupport@gbgplc.com)) or your
+  Account Manager and ask them to enable your API key for use with Adobe
+  Commerce. Once this is enabled, you can proceed with your integration
+
+## Integration Management
+
+This section will include instructions on how to install, upgrade and uninstall
+the
+[Loqate Adobe Commerce Integration](https://commercemarketplace.adobe.com/gbg-loqate-loqate-integration.html).
+
+As stated in the introduction of this document, this part of the guide is
+primarily aimed at technical users with knowledge of Adobe Commerce who manage
+your environment.
+
+### Supported Versions
+
+The Loqate integration for Adobe Commerce will support versions of Magento 2.4.
+It has been built with PHP8.
+
+New versions should be backwards compatible and require no extra development on
+your side after you upgrade.
+
+### Module name
+
+Depending on how you’re installing the app you might install from different
+namespaces.
+
+When installing directly via Composer, without going via the Adobe Commerce
+store, you should use the package name "**lqt/loqate-integration**" (this
+supersedes "**loqate-integration/adobe"**from version 1.1.8 onwards).
+
+When installing from the Adobe Commerce app store you will need to have your
+Composer credentials in place for
+**[repo.magento.com](http://repo.magento.com),** and you should install from the
+package name provided by the app store (as of November 2024 this is
+"**gbg-loqate/loqate-integration**").
+
+For the examples in this guide, we’ll use the non-store version
+"**lqt/loqate-integration**".
+
+## Installing the module
+
+To begin, open a terminal and run the following command in your Adobe Commerce
+directory:
+
+**composer require lqt/loqate-integration**
+
+Next, set up the module by running the following commands:
+
+**php bin/magento module:enable Loqate_ApiIntegration&#xA0;**
+
+**php bin/magento setup:upgrade&#xA0;**
+
+**php bin/magento setup:di:compile&#xA0;**
+
+## Upgrading the module
+
+Before you upgrade:
+
+- Back up your files and database.
+
+- Start with your test environment.
+
+- Keep a copy of any customisation you made to the module’s original code.
+
+- Check out the changelog.
+
+If you have customised the integrations code, you’ll need to port these
+customisations after upgrading and resolve any potential conflict.
+
+Run the following commands:
+
+**composer remove lqt/loqate-integration**
+
+**composer lqt/loqate-integration**
+
+**php bin/magento setup:upgrade&#xA0;**
+
+**php bin/magento setup:di:compile&#xA0;**
+
+**php bin/magento setup:static-content:deploy&#xA0;**
+
+**php bin/magento cache:clean&#xA0;**
+
+## Uninstalling the module
+
+Before you uninstall:
+
+- Back up your files and database.
+
+- Keep a copy of any customisation you made to the module’s original code in
+  case you need to reinstall it later.
+
+Run the following commands:
+
+**composer remove lqt/loqate-integration**
+
+**php bin/magento setup:upgrade&#xA0;**
+
+**php bin/magento setup:di:compile&#xA0;**
+
+**php bin/magento setup:static-content:deploy&#xA0;**
+
+**php bin/magento cache:clean&#xA0;**
+
+## Using the Integration
+
+## Before you start
+
+There are configurations that Loqate offer within your account section on a key.
+The configurations you will see in this guide are solely related to the
+performance and capabilities of the integration for Adobe commerce.
+
+For further configurations, please visit your Loqate account and you can find
+more information on this
+here: [/guides/address-email-and-phone-verification/advanced-setup-guide/](/guides/address-email-and-phone-verification/advanced-setup-guide/)
+
+## Integration Configuration
+
+Once the installation process has completed, you can then configure the module
+in the admin panel of the store.
+
+The configuration section for the integration can be found by navigating
+to **Stores -> Configuration -> Loqate -> Main Settings.**
+
+For this integration to work, you need to provide a valid API key to the **API
+Key** input field found in the configuration section of the module. This is a
+required field and can be found in the “Your services” section of your account
+on [https://www.loqate.com/](https://www.loqate.com/).
+
+Under the Loqate configuration you will find the below sections which we have
+within the integration.
+
+## Main Settings
+
+**API Key** - Navigate to the **Your Services** section of your Loqate account
+and copy your API key. Next, navigate back to the Adobe Loqate configuration
+page and paste it in this field for your integration to work.
+
+## Address Capture
+
+Our market leading address capture product allows you to search for and select
+global accurate premise level addresses from our comprehensive data sources.
+This service is available to be added in below sections of your Adobe commerce
+store:
+
+- **Enable on Customer Account:** by enabling this, a drop-down list will be
+  displayed in the customer account page, based on the input text
+
+* **Enable on Checkout:** by enabling this, a drop-down list will be displayed
+  in the checkout page, based on the input text
+
+- **Enable on Customer Account (Admin):** by enabling this, a drop-down list
+  will be displayed in the customer account page in the Admin, based on the
+  input text
+
+* **Enable on Create Order (Admin):** by enabling this, a drop-down list will be
+  displayed in the create order page in the Admin, based on the input text
+
+The below features and customisations can be found within the config menu for
+Address Capture.
+
+### **Restrict searchable countries**
+
+Merchants can restrict the address results to search only within specific
+countries. By default, no country is selected and the integration doesn’t apply
+any country restrictions.
+
+Multiple consecutive countries can be selected by clicking on the first country,
+scrolling towards the end country, holding down SHIFT and clicking on that end
+country.
+
+**Multiple countries can be selected by holding down CTRL and clicking on
+them**. All the countries can be selected by clicking once within the field and
+pressing CTRL+A.
+
+<Frame caption="">
+  <img src="/images/d80454ab-adobe-commerce-magento-guide-1.png" />
+</Frame>
+
+## Address Verify
+
+Our address verification product allows you to parse, cleanse and select the
+most accurate addresses from our comprehensive data sources. You are able to
+determine the level of quality according to your preferences, more information
+below:
+
+**Address Quality Index**: this is used to indicate the quality of an address.
+Two factors decide the address quality post-processed verification and match
+level and Matchscore. Based on the Address Quality chosen, the address will be
+validated or not. All the settings from Address Verify will be based on the
+address quality set.
+
+Address Quality and index:
+
+- Excellent - A - Verifiable to at last premise level without changes
+
+- Good - B - Verifiable to at least thoroughfare level with minor changes
+
+- Average - C - Verifiable to at least locality level with moderate changes
+
+- Poor - D - Only verifiable to at least locality level with more than moderate
+  changes
+
+- Bad - E (or empty) - If an address is unable to be parsed, the AQI can be
+  empty
+
+This service is available to be added in below sections of your Adobe commerce
+store:
+
+1. **Enable on Customer Account:** the quality of the address will be
+   verified in the Customer Account based on the address quality index set
+
+2. **Enable on Checkout:** the quality of the address will be verified
+   in the Checkout page based on the address quality index set
+
+3. **Enable on Customer Account (Admin):** the quality of the address will be
+   verified in the Customer Account (Admin) based on the address quality index
+   set
+
+4. **Enable on Create Order (Admin):** the quality of the address will be
+   verified in the Create Order page based on the address quality index set
+
+5. **Enable on Customer Import (Admin):** the quality of the address will be
+   verified at the import, based on the address quality index set
+
+## Email Validation
+
+Validate the accuracy of the emails captured in your Adobe Commerce environment
+with our simple but effective email validation product.
+
+In the config menu for this service you will first see the option below:
+
+- **Prevent Submit on Invalid Email Address:&#x20;**&#x74;his is used to prevent
+  the user from adding invalid email in the email fields.
+
+If set to NO then a warning will be displayed at the save address in which the
+customer is told that the email address is unable to be validated. This may be
+useful if you do not depend too much on the accuracy of the email address and
+wish to proceed with the entered information. If the end user selects ‘Save’ a
+second time, the entered email address will be accepted and the user can
+proceed.
+
+If set to YES then your end user will be unable to proceed until a validated
+email address has been entered.
+
+This service is available to be added in below sections of your Adobe commerce
+store:
+
+- **Enable on Customer Account** - if this is set to YES then the validation
+  will be displayed on the customer account page
+
+* **Enable on Checkout** - if this is set to YES then the validation will be
+  displayed on the checkout page
+
+- **Enable on Register** - if this is set to YES then the validation will be
+  displayed on the registration page
+
+* **Enable on Customer Account (Admin)**- if this is set to YES then the
+  validation will be displayed on the customer account page in the Admin
+
+- **Enable on Create Order (Admin)** - if this is set to YES then the validation
+  will be displayed on the create order page in the Admin
+
+For email validation the Loqate Integration returns Valid, Invalid and
+Valid_CatchAll responses. In the config you will see an option entitled ‘Accept
+Valid_CatchAll response code’. This means that a domain has been validated but
+the account could not be validated (particularly for employment email
+addresses). You have the option to allow all responses, by selecting Yes in this
+option, or NO only allows fully validated emails to be accepted.
+
+<Frame caption="">
+  <img src="/images/5f2f364c-adobe-commerce-magento-guide-email-validation.png" />
+</Frame>
+
+- **Validation timeout:&#x20;**&#x74;he request timeout can also be customised,
+  the default value and maximum is 15000 ms.(15 seconds). If you wish to reduce
+  this, you can enter the value in milliseconds here
+
+## Phone Validation
+
+Validate the accuracy of the phone numbers captured in your Adobe Commerce
+environment with our simple but effective phone validation product.
+
+In the config menu for this service you will first see the option below:
+
+- **Prevent Submit on Invalid Phone Number:&#x20;**&#x74;his is used in order to
+  prevent the user from adding invalid phone numbers in the phone fields
+
+If set to NO then a warning will be displayed at the save address in which the
+customer is told that the phone number is unable to be validated. This may be
+useful if you do not depend too much on the accuracy of the phone number and
+wish to proceed with the entered information. If the end user selects ‘Save’ a
+second time, the entered phone number will be accepted and the user can proceed.
+
+If set to YES then your end user will be unable to proceed until a validated
+email address has been entered.
+
+This service is available to be added in below sections of your Adobe commerce
+store:
+
+- **Enable on Customer Account:** if this is set to YES then the validation will
+  be displayed on the customer account page
+
+* **Enable on Checkout:** if this is set to YES then the validation will be
+  displayed on the checkout page
+
+- **Enable on Customer Account (Admin):** if this is set to YES then the
+  validation will be displayed on the customer account page in the Admin
+
+* **Enable on Create Order (Admin):** if this is set to YES then the validation
+  will be displayed on the create order page in the Admin
+
+## Additional config
+
+### IP2Country
+
+This optimisation can pre-determine the country of the end user’s IP to populate
+the country selection field within parts of the integration.
+
+The user’s IP (if redeemable) is gathered by Loqate and the API returns the
+country ISO2 code, that is then mapped within Magento’s country form. The form
+will be set by default to that country and addresses will be searched from that
+country unless the customer changes it.
+
+Upon accessing a page with an address form creation (new customer address, new
+address at checkout), an Ip2Country request is done if configured for the
+integration:\
+
+<Frame caption="">
+  <img src="/images/4a781dad-adobe-commerce-magento-guide-ip2country.png" />
+</Frame>
+
+###
+
+Loqate API results can be customised via the enhanced fields functionality.
+Before the address is auto-completed by the end user, values can be enhanced by
+specifying the fields within this section of the integration config.
+
+Trailing characters can be added in admin config page, for example ! for
+capitalisation and \$ to remove diacritics.
+
+The fields are mapped as following:
+
+| Frontend Form Field | Backend Text Input |
+| ------------------- | ------------------ |
+| Street Address1     | Line1              |
+| Street Address2     | Line2              |
+| State/Province      | ProvinceName       |
+| City                | City               |
+
+Note: State/Province will be changed only in the case of a text field, as Adobe
+Commerce displays a dropdown for certain countries.
+
+<Frame caption="">
+  <img src="/images/6d3f4ea6-adobe-commerce-magento-guide-enabled-fields.png" />
+</Frame>
+
+In the screenshot above, all values will be enhanced – replaced from the
+enhanced fields call, capitalised and without diacritics.
+
+<Frame caption="">
+  <img src="/images/95d1cf87-adobe-commerce-magento-guide-enabled-fields1.png" />
+</Frame>
+
+This is an example where diacritics were removed from the city name, as it would
+have been the same as the value in the State/Province field.
+
+Additional data can be returned within other fields(ex: Latitude, Longitude),
+but that data is not mapped to form fields and the values will not be replaced.
+These values can be found in the API response call.
+
+### Multiple storefront support
+
+The Loqate integration supports multiple store(s) configuration. If you had an
+operation that needed to interact differently for the UK, and another for a
+Spanish storefront, then this capability has been introduced to allow management
+of this.
+
+The priority for configuration values is defaulted to the standard Magento
+site:**Store->Website->Default**
+
+<Frame caption="">
+  <img src="/images/b8659a10-adobe-commerce-magento-guide-multiple-store.png" />
+</Frame>
+
+In this store, the API key is inherited from the parent website, which inherits
+it from the Default config:
+
+<Frame caption="">
+  <img src="/images/77870f3e-adobe-commerce-magento-guide-multiple-store1.png" />
+</Frame>
+
+Different stores can use different API keys for the Loqate service, and even
+different settings (e.g.: restrict one store to specific countries and another
+to other countries).
+
+<Frame caption="">
+  <img src="/images/7d5602ed-adobe-commerce-magento-guide-multiple-store2.png" />
+</Frame>
+
+## Troubleshooting
+
+The development of this integration has been concluded in isolation from other
+third-party Adobe Commerce integrations, and therefore may not be compatible
+with these.

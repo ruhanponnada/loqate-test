@@ -1,0 +1,134 @@
+---
+title: "Transaction Reporting Service"
+sidebarTitle: "Transaction Logging Documentation"
+---
+
+For on-premise installations that are licensed by transaction, it is required that all usage be recorded and transmitted to Loqate through a transaction reporting service. This is configured to periodically send updates to our external licensing web service.
+
+If it is not possible to connect your applications or servers to an external service, then customers will be required to collate the reports internally and send them to us by an agreed date.
+
+### Information Gathered by the Node Collectors
+
+For transactional processing, we are required by our data suppliers to provide accurate and consistent reporting for the payment of royalties. To comply with our supplier terms, we will only ever keep a record of the following fields:
+
+| Logged Information      | Logged Information                 | Example   |
+| ----------------------- | ---------------------------------- | --------- |
+| a. Customer or end user | Name or non-identifying identifier | CUST-0001 |
+| b. Process              | Method or product requested        | Verify    |
+| c. ISO2 code            | Country ISO2 code                  | US        |
+
+### How Is Data Sent to Loqate?
+
+Some set-up will be required to install, configure, and test the service. Loqate will provide consultancy to assist with this at no charge. The server architecture consists of three components:
+
+1. **Central Collector**. This could be a AWS instance or a load balancer that allows installation of applications. This machine needs to be able to connect to the internet\* and should have a static IP address or DNS name that can be referenced by the Node Collectors.
+2. In each machine or instance where the Loqate API/Library is installed, a **Node collector** is also installed. This is configured to send data to the Central Collecter at regular intervals.
+3. The **Web Service** to receive the transaction recording information, sent periodically.
+
+The diagram below demonstrates the components in a typical AWS deployment.
+
+<Frame caption="">
+  <img src="/images/02a4ec9e-AWS_Deployment-271x300.png" />
+</Frame>
+
+In this deployment,
+
+1. Central Collector is a machine where Central Collector application is installed.
+2. Each AWS Node is where Loqate API/Library along with the Node collector is installed.
+3. The Central collector is connected to the internet and can upload transaction log data to the Loqate Web Service (run by Loqate).
+4. The Central collector is run on a machine which has an internal elastic IP address or a fixed DNS name that can be referenced by each AWS Node’s node collector for updating the transaction log files generated in that node. Port 9099 (default Central_Post) should be open for inbound traffic on this machine.
+5. The port that is configured (TC&#x50;**&#x20;9099 is the default Node_Port**) is open for outbound traffic of transaction log data from each node to the central collector (need appropriate security policy). This port is used to send the transaction log data collected at each node to the central collector. The central collector will then send all the collected data once a day ( at a time configured in the collector.properties ) to the Loqate Web service.
+
+### Installation and set up
+
+**[A]** In each machine on which Loqate library is installed, it will be required to also install the Node collector software. If the central collector is also doubling up as a node running Loqate, then, on that machine, the Loqate library + node collector should be installed in a separate folder and Central collector should be installed in a separate folder.
+
+The following are the files that are related to the Node Collector.
+
+| File Name                | Purpose                                                                                                                                            | Set up changes needed in this file                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LogCollector.jar         | Node/Central Application Jar file                                                                                                                  | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| jre                      | Java Run Time Folder                                                                                                                               | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| lib                      | Java dependent library folder                                                                                                                      | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| collector.properties     | Configuration file                                                                                                                                 | The following lines should be edited and the items colored red need to be updated **Node_DataLogDir =&#x20;\*\***\$LOQ_INSTALL_FOLDER\***\*/data/trLogs Node_Server =&#x20;\*\***\$CENTRAL_COLLECTOR_SERVER_IP\***\*Node_WaitTime = 10000&#x20;**–Frequency in milliseconds for Node Collector checks the data/trLogs for new log files**Central_WaitTime1 = 10000&#x20;**–Frequency in milliseconds for Central Collector to save the incoming queued logs to collectedLogFiles/files**Central_MaxLogsPerCall = 10&#x20;**– Number of log files per call |
+| LQTNodeCollector.service | Node Collector service setup file                                                                                                                  | The following lines should be edited and the items colored red need to be updated **WorkingDirectory=&#x20;\*\***\$LOQ_INSTALL_FOLDER&#x20;\***\*ExecStart= \$LOQ_INSTALL_FOLDER/jre/bin/java -Dlogback.configurationFile=logbackinfo.xml -jar&#x20;\*\***\$LOQ_INSTALL_FOLDER\***\*/LogCollector.jar**                                                                                                                                                                                                                                                   |
+| InstallNodeSystemd.sh    | Script to run Node Collector service. On AWS instances this can be used                                                                            | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| InstallNodeSystemV.sh    | On machines where systemctl is not available ( as in old linux machines ), need to use this script. On AWS instances, this is typically not needed | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+The following are the steps to be completed on each node instance:
+
+1. Install Loqate API using the API Installer ( loqate_installer_x86_64 ). Select 10 to install all components. This will install the Central Collector also on the node but this can be ignored.
+
+Ensure dos2unix is installed on the instance. If not install it using the command
+
+**sudo yum install dos2unix**
+
+2. cd to the folder where Loqate API/Node is installed and Run this command
+
+**dos2unix \*.sh**
+
+**chmod 755 \*.sh**
+
+3. Edit the collector.properties ( refer to table above ). The CENTRAL_COLLECTOR_SERVER_IP should be filled with elastic IP or DNS name of the machine where central collector is installed.
+4. Edit the LQTNodeCollector.service (refer to table above).
+5. Execute sh
+
+**\[B]** In the Central collector machine, only the Central Collector is required. The following are the files that relate to the central collector.
+
+| File Name                | Purpose                                                                                                                                            | Set up changes needed in this file                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LogCollector.jar         | Node/Central Application Jar file                                                                                                                  | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| jre                      | Java Run Time Folder                                                                                                                               | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| lib                      | Java dependent library folder                                                                                                                      | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| collector.properties     | Configuration file                                                                                                                                 | The following lines should be edited and the items colored red need to be updated **Central_DataLogDir =&#x20;\*\***\$LOQ_INSTALL_FOLDER**\*\***/collectedLogFiles Central_WebServiceUrl =&#x20;\***\*&#x68;ttps\://transactions.loqate.com/Transactions/transactionLogs **Central_PostTime =\***\*&#x20;10:28:04&#x20;\*\***Central_Quarantine=\***\*\$LOQ_INSTALL_FOLDER\*\***/collectedLogFiles/quarantine\***\*Node_WaitTime = 10000&#x20;**–Frequency in milliseconds for Node Collector checks the data/trLogs for new log files**Central_WaitTime1 = 10000&#x20;**–Frequency in milliseconds for Central Collector to save the incoming queued logs to collectedLogFiles/files**Central_MaxLogsPerCall = 10&#x20;**– Number of log files per call |
+| LQTNodeCollector.service | Central Collector service setup file                                                                                                               | The following lines should be edited and the items colored red need to be updated **WorkingDirectory=&#x20;\*\***\$LOQ_INSTALL_FOLDER\***\*&#x20;ExecStart=\*\***&#x20;\$LOQ_INSTALL_FOLDE\***\*R/jre/bin/java -Dlogback.configurationFile=logbackinfo.xml -cp&#x20;\*\***\$LOQ_INSTALL_FOLDER\***\*/LogCollector.jar -Djava.rmi.server.hostname=&#x20;\*\***\$CENTRAL_COLLECTOR_SERVER_IP&#x20;\***\*com.gbgplc.loqateutils.collector.server.CentralMain**                                                                                                                                                                                                                                                                                              |
+| InstallCentralSystemd.sh | Script to run Central Collector service. On AWS instances this can be used                                                                         | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| InstallCentralSystemV.sh | On machines where systemctl is not available ( as in old linux machines ), need to use this script. On AWS instances, this is typically not needed | None                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+**The following are the steps to be completed on each node instance:**
+
+1. Install Loqate API using the API Installer (loqate_installer_x86_64). Select 10 to install all components. This will install the Node Collector also on the Central Collector machine, but this can be ignored.
+
+Ensure dos2unix is installed on the machine. If not install it using the command
+
+**sudo yum install dos2unix**
+
+2. cd to the folder where Central collector is installed and Run this command
+
+**dos2unix \*.sh**
+
+**chmod 755 \*.sh**
+
+3. Edit the collector.properties (refer to table above). The value of \***\*Central_WebServiceUrl should be set to\*\***
+
+   (https://transactions.loqate.com/Transactions/transactionLogs). Please ensure there is no trailing space in the value.
+
+The Central_PostTime is the time when files will be sent to the web service. It will be based on time on the machine.
+
+4. Edit the LQTCentralCollector.service (refer to table above). The CENTRAL_COLLECTOR_SERVER_IP should be filled with elastic IP or DNS
+5. Execute sh
+
+### Custom Log entries
+
+Users can also add an optional UserID entry; the UserID is optional.
+
+The UserID entry can be added to the log by prefixing the input field name with “Transaction.Log.User”. The value in the field will be written to the log file.
+
+Example of UserID:
+
+_&#xA0; // Load the input record\&#xA;_&#xA0; rec->set(“Address1″, “PASEO DE LA CASTELLANA 137 MADRID 28001 Spain”);\
+rec->set(“**Transaction.Log.User**”, “Loqate”); // note the 2 periods in the prefix\
+_\
+// Process it\&#xA;_&#xA0; srv->process(rec, lst, res);
+
+The Above example will have the custom field “UserID” with the value “Loqate” written to the log file. See screenshots below for an example:
+
+<Frame caption="">
+  <img src="/images/544b25c6-TransactionLogUser_example-243x300.jpg" />
+</Frame>
+
+<Frame caption="">
+  <img src="/images/dfe6bfa5-TransactionLogFile_Outputexample-300x138.png" />
+</Frame>
+
+The old transaction logging can be found [here](/local-apis/transaction-logging/).

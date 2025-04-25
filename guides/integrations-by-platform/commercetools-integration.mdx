@@ -1,0 +1,120 @@
+---
+title: "The Loqate Commercetools Integration Guide"
+sidebarTitle: "Commercetools"
+---
+
+The Loqate commercetools plugin (`loqate-commercetools-b2c-frontend`) provides
+integration between [the commercetools platform](https://commercetools.com/) and
+the Loqate API.
+
+### Overview
+
+The [loqate-commercetools](https://github.com/loqate/loqate-commercetools)
+repository contains a commercetools plugin that integrates with the Loqate API
+to provide access to Address Capture, Address Verify, Email Validation, and
+Phone Validation.
+
+The plugin makes modifications in the following areas:
+
+- Checkout
+- My Account
+- Registration
+
+The modifications are applied in two areas:
+
+- **Backend-for-frontend (BFF):** commercetools extensions - used to make the
+  Loqate API calls and handle the responses
+- **Frontend:** React components - used to display the address capture, address
+  verification, email validation, and phone validation features
+
+### Feature overview
+
+The following Loqate products are supported:
+
+- **[Address Capture](/guides/commercetool-integration/feature-overview/#address-capture "Commercetools Integration: Feature Overview"):**
+  suggests addresses based on user input
+- **[Address Verify](/guides/commercetool-integration/feature-overview/#address-verify "Commercetools Integration: Feature Overview"):**
+  verifies address validity
+- **[Email Validation](/guides/commercetool-integration/feature-overview/#email-validation "Commercetools Integration: Feature Overview"):**
+  validates email addresses
+- **[Phone Validation](/guides/commercetool-integration/feature-overview/#phone-validation "Commercetools Integration: Feature Overview"):**
+  validates phone numbers
+
+These features can be toggled on or off through project settings.
+
+Please refer to the
+[Feature Overview](/guides/commercetool-integration/feature-overview/)
+page for more information on the supported features.
+
+### Setup
+
+The
+[Setup Guide](/guides/commercetool-integration/setup-guide "Commercetools Integration: Setup Guide")
+provides instructions on how to set up and configure the Loqate commercetools
+Composable Commerce Plugin.
+
+The [Studio Settings](/guides/commercetool-integration/studio-settings/) page
+provides instructions on how to configure the Loqate commercetools Composable
+Commerce Plugin in the Studio.
+
+### Disclaimers
+
+The loqate-commercetools repository demonstrates the integration of Loqate
+Address Capture, Address Verify, Email Validation and Phone Validation features
+with commercetools. It is to be used as a reference implementation for your own
+integration - it is not intended to be used as is in a production environment.
+Please refer to the
+[Setup Guide](/guides/commercetool-integration/setup-guide "Commercetools Integration: Setup Guide")
+for instructions on the changes required to carry over the Loqate commercetools
+integration into your own project.
+
+It uses the
+[commercetools Frontend B2C template](https://docs.commercetools.com/frontend-development/b2c-store-launchpad-overview)
+as a base, specifically the latest as of 3 June 2024.
+
+This plugin:
+
+- Does not aim to keep up with the latest changes in the commercetools frontend
+  template, but rather to provide a reference implementation
+- Should not be cloned and used as is in a production environment. It is
+  recommended to use it as a reference and adapt it to your own needs by copying
+  the relevant parts of the code and applying them to the merchant's
+  implementation
+- Does not aim to fix any bugs or issues in the commercetools frontend template.
+  If you encounter any issues related with the B2C Frontend Template, please
+  refer to the [commercetools documentation](https://docs.commercetools.com/)
+- Is not responsible for any bugs or issues coming from the commercetools B2C
+  Frontend Template, nor any customizations made to it and does not aim to fix
+  them. You should refer to the commercetools documentation for support for any
+  issues related to the specific version of the commercetools B2C Frontend
+  Template that you are using
+- Does not take an opinion of the flow you should support in your store - it
+  applies changes to the out of the box checkout, my account and registration
+  flows
+
+### Navigation
+
+<CardGroup>
+  <Card
+  title="The Loqate commercetools Integration: Feature Overview"
+  href="/guides/commercetool-integration/feature-overview/"
+  icon="book"
+  >
+    Review the Loqate products available in the integration.
+  </Card>
+
+  <Card
+  title="The Loqate commercetools Integration: Setup Guide"
+  href="/guides/commercetool-integration/setup-guide"
+  icon="book"
+  >
+    Follow these steps to get started.
+  </Card>
+  <Card
+  title="The Loqate commercetools Integration: Studio Settings"
+  href="/guides/commercetool-integration/studio-settings/"
+  icon="book"
+  >
+    Configure the Loqate plugin in the commercetools Studio.
+  </Card>
+</CardGroup>

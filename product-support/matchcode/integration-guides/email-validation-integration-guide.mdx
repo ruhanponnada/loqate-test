@@ -1,0 +1,787 @@
+---
+title: "Email Validation Integration Guide"
+---
+
+This guide explains how to access GBGroup's Email Validation web service product using their Identity Management Platform (IdM), available via SOAP web services.
+
+The fundamentals of integrating with the service are described here: Integration Fundamentals
+
+- Understanding Email Validation
+- Email Response Fields - Further Detail
+- Email Validation FAQs
+
+### Service Description
+
+The email validation service provides full validation of an email address via the following stages:
+
+1. Checks that the provided Email Address conforms to the valid syntax required for an email address
+
+2. Validates Domain and runs a DNS check, recognising common mispellings and return a suggested spelling if necessary
+
+3. Real-time checks to assess the validity of the domain, whether the catch-all domain is specified and whether the email is deliverable.
+
+For further advice on how to approach email validation head to Understanding Email Validation
+
+**Input Criteria** <br/>
+
+Method: ExecuteCapture
+
+The ExecuteCapture method is used to access the Email Validation product and services by specifying the corresponding profile.
+
+**Input Details**
+
+Type: ExecuteCaptureRequest
+
+| Field Name     | Type                  | Description                                                                              |
+| -------------- | --------------------- | ---------------------------------------------------------------------------------------- |
+| securityHeader | SecurityHeader        | The username used to access the system including domain name (e.g. user1@domainname.com) |
+| profileRequest | ProfileRequestCapture | Details of the request                                                                   |
+
+In the profileRequest element, the profileGuid should be specified as:
+
+| Profile          | GUID                                 |
+| ---------------- | ------------------------------------ |
+| Email Validation | 20B3F459-7D04-42AD-B7E2-AA1D5FE07E82 |
+
+#### Email Validation Criteria
+
+The Email validation criteria should be entered into the email field:
+
+ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → email
+
+### Email Validation Input XML
+
+The following samples demonstrate a request data object containing an email address for validation.
+
+```xml
+<!-- Request Input Data - Email and Telephone -->
+<req:requestData>
+  <!-- Email Input Data -->
+  <req:email>first.lastname@company.co.uk</req:email>
+</req:requestData>
+```
+
+```json
+"requestData": {
+    {
+   "email": ["first.lastname@company.co.uk"]
+   }
+}
+```
+
+#### Email Validation Additional Options
+
+Email Validation options can be specified by providing the key value pairs specified below to the ProfileRequestCaptureData → additionalData property.
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → additionalData**
+
+Type: IdmDataArrayAdditionalData
+| Key Mnemonic | Key Value | Description |
+|--------------|-----------|-------------|
+| EMAIL_TIMEOUT | Timeout Value in milliseconds (200 < EMAIL_TIMEOUT < 30000) | This value specifies how long the service is allowed to wait for all real-time network level checks to finish. Real-time checks consist primarily of DNS and SMTP level verification. Timeout time is in milliseconds. A minimum value of 200ms is required. |
+
+<Note>
+  NOTE: If no email validation timeout value is specified in the additionalItems
+  list, or the value is not a valid positive number, the service will default to
+  using a value of 30 seconds
+</Note>
+If a value of less that 200 is speified, the service will set the timeout at 200
+mS
+
+If a value of greater then 30000 mS (30 seconds) is specified the service will set the timeout at 30000 mS
+
+The following samples demonstratessetting the email validation timeout vale to 10 seconds.
+
+```xml
+<req:additionalData>
+ <data:item>
+  <data:key>EMAIL_TIMEOUT</data:key>
+  <data:value>10000</data:value>
+ </data:item>
+</req:additionalData>
+```
+
+```json
+{
+  "additionalData": {
+    "item": {
+      "key": "EMAIL_TIMEOUT",
+      "value": "10000"
+    }
+  }
+}
+```
+
+**Bank Input XML**
+The following XML sample demonstrates a request data object containing both an address and two bank accounts for validation.
+
+```xml
+<!-- Request Input Data - Bank Account Validation -->
+  <req:requestData>
+     <req:address />
+     <req:bank>
+        <data:accountNumber>12345678</data:accountNumber>
+        <data:sortcode>110167</data:sortcode>
+     </req:bank>
+     <req:filters tmp="?" />
+     <req:options>
+        <req:offset>0</req:offset>
+        <req:maxReturn>10</req:maxReturn>
+     </req:options>
+     <req:additionalData tmp="?" />
+  </req:requestData>
+```
+
+JSON sample:
+
+```json
+{
+  "customerReference": "Test",
+  "profileGuid": "39944560-4137-489A-A72D-64F0F3524B08",
+  "configurationId": "1",
+  "requestData": {
+    "bank": [
+      {
+        "accountNumber": "12345678",
+        "sortcode": "110167"
+      }
+    ],
+    "options": {
+      "offset": "0",
+      "maxReturn": "100",
+      "countryCodeFormat": "ISO_3"
+    }
+  }
+}
+```
+
+**Output Format**
+The results of the GB Email Verification Web Service search are returned in a ProfileResponseDetails structure with a responseType of 'VALIDATE'.
+
+The ProfileResponseDetails structure contains a single data structure which holds an array of records containing the returned validation data per input number.
+
+ExecuteCaptureResponse → ProfileResponse [0] → ProfileResponseDetails [0] → ValidateResponse → ValidateResponseData
+
+The returned data structure is detailed below:
+
+Type: ValidateResponseData
+
+| Field Name      | Type                       | Description                                                                     |
+| --------------- | -------------------------- | ------------------------------------------------------------------------------- |
+| input           | String                     | The input Bank Account and Sortcode                                             |
+| status          | Enumeration                | SUCCESS if the validation has taken place, FAILURE otherwise                    |
+| validationCodes | IdmDataArrayAdditionalData | Array of key value pairs containing the validation response codes for the input |
+
+#### Sample Output XML
+
+Search XML requesting more data:
+
+The following output XML demonstrates the ProfileResponse for the Email Address Component. The component name is Email Validation and the response type is VALIDATE.
+
+The validation results for each email address will be returned in the same order as input. The array of ValidateResponse data structures contain the individual response details. A series of key value pair response codes are returned for each address, which contain data supplier specific summaries of the input.
+
+```xml
+<!-- Email Component Response -->
+<req:profileResponse>
+  <req:transactionGuid>1d39bec2-7f7e-42b9-bdfd-3909bf20f44d</req:transactionGuid>
+  <req:componentName>EMail Validation</req:componentName>
+  <req:componentStatus>SUCCESS</req:componentStatus>
+  <req:componentAction>match</req:componentAction>
+  <req:responseType>VALIDATE</req:responseType>
+  <req:notes>[]</req:notes>
+
+    <!-- Billing Invoice -->
+  <req:invoice>
+     <req:invoiceList>
+        <req:invoiceGuid>F7210D60-F4BF-4024-82ED-75A8EB5C0681</req:invoiceGuid>
+        <req:billingInformationGuid>477B8BFB-B3EA-4FA5-9015-431047E046EC</req:billingInformationGuid>
+        <req:billingPoints>21</req:billingPoints>
+        <req:creditsUsed>1</req:creditsUsed>
+        <req:dataSetInvoices>
+           <req:dataSetCode>EMAIL</req:dataSetCode>
+           <req:billingPoints>1</req:billingPoints>
+           <req:recordsReturned>1</req:recordsReturned>
+           <req:dataLicenceGuid>477B8BFB-B3EA-4FA5-9015-431047E046EC</req:dataLicenceGuid>
+        </req:dataSetInvoices>
+     </req:invoiceList>
+  </req:invoice>
+
+
+  <!-- Response Data -->
+  <req:validateResponse>
+     <req:recordsReturned>1</req:recordsReturned>
+     <req:responseCount>1</req:responseCount>
+
+     <!-- Response per Input Email -->
+     <req:response>
+        <req:input>first.lastname@company.co.uk</req:input>
+        <req:status>SUCCESS</req:status>
+
+         <req:validationCodes>
+            <data:item>
+               <data:key>IsSyntaxGood</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>SyntaxErrorPosition</data:key>
+               <data:value>-1</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsDomainSpecificSyntaxGood</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>DomainSpecificSyntaxErrorPosition</data:key>
+               <data:value>-1</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsDNSGood</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsSMTPServerGood</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsSMTPMailBoxGood</data:key>
+               <data:value>unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsCatchAllDomain</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsRecognisedTLD</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsCountrySpecific</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsAlias</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsFree</data:key>
+               <data:value>Unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsEstablished</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsVulgar</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsSMSDomain</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsRole</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsGood</data:key>
+               <data:value>Unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsDeliverable</data:key>
+               <data:value>unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsBusinessAddress</data:key>
+               <data:value>Unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsBogus</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>Box</data:key>
+               <data:value>first.lastname</data:value>
+            </data:item>
+            <data:item>
+               <data:key>Domain</data:key>
+               <data:value>company.co.uk</data:value>
+            </data:item>
+            <data:item>
+               <data:key>TopLevelDomain</data:key>
+               <data:value>.uk</data:value>
+            </data:item>
+            <data:item>
+               <data:key>TopLevelDomainDescription</data:key>
+               <data:value>United Kingdom</data:value>
+            </data:item>
+            <data:item>
+               <data:key>NoMXRecords</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>BogusSMSAddress</data:key>
+               <data:value>Unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>Garbage</data:key>
+               <data:value>Unknown</data:value>
+            </data:item>
+            <data:item>
+               <data:key>MailBoxIsFull</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>MailBoxIsBusy</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>DisposableEmail</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>SpamTrap</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>KnownSpammer</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>BlackListedDomain</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>KnownComplainer</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>KnownGreylister</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>OptinRequired</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>IsWhiteListOnly</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>ConnectionRefused</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>EmailIsBad</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>Bot</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>GreyListTactic</data:key>
+               <data:value>true</data:value>
+            </data:item>
+            <data:item>
+               <data:key>MailServerTemporarilyUnavailable</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>ServerConnectTimeout</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>MailBoxTimeout</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>TemporaryReject</data:key>
+               <data:value>false</data:value>
+            </data:item>
+            <data:item>
+               <data:key>MisspelledDomain</data:key>
+               <data:value>False</data:value>
+            </data:item>
+         </req:validationCodes>
+     </req:response>
+  </req:validateResponse>
+</req:profileResponse>
+```
+
+```json
+{
+  "profileHeader": {
+    "profileGuid": "20B3F459-7D04-42AD-B7E2-AA1D5FE07E82",
+    "profileName": "Email",
+    "transactionGuid": "076B89EA-F6D6-4A3C-ABA5-38CCC89F3C4F",
+    "transactionTimeStamp": 1433167116839,
+    "profileStatus": "SUCCESS",
+    "remarks": null
+  },
+  "profileResponseDetails": [
+    {
+      "transactionGuid": "a3c9c522-0a44-4e75-93fc-af1052520233",
+      "componentName": "EMail Validation",
+      "componentStatus": "SUCCESS",
+      "componentAction": "match",
+      "responseType": "VALIDATE",
+      "notes": "[]",
+      "invoice": {
+        "invoiceList": [
+          {
+            "invoiceGuid": "109A0D0F-0769-49F0-95CC-7CD123EEF4F5",
+            "billingInformationGuid": "477B8BFB-B3EA-4FA5-9015-431047E046EC",
+            "dataLicenceDescription": null,
+            "billingPoints": 1,
+            "creditsUsed": 1,
+            "dataSetInvoices": [
+              {
+                "dataSetCode": "EMAIL",
+                "billingPoints": 1,
+                "recordsReturned": 1,
+                "dataLicenceGuid": "477B8BFB-B3EA-4FA5-9015-431047E046EC"
+              }
+            ]
+          }
+        ],
+        "tmp": null
+      },
+      "captureResponse": null,
+      "validateResponse": {
+        "resultStatus": null,
+        "recordsReturned": 1,
+        "responseCount": 1,
+        "response": [
+          {
+            "input": "first.lastname@company.co.uk",
+            "status": "SUCCESS",
+            "validityFlag": "VALID",
+            "validationCodes": {
+              "item": [
+                {
+                  "key": "IsSyntaxGood",
+                  "value": "true"
+                },
+                {
+                  "key": "SyntaxErrorPosition",
+                  "value": "-1"
+                },
+                {
+                  "key": "IsDomainSpecificSyntaxGood",
+                  "value": "true"
+                },
+                {
+                  "key": "DomainSpecificSyntaxErrorPosition",
+                  "value": "-1"
+                },
+                {
+                  "key": "IsDNSGood",
+                  "value": "true"
+                },
+                {
+                  "key": "IsSMTPServerGood",
+                  "value": "true"
+                },
+                {
+                  "key": "IsSMTPMailBoxGood",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "IsCatchAllDomain",
+                  "value": "TRUE"
+                },
+                {
+                  "key": "IsRecognisedTLD",
+                  "value": "true"
+                },
+                {
+                  "key": "IsCountrySpecific",
+                  "value": "false"
+                },
+                {
+                  "key": "IsAlias",
+                  "value": "false"
+                },
+                {
+                  "key": "IsFree",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "IsEstablished",
+                  "value": "false"
+                },
+                {
+                  "key": "IsVulgar",
+                  "value": "false"
+                },
+                {
+                  "key": "IsSMSDomain",
+                  "value": "false"
+                },
+                {
+                  "key": "IsRole",
+                  "value": "false"
+                },
+                {
+                  "key": "IsGood",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "IsDeliverable",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "IsBusinessAddress",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "IsBogus",
+                  "value": "false"
+                },
+                {
+                  "key": "Box",
+                  "value": "first.lastnam"
+                },
+                {
+                  "key": "Domain",
+                  "value": "company.co.uk"
+                },
+                {
+                  "key": "TopLevelDomain",
+                  "value": ".uk"
+                },
+                {
+                  "key": "TopLevelDomainDescription",
+                  "value": "commercial"
+                },
+                {
+                  "key": "NoMXRecords",
+                  "value": "false"
+                },
+                {
+                  "key": "BogusSMSAddress",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "Garbage",
+                  "value": "Unknown"
+                },
+                {
+                  "key": "MailBoxIsFull",
+                  "value": "false"
+                },
+                {
+                  "key": "MailBoxIsBusy",
+                  "value": "false"
+                },
+                {
+                  "key": "DisposableEmail",
+                  "value": "false"
+                },
+                {
+                  "key": "SpamTrap",
+                  "value": "false"
+                },
+                {
+                  "key": "KnownSpammer",
+                  "value": "false"
+                },
+                {
+                  "key": "BlackListedDomain",
+                  "value": "false"
+                },
+                {
+                  "key": "KnownComplainer",
+                  "value": "false"
+                },
+                {
+                  "key": "KnownGreylister",
+                  "value": "false"
+                },
+                {
+                  "key": "OptinRequired",
+                  "value": "false"
+                },
+                {
+                  "key": "IsWhiteListOnly",
+                  "value": "false"
+                },
+                {
+                  "key": "ConnectionRefused",
+                  "value": "false"
+                },
+                {
+                  "key": "EmailIsBad",
+                  "value": "false"
+                },
+                {
+                  "key": "Bot",
+                  "value": "false"
+                },
+                {
+                  "key": "GreyListTactic",
+                  "value": "false"
+                },
+                {
+                  "key": "MailServerTemporarilyUnavailable",
+                  "value": "false"
+                },
+                {
+                  "key": "ServerConnectTimeout",
+                  "value": "false"
+                },
+                {
+                  "key": "MailBoxTimeout",
+                  "value": "false"
+                },
+                {
+                  "key": "TemporaryReject",
+                  "value": "false"
+                },
+                {
+                  "key": "MisspelledDomain",
+                  "value": "False"
+                }
+              ],
+              "tmp": null
+            }
+          }
+        ]
+      },
+      "verifyResponse": null,
+      "traceResponse": null
+    }
+  ]
+}
+```
+
+**Error in the Validation Process**
+As the Validation process involves several steps, it's possible that one of these steps might fail for some reason. In this case, the response will be a valid response but there will be some Validation Codes indicating the problem.
+
+Sample XML and JSON Responses with some Validation Problem:
+
+```xml
+<req:profileResponse>
+  <req:transactionGuid>1d39bec2-7f7e-42b9-bdfd-3909bf20f44d</req:transactionGuid>
+  <req:componentName>EMail Validation</req:componentName>
+  <req:componentStatus>SUCCESS</req:componentStatus>
+  <req:componentAction>match</req:componentAction>
+  <req:responseType>VALIDATE</req:responseType>
+  <req:notes>[]</req:notes>
+
+    <!-- Billing Invoice -->
+  <req:invoice>
+     <req:invoiceList>
+        <req:invoiceGuid>F7210D60-F4BF-4024-82ED-75A8EB5C0681</req:invoiceGuid>
+        <req:billingInformationGuid>477B8BFB-B3EA-4FA5-9015-431047E046EC</req:billingInformationGuid>
+        <req:billingPoints>21</req:billingPoints>
+        <req:creditsUsed>1</req:creditsUsed>
+        <req:dataSetInvoices>
+           <req:dataSetCode>EMAIL</req:dataSetCode>
+           <req:billingPoints>1</req:billingPoints>
+           <req:recordsReturned>1</req:recordsReturned>
+           <req:dataLicenceGuid>477B8BFB-B3EA-4FA5-9015-431047E046EC</req:dataLicenceGuid>
+        </req:dataSetInvoices>
+     </req:invoiceList>
+  </req:invoice>
+
+
+  <!-- Response Data -->
+  <req:validateResponse>
+     <req:recordsReturned>1</req:recordsReturned>
+     <req:responseCount>1</req:responseCount>
+
+     <!-- Response per Input Email -->
+     <req:response>
+        <req:input>first.lastname@company.co.uk</req:input>
+        <req:status>FAILURE</req:status>
+        <req:validityFlag>UNKNOWN</req:validityFlag>
+         <req:validationCodes>
+            <data:item>
+               <data:key>ErrorDescription</data:key>
+               <data:value>Call to mail server timeout</data:value>
+            </data:item>
+            <data:item>
+               <data:key>ErrorDescriptionCode</data:key>
+               <data:value>BE070001</data:value>
+            </data:item>
+            <data:item>
+               <data:key>MisspelledDomain</data:key>
+               <data:value>False</data:value>
+            </data:item>
+         </req:validationCodes>
+     </req:response>
+  </req:validateResponse>
+</req:profileResponse>
+```
+
+```json
+{
+   "profileHeader":    {
+      "profileGuid": "20B3F459-7D04-42AD-B7E2-AA1D5FE07E82",
+      "profileName": "Email",
+      "transactionGuid": "076B89EA-F6D6-4A3C-ABA5-38CCC89F3C4F",
+      "transactionTimeStamp": 1433167116839,
+      "profileStatus": "SUCCESS",
+      "remarks": null
+   },
+   "profileResponseDetails": [   {
+      "transactionGuid": "a3c9c522-0a44-4e75-93fc-af1052520233",
+      "componentName": "EMail Validation",
+      "componentStatus": "SUCCESS",
+      "componentAction": "match",
+      "responseType": "VALIDATE",
+      "notes": "[]",
+      "invoice":       {
+         "invoiceList": [         {
+            "invoiceGuid": "109A0D0F-0769-49F0-95CC-7CD123EEF4F5",
+            "billingInformationGuid": "477B8BFB-B3EA-4FA5-9015-431047E046EC",
+            "dataLicenceDescription": null,
+            "billingPoints": 1,
+            "creditsUsed": 1,
+            "dataSetInvoices": [            {
+               "dataSetCode": "EMAIL",
+               "billingPoints": 1,
+               "recordsReturned": 1,
+               "dataLicenceGuid": "477B8BFB-B3EA-4FA5-9015-431047E046EC"
+            }]
+         }],
+         "tmp": null
+      },
+      "captureResponse": null,
+      "validateResponse":       {
+         "resultStatus": null,
+         "recordsReturned": 1,
+         "responseCount": 1,
+         "response": [         {
+            "input": "first.lastname@company.co.uk",
+            "status": "SUCCESS",
+            "validityFlag": "UNKNOWN",
+            "validationCodes":             {
+               "item":                [
+                                    {
+                     "key": "ErrorDescription",
+                     "value": "Call to mail server timeout"
+                  },
+                                    {
+                     "key": "ErrorDescriptionCode",
+                     "value": "BE070001"
+                  },
+                                    {
+                     "key": "MisspelledDomain",
+                     "value": "False"
+                  }
+               ],
+               "tmp": null
+            }
+         }]
+      },
+      "verifyResponse": null,
+      "traceResponse": null
+   }]
+}<br><br>
+```
+
+### Error Information
+
+Information on possible error codes is given here: [Error Code Information](/product-support/matchcode/general-information/error-codes/)

@@ -1,0 +1,83 @@
+---
+title: "GB Enhancement Data Fields"
+---
+
+**The following fields are sourced through the United Kingdom Postal Address File (PAF) and the OS Open UPRN data source, and provide further intelligence on each verified address record.**
+
+## UDPRNKey
+
+The Royal Mail UDPRN, or Unique Delivery Point Reference Number, is an eight-digit numeric key that is unique to every delivery point record in the PAF.
+
+There are some cases where AddressKeys or OrganisationKeys will change or be re-used, so the UDPRN key is a more permanent reference to a given delivery point.
+
+## UPRN
+
+The Unique Property Reference Number (UPRN) is the twelve-digit Ordnance Survey’s unique record ID for a property and is a persistent ID for a property.
+
+## ParentUPRN
+
+The Parent UPRN is a twelve-digit UPRN of the ‘shell’ or ‘owning’ building of a Multiple Residence (flat, unit or apartment).
+
+Note that this is inferred from the relationships of an Multi Residence with a PAF parent address record.
+
+## OwningUDPRN
+
+The Owning UDPRN is an eight-digit UDPRN key of the ‘shell’ or ‘owning’ PAF building record of a Multiple Residence (flat, unit or apartment). For example, if “Ground Floor Flat, Princes House” is a Multiple Residence record, then “Princes House” would be its owning building.
+
+## UMRRN
+
+The Unique Multiple Residence Reference Number (UMRRN) is an eight-digit numeric key that is unique to every Multiple Residence (MR).
+
+## ResidentialCommercialFlag
+
+A flag indicating if the address is known to be residential or commercial. Values are “R” (residential), “C” (commercial), or blank (unknown).
+
+## DPS
+
+The Delivery Point Suffix (DPS) is used with a postcode to generate a machine-readable barcode (RM4SCC), which then serves as a unique reference to an active property or delivery point. It is made up of one number (1-9) and one character (A-T), and is assigned by Royal Mail. It is possible that an address is not assigned a DPS value, in which case a default value of 9U or 9Z is used. 1A is also reserved for postcodes that have PostCodeType = L (Large User).
+
+– Example: 16 St. Alphonsus Road, London
+– Postcode: SW4 7AS; DPS: 1B
+– Sample RM4SCC:(Loqate does not generate a barcode)
+
+## PostcodeType
+
+This can be one of two values, below. This value can also be empty (not assigned).
+
+### Large User Postcode (L)
+
+These are assigned to one single address either due to the large volume of mail received at that address, or because a PO Box has been set up.
+
+### Small User Postcode (S)
+
+Describes a range of standard delivery points. On average, a Small User Postcode will serve between 15-20 properties, but may range from 1 to 100+ delivery points.
+
+## AddressKey
+
+Every address in the Royal Mail Postal Address File (PAF) is assigned an 8-digit value that serves as a persistent reference to a building or delivery point, even when there are changes to a postcode.
+
+## OrganisationKey
+
+Each Organization that is added to PAF is assigned an 8-digit number that serves as a unique delivery point when used alongside the AddressKey and PostcodeType. This is useful to identify small businesses that share an address (the address will appear multiple times in the PAF). For residential addresses, OrganisationKey is set to 0.
+
+## FormerPostalCounty
+
+Default value for AdministrativeArea, or County, in the United Kingdom. Defined and supplied by Royal Mail. These values were used prior to the postcode system introduced in the 1970s to differentiate Locality names that were the same, or similar.
+
+E.g. Avon
+
+This field is assigned as the AdministrativeArea default as it remains static and provides a consistent geographic boundary.
+
+## AdministrativeCounty
+
+Alternative value for AdministrativeArea, or County, in the United Kingdom. Defined and supplied by Royal Mail. This is the Unitary Authority name (where one is present), and provided by the Office for National Statistics. This field can change more frequently due to administrative changes in the respective area.
+
+E.g. “Bristol, City Of”
+
+## Traditional County
+
+Alternative value for AdministrativeArea, or County, in the United Kingdom. Defined and supplied by Royal Mail. These values date from the 1800s and were assigned by the Association of British Counties.
+
+E.g. “Gloucestershire”
+
+[Learn more about other address enhancement datasets](/field-descriptions/data-enhancement/)

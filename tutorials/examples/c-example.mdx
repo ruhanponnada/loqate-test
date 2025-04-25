@@ -1,0 +1,61 @@
+---
+title: "C++ Example"
+---
+
+```cpp
+#include <iostream>
+#include "lqtcr.h"
+using namespace std;
+int main(int argc, char* argv[])
+{
+ try
+ {
+  // Create the objects
+  lqtServer* srv(lqtServer::create());
+  lqtProcessOptions* opts(lqtProcessOptions::create());
+  lqtInputRecord* rec(lqtInputRecord::create());
+  lqtProcessResult* res(lqtProcessResult::create());
+  lqtProcessList* lst(lqtProcessList::create());
+  // Initialize the objects
+  srv->init("../data");
+  lst->add("Verify", opts);
+  lst->add("Geocode", opts);
+  // Loop around the records we want to process
+  {
+   // Load the input record
+   rec->clear();
+   rec->set("Address1", "PASEO DE LA CASTELLANA 137 MADRID 28001 Spain");
+   // Process it
+   srv->process(rec, lst, res);
+   // Write the output, using the relevant Loqate fields
+   cout << res->getField(0, "Address") << endl;
+   cout << res->getField(0, "Locality") << endl;
+   cout << res->getField(0, "AdministrativeArea") << endl;
+   cout << res->getField(0, "PostalCode") << endl;
+   cout << res->getField(0, "CountryName") << endl;
+
+   // Write out the verification code
+   cout << res->getAccuracyCode() << endl;
+
+   // Write out the geocode
+   cout << res->getField(0, "Longitude") << endl;
+   cout << res->getField(0, "Latitude") << endl;
+
+   // Write out the geocode accuracy
+   cout << res->getField(0, "GeoAccuracy") << endl;
+  }
+  // Tidy up
+  srv->shutdown();
+  lqtProcessOptions::destroy(opts);
+  lqtInputRecord::destroy(rec);
+  lqtProcessResult::destroy(res);
+  lqtProcessList::destroy(lst);
+  lqtServer::destroy(srv);
+ }
+ catch (exception& e)
+ {
+  cout << "Exception thrown: " << e.what() << endl;
+ }
+ return 0;
+}
+```

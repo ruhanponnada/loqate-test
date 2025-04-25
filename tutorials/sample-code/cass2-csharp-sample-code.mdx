@@ -1,0 +1,143 @@
+---
+title: "CASS2 C# Sample Code"
+---
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Text;
+using com.loqate;
+
+namespace lqtSample
+{
+class lqtSample
+{
+static void Main(string[] args)
+{
+// Loqate objects
+lqtServer srv = lqtServer.create();
+lqtInputRecord rec = lqtInputRecord.create();
+lqtProcessResult res = lqtProcessResult.create();
+
+// Initialize the server
+if (args.Length > 0)
+srv.init(args[0]);
+else
+srv.init(“./data”);
+
+// Create the process list
+lqtProcessList lst = lqtProcessList.create();
+lqtProcessOptions opts = lqtProcessOptions.create();
+
+/*Option 1 : To Run CASS
+Use Verify + Server Option “CertifiedCountryList=USA”
+*/
+lst.add(“Verify”, opts);
+srv.setOption(“CertifiedCountryList”,”USA”);
+
+/*Option 2 : To Run CASS
+Use process CASS2
+*/
+//lst.add(“CASS2”, opts);
+
+try
+{
+// Open the Loqate session
+int session = srv.open();
+Console.WriteLine(“Server Version : ” + srv.getVersion());
+// Process data
+try
+{
+// Set the relevant Loqate values
+rec.set(“Address1”, “805 Veterans Blvd”);
+rec.set(“Locality”, “Redwood City”);
+rec.set(“AdministrativeArea”, “CA”);
+rec.set(“PostalCode”, “94063”);
+rec.set(“Country”, “USA”);
+
+// Process the record
+srv.process(rec, lst, res);
+
+// Output the result
+Console.WriteLine(res.getAccuracyCode());
+for (uint i = 0; i < res.getCount(); i++)
+{
+Console.WriteLine(res.getField(i, “Organization”));
+Console.WriteLine(res.getField(i, “SubBuilding”));
+Console.WriteLine(res.getField(i, “Premise”));
+Console.WriteLine(res.getField(i, “Building”));
+Console.WriteLine(res.getField(i, “PostBox”));
+Console.WriteLine(res.getField(i, “DependentThoroughfare”));
+Console.WriteLine(res.getField(i, “Thoroughfare”));
+Console.WriteLine(res.getField(i, “DoubleDependentLocality”));
+Console.WriteLine(res.getField(i, “DependentLocality”));
+Console.WriteLine(res.getField(i, “Locality”));
+Console.WriteLine(res.getField(i, “SubAdministrativeArea”));
+Console.WriteLine(res.getField(i, “AdministrativeArea”));
+Console.WriteLine(res.getField(i, “SuperAdministrativeArea”));
+Console.WriteLine(res.getField(i, “PostalCode”));
+Console.WriteLine(res.getField(i, “Telephone”));
+Console.WriteLine(res.getField(i, “CountryName”));
+Console.WriteLine(res.getField(i, “ISO3166-2”));
+Console.WriteLine(res.getField(i, “Latitude”));
+Console.WriteLine(res.getField(i, “Longitude”));
+Console.WriteLine(res.getField(i, “GeoAccuracy”));
+Console.WriteLine(res.getField(i, “Address”));
+
+Console.WriteLine(“************ CASS2 Fields ************”);
+Console.WriteLine(“AutoZoneIndicator : ” + res.getField(i,”AutoZoneIndicator”));
+Console.WriteLine(“CarrierRoute : ” + res.getField(i,”CarrierRoute”));
+Console.WriteLine(“CMRAIndicator : ” + res.getField(i,”CMRAIndicator”));
+Console.WriteLine(“CongressionalDistrict : ” + res.getField(i,”CongressionalDistrict”));
+Console.WriteLine(“DefaultFlag : ” + res.getField(i,”DefaultFlag”));
+Console.WriteLine(“DeliveryPointBarCode : ” + res.getField(i,”DeliveryPointBarCode”));
+Console.WriteLine(“DPVConfirmedIndicator : ” + res.getField(i,”DPVConfirmedIndicator”));
+Console.WriteLine(“DPVFootnotes : ” + res.getField(i,”DPVFootnotes”));
+Console.WriteLine(“eLOTCode : ” + res.getField(i,”eLOTCode”));
+Console.WriteLine(“eLOTNumber : ” + res.getField(i,”eLOTNumber”));
+Console.WriteLine(“EWSFlag : ” + res.getField(i,”EWSFlag”));
+Console.WriteLine(“FalsePositiveIndicator : ” + res.getField(i,”FalsePositiveIndicator”));
+Console.WriteLine(“FIPSCountyCode : ” + res.getField(i,”FIPSCountyCode”));
+Console.WriteLine(“Footnotes : ” + res.getField(i,”Footnotes”));
+Console.WriteLine(“LACSLinkCode : ” + res.getField(i,”LACSLinkCode”));
+Console.WriteLine(“LACSLinkIndicator : ” + res.getField(i,”LACSLinkIndicator”));
+Console.WriteLine(“LACSStatus : ” + res.getField(i,”LACSStatus”));
+Console.WriteLine(“NoStatIndicator : ” + res.getField(i,”NoStatIndicator”));
+Console.WriteLine(“PMBNumber : ” + res.getField(i,”PMBNumber”));
+Console.WriteLine(“PMBType : ” + res.getField(i,”PMBType”));
+Console.WriteLine(“PrimaryAddressLine : ” + res.getField(i,”PrimaryAddressLine”));
+Console.WriteLine(“RecordType : ” + res.getField(i,”RecordType”));
+Console.WriteLine(“ReturnCode : ” + res.getField(i,”ReturnCode”));
+Console.WriteLine(“ResidentialDelivery : ” + res.getField(i,”ResidentialDelivery”));
+Console.WriteLine(“SecondaryAddressLine : ” + res.getField(i,”SecondaryAddressLine”));
+Console.WriteLine(“SUITELinkFootnote : ” + res.getField(i,”SUITELinkFootnote”));
+Console.WriteLine(“VacantIndicator : ” + res.getField(i,”VacantIndicator”));
+
+}
+}
+catch (Exception e)
+{
+Console.WriteLine(“Exception: ” + e);
+}
+
+// Close the session
+srv.close(session);
+}
+catch (Exception e)
+{
+Console.WriteLine(“Exception: ” + e);
+}
+
+// Destroy the process list
+lqtProcessList.destroy(lst);
+lqtProcessOptions.destroy(opts);
+
+// Tidy up
+srv.shutdown();
+lqtInputRecord.destroy(rec);
+lqtProcessResult.destroy(res);
+lqtServer.destroy(srv);
+}
+}
+}
+```

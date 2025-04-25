@@ -1,0 +1,30 @@
+---
+title: "lqtMatchInfo"
+sidebarTitle: "LQT Match Info"
+---
+
+## Public Attributes
+
+### string type
+
+This string value gives the type of data item described by this record.
+
+### size_t start
+
+This numeric value gives the start character location of the data item described by this record.
+
+### size_t end
+
+This numeric value gives the end character location of the data item described by this record.
+
+### string info
+
+This string value gives debug tool information regarding the steps the server took to conclude that this record interpretation is correct. This is primarily intended for debugging purposes.
+
+### int confidence
+
+This numeric value gives the confidence associated with the servers choice of this interpretation. This is primarily intended for debugging purposes.
+
+### int matchscore
+
+This numeric value between 0 and 100 giving the similarity between the identified input data, and the output data in this record. A result of 100 means that no changes other than additions, alias, casing, or diacritic changes have been made to the input data. A result of 0 means there is no similarity between the input data identified as the specified data item, and the output data provided.

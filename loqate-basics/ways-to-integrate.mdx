@@ -1,0 +1,129 @@
+---
+title: "Ways To Integrate"
+---
+
+import { CustomInfo } from "/snippets/CustomInfo.mdx";
+
+You have multiple options when it comes to integrating with Loqate, and in this
+article we'll look at what those options are, along with their pros and cons.
+
+The two main integration options are:
+
+- **Using Tags:** this option is available for Address Capture, Email
+  Verification and Phone Verification
+- **Using APIs:** this option is available for all Loqate products and services
+
+There's also a third option available for certain situations, which is
+**Integrations by Platform**. You can use Address Capture, Verify, Email
+Verification and Phone Verification via pre-built integrations with various
+tools, including Shopware and Microsoft Dynamics 365. This offers a slightly
+different approach to integrating with Loqate natively, useful if you already
+use one of the tools that we integrate with.
+
+<CustomInfo
+  image="/images/f622a70f-like-favourite.svg"
+  imageSize="120px"
+  border="15px"
+>
+  The main focus of this article is on Tag and API integrations, although we've
+  included some information about third-party integrations too, and a link out
+  to the specific documentation.
+</CustomInfo>
+
+These options are not mutually exclusive, so you can use more than one in
+conjunction if you want.
+
+Regardless of which option(s) you choose, you can make changes in the Account
+Section for security, customisation and certain features.
+
+#### Use cases
+
+You know your business best, and what your requirements are. Here are a few
+examples though of possible use cases, and which of the Tag or API integration
+option might be best for each:
+
+| Business Type            | Specifics                                 | Recommended option |
+| ------------------------ | ----------------------------------------- | ------------------ |
+| Financial business       | Strictly regulated                        | APIs               |
+| Large ecommerce business | Requires considerable customisation       | APIs               |
+| Very small business      | Uses simple web forms                     | Tag                |
+| Small business           | Uses cloud-based tools for creating forms | Tag or APIs        |
+
+#### Tag Integrations
+
+The simplest way of setting up Address Verification, Email Verification and
+Phone Verification is by using the Tag method, which uses
+automatically-generated code snippets that you can insert into your website to
+set these services up.
+
+This method is designed for simple webforms, allowing you to set up standard
+configurations via your Loqate account.
+
+**Pros**:
+
+- **Speed:&#x20;**&#x79;ou can get started quickly and easily
+- **Simplicity:** there's no need for technical know-how, as the functionality
+  comes from our JavaScript solution and CSS
+
+**Cons**:
+
+- **Customisation:** unlike API integrations, you don't have as much control
+  over how your integration works as it will always be based off our JavaScript
+  and CSS
+- **Security:** adding JavaScript to your website, while an effective way of
+  adding new functionality, does come with some security considerations, and as
+  such may not be appropriate for all circumstances. See our Security article
+  for more information
+
+Check out our
+[Quick Setup Guide](/guides/address-email-and-phone-verification/quick-setup-guide "Quick")
+for simple instructions that walk you through how to get set up with Tag
+integrations.
+
+From an additional security perspective, consider using the Limits functionality
+to restrict your integration by IP address, service and/or URL. See our Security
+article for more details.
+
+#### API Integrations
+
+All Loqate products can be integrated using our APIs, which are also available
+for Address Verification, Email Verification and Phone Verification for more
+flexible integrations.
+
+**Pros:**
+
+- **Control:** you're not constrained by any existing integrations or ways of
+  working, and you don't need to rely on our preset JavaScript or CSS
+- **Customisation:&#x20;**&#x79;ou can shape your customer journey however you
+  see fit
+
+**Cons:**
+
+- **Complexity:&#x20;**&#x41;PI integrations require technical knowledge and
+  resources
+- **Speed:** it takes time to implement and test API integrations
+
+Check out our [API documentation](/apis/ "APIs") for details of all of the
+Loqate APIs.
+
+You can still take advantage of all of the security functionality available in
+the Account Section - see our [Security](/loqate-basics/api-security/) article
+for more details.
+
+#### Integrations by Platform
+
+As well as the option of creating your own integration using the Tag and/or API
+methods, we also have a range of pre-built integrations which allow you to
+access Address Capture, Verify, Email Validation and Phone Validation within
+various tools. We're always working on new integrations, but some of our current
+integrations include:
+
+- [Microsoft Dynamics 365](https://www.loqate.com/en-gb/integrations/microsoft-dynamics-365/)
+- [SAP](https://www.loqate.com/en-gb/integrations/sap-commerce-cloud/)
+- [Shopware](https://www.loqate.com/en-gb/integrations/shopware/)
+
+If you already use any of these tools, you can use our pre-built integrations to
+quickly and easily add Loqate functionality to your site.
+
+Check out our [Integrations documentation](/guides/ "Guides") for details of how
+to get up and running.

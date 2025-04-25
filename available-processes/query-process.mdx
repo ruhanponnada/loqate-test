@@ -1,0 +1,125 @@
+---
+title: "Query Process"
+---
+
+## Overview
+
+The Query process is designed to perform SQL-like custom queries on the Loqate GKR. It enables searching and retrieving multiple results of specific address components that meet user-definable conditions. The query-conditions are expressed in our proprietary query-language, an example using our Verify SaaS service and the syntax and semantics are described below.
+
+```json
+{
+  "Key": "{{LoqateKey}}",
+  "Options": {
+    "Process": "Query",
+    "ServerOptions": {
+      "Table": "rd_US_vfy",
+      "QueryString": "(PostalCodePrimary LIKE \"60010%*\")",
+      "OutputFields": "Locality",
+      "QueryClause": "Distinct",
+      "AliasPreference": "First",
+      "RangefieldPreference": "Match",
+      "MaxResults": 655
+    }
+  }
+}
+```
+
+Query is a debug tool to be used to support submission of support cases, and please note this tool is in maintenance mode with no planned future developments or bug fixes.
+
+Query Syntax and Semantics
+
+A query has the following syntax:
+
+```
+**…\<(>\<(>QUERY-EXPRESSION \<LOGICAL-OPERATOR QUERY-EXPRESSION>\<)> \<LOGICAL-OPERATOR QUERY-EXPRESSION\<)>…**
+
+```
+
+The terminology used in the query syntax is described below, parenthesis may be used optionally to nest and string simple queries into compound queries:
+
+```
+
+**PREFIX TAG** (optional):*\~&#x20;*&#x6D;eans phonetic similarity
+
+```
+
+```
+
+**SUFFIX TAG**: *%* means auto-complete word, *\** means auto-complete phrase
+
+```
+
+The tags apply at the word level and qualify the search criteria:
+
+```
+
+**QUERY-KEYWORD**: *\<PREFIX-TAG(s)>word\<SUFFIX-TAG(s)>&#xA0;*
+
+```
+
+```
+
+**CONDITION-OPERATORS**:*LIKE* (Ordered-matching), *CONTAINS* (Unordered-matching)
+
+```
+
+```
+
+**QUERY-EXPRESSION** :*FieldName CONDITION-OPERATOR “QUERY-KEYWORD(s)”&#xA0;*
+
+```
+
+```
+
+**LOGICAL-OPERATORS**:|| (logical OR), *&&* (logical AND), used to form compound queries by stringing multiple *QUERY-EXPRESSION*s
+
+```
+
+Example Queries:
+
+```
+*Thoroughfare LIKE “Bayhill Dr”*matches*Bayhill Dr&#x20;*&#x62;ut does not match*Dr Bayhill* or*Bayhill Drive*
+```
+
+- _Thoroughfare CONTAINS “Bayhill Dr”&#x20;_&#x6D;atches _Bayhill Dr_ and *Dr Bayhill*but does not matc&#x68;_&#xA0;Bayhill Drive_
+- *Thoroughfare LIKE “\~Payhill Dr”*matches _Bayhill Dr_ but does not match _Bayhill Tr_
+- _Thoroughfare CONTAINS “Bay% Dr”&#x20;_&#x6D;atches*Dr Bayhill*,_Bayhill Dr_ and*Bay Dr*, but does not match*Bay Drive* or*TromBay Dr*
+- _Thoroughfare LIKE “Bay Dr%”&#x20;_&#x6D;atches*Bay Dr* and *Bay Drive*but does not match _Bayhill Dr_ or _Bay Drive Ct_
+- *Thoroughfare LIKE “Bay Dr%\*”*matches*Bay Dr*,_Bay Dr Ct_,_Bay Drive_ and*Bay Drive Ct*
+- *(Thoroughfare CONTAINS “Bay%”) && (Locality LIKE “San Bruno”)*matches*Bayhill Drive San Bruno*, _Bay Dr San Bruno_ and \*Bayhill Dr San Bruno\***_\&#xA;_**
+
+Process Options
+
+The query tool uses the following process options:
+
+**Table&#x20;**(required): Reference (GKR) table to be queried
+
+**QueryString** (required): String expressing the query in the query language
+
+**OutputFields&#x20;**(optional): Comma separated output field-names desired. Field-names are case sensitive. Reserved keyword _ALL_(or null) returns all field in output.
+
+**MaxResults**(optional): Max number of output records desired. Defaults to **10**, valid values are 1-1000.
+
+**QueryClause&#x20;**(optional): \*DISTINCT/UNIQUE**\*/**&#x6E;ull specifies output address component-set to be distinct, unique, or unconstrained across the output record results, respectively.
+
+**AliasPreference**(optional):Specify to return, for non-rangefields –
+
+\*FIRST**\*&#x20;:&#xA0;**&#x74;he first alias in fields desired in the output
+
+_EXHAUSTIVE_: all combinations of every alias
+
+_UNPROCESSED_ (null):field-value entry as stored in the GKR
+
+**RangefieldPreference** (optional): Specify to return, for rangefields –
+
+_MATCH&#x20;_: the queried value verified in the range
+
+_RANGE&#x20;_: the range containing the queried value after verification
+
+_FULL&#x20;_: every value in the range containing the queried value
+
+_RAW_(null): the range-field containing the queried value as stored in the table
+
+Output
+
+The results of the query are returned in the **ProcessResult** object.

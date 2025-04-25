@@ -1,0 +1,64 @@
+---
+title: "lqtprocessresult"
+sidebarTitle: "LQT Process Result"
+---
+
+## Static Public Member Functions
+
+### static lqtProcessResult\* create ()
+
+This member function returns a pointer to a newly created lqtProcessResult instance.
+
+### static void destroy (lqtProcessResult\* pProcessResult)
+
+This member function destroys all resources associated with the supplied lqtProcessResult pointer.
+
+## Public Member Functions
+
+### processStatus getStatus ()
+
+This member function returns a processStatus enumeration value giving the status of the most recent process that used this lqtProcessResult as a parameter.
+
+### const char\* getLastError ()
+
+This member function returns a string containing textual detail of the outcome of the most recent process that used this lqtProcessResult as a parameter.
+
+### uint getCount ()
+
+This member function returns the number of records within the lqtProcessResult object.
+
+### uint getFieldCount (uint record)
+
+This member function return the number of fields within the requested record number.
+
+### const char* getField (uint record, const char* field)
+
+This member function return a string value containing the contents of the requested field name from the requested record number.
+
+### const char\* getField (uint record, uint field)
+
+This member function return a string value containing the contents of the requested field number from the requested record number.
+
+#### const char\* getFieldName (uint record, uint field)
+
+This member function return a string value containing the field name of the requested field number from the requested record number.
+
+### fieldStatus getFieldStatus (uint record, const char\* field)
+
+This member function returns a fieldStatus enumeration value giving the status of the requested field name from the requested record number.
+
+### int getFieldConfidence (uint record, const char\* field)
+
+This member function returns a numeric confidence value for the requested field name from the requested record number. This is primarily intended for debugging purposes.
+
+### const char* getFieldInfo (uint record, const char* field)
+
+This member function returns a string value containing debug tool information regarding the steps the server took to conclude that this field interpretation is correct. This is primarily intended for debugging purposes.
+
+### float getFieldMatchscore (uint record, const char\* field)
+
+This member function returns a numeric value between 0 and 100 giving the similarity between the identified input data, and the output data in this field. A result of 100 means that no changes other than alias, casing, or diacritic changes have been made to the input data. A result of 0 means there is no similarity between the input data identified as the specified field, and the output data provided.
+
+### lqtMatchInfo getMatchInfo (uint record)
+
+This member function returns a lqtMatchInfo instance containing information regarding the specified record.

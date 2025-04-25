@@ -1,0 +1,187 @@
+---
+title: "Consuming Premium Data Sets"
+---
+
+There are a series of extra datasets available via our address capture services.
+As these datasets are covered by separate terms and agreements they will need to
+be activated on your account for you, please get in touch if you are interested
+in taking advantage of any of our premium datasets.
+
+There are a few approaches you can take in consuming these extra datasets, and
+which one is appropriate depends on how you want to integrate with the service.
+
+### Direct Via the API
+
+#### Find
+
+Your extra dataset can be activated by us as a setting on the key itself. This
+means that the selected API key will always return data from the selected
+dataset. Alternatively, you can use any API key from your account and specify
+the dataset required via a parameter on the request.
+
+Note: If a premium dataset is requested using an API key from an account that
+does not have that dataset enabled, the request will fail.
+
+If the dataset has not been enabled on the key itself, you will need to add the
+datasets parameter to the find request. The following example requests the
+Business dataset be used for this find request:
+
+```txt
+https://api.addressy.com/Capture/Interactive/Find/v1.00/csv.ws?Key=AA11-AA11-AA11-AA11&Text=wr5 3da&Datasets=gb_db
+```
+
+The find request will then continue as normal using the Business data as its
+dataset. Once the user selects an address from the list you will pass the Id of
+that address into the retrieve request as per a normal flow.
+
+#### Retrieve
+
+Each premium dataset contains certain extra fields that are available in
+addition to the standard fields provided by a retrieve request. By default, if
+you use an Id from a premium dataset find request, the retrieve will still only
+return the standard set of fields. In order to retrieve these special fields,
+you will need to supply field format strings for them into the FieldFormat
+Parameters of a retrieve request. These fields are in the style of FieldXFormat,
+with X being the number of that field. The requested field will then be returned
+in the corresponding response field, FieldX.
+
+A normal field format will be in the style of \{FIELDNAME}.
+
+For example, in order to retrieve the Company number from the Business dataset
+you would use the following request:
+
+```txt
+https://api.addressy.com/Capture/Interactive/Retrieve/v1.00/csv.ws?Key=AA11-AA11-AA11-AA11&Id=IDFROMFIND&Field1Format={CompanyNumber}
+```
+
+This would return the the Company number in the returned property Field1.
+
+The retrieve request is limited to 20 Field Format fields by default. Should you
+require more fields than this you will need to specify a fields property along
+with your field formats that will set the number of extra fields to respond
+with, for example:
+
+```txt
+https://api.addressy.com/Capture/Interactive/Retrieve/v1.00/csv.ws?Key=AA11-AA11-AA11-AA11&Id=IDFROMFIND&Field1Format={CompanyNumber}......................&Field21Format={TelephoneNumber}&Fields=21
+```
+
+### Using the JavaScript SDK
+
+If you are using our JavaScript SDK to make requests to the service, as outlined
+in our
+[advanced guide](/guides/address-email-and-phone-verification/advanced-setup-guide),
+you can enable premium datasets via the options object used in the construction
+of the control object, e.g.:
+
+```javascript
+var options = {
+  key: "AA11-AA11-AA11",
+  search: {
+    datasets: ["gb_db"],
+  },
+  advancedFields: ["{CompanyNumber}"],
+};
+```
+
+The same restrictions apply to the datasets as apply when directly integrating
+via API.
+
+### Using the simple setup
+
+If you are using our simple setup wizard to install your lookup control you can
+specify the field formats directly in the field mapping control using the field
+format syntax, \{FIELDFORMAT}.
+
+- [Utilities Standard/Premium]()
+
+  - "UDPRN"
+  - "UMRRN"
+  - "ParentUDPRN"
+  - "MPANPostcode"
+  - "MPRNPostcode"
+  - "DeliveryPointSuffix"
+  - "MPANCount"
+  - "MPRNCount"
+  - "FuelFlag"
+  - "LargeGasUser"
+  - "EnergyUseOnly"
+
+  And then each of these post-fixed with 1 - 20:
+
+  - "MPRN"
+  - "MPAN"
+  - "GasMeterSerial"
+  - "ElectricMeterSerial"
+  - "GSPID"
+  - "ElectricMeterType"
+  - "MPANTopLine"
+
+- [Business Data]()
+
+  - "CompanyNumber",
+  - "TelephoneNumber",
+  - "UK2003Code",
+  - "SICCode",
+  - "SICDescription",
+  - "LineOfBusiness",
+  - "EmployeesAtCompany",
+  - "EmployeesAtSite",
+  - "LocationIndicator",
+  - "Sales",
+  - "YearStarted",
+  - "Executive1Function",
+  - "Executive1FirstName",
+  - "Executive1Surname",
+  - "Executive1Saluation",
+  - "Executive2Function",
+  - "Executive2FirstName",
+  - "Executive2Surname",
+  - "Executive2Saluation",
+  - "Executive3Function",
+  - "Executive3FirstName",
+  - "Executive3Surname",
+  - "Executive3Saluation",
+  - "Executive4Function",
+  - "Executive4FirstName",
+  - "Executive4Surname",
+  - "Executive4Saluation",
+  - "Executive5Function",
+  - "Executive5FirstName",
+  - "Executive5Surname",
+  - "Executive5Saluation",
+  - "Executive6Function",
+  - "Executive6FirstName",
+  - "Executive6Surname",
+  - "Executive6Saluation",
+  - "Executive7Function",
+  - "Executive7FirstName",
+  - "Executive7Surname",
+  - "Executive7Saluation",
+  - "Executive8Function",
+  - "Executive8FirstName",
+  - "Executive8Surname",
+  - "Executive8Saluation",
+
+- [Geo+]()
+
+  - "PropertyType",
+  - "UPRN",
+  - "UDPRN",
+  - "UMRRN",
+  - "Owning_UDPRN",
+  - "InferredParentUPRN",
+  - "AddressKey",
+  - "OrganisationKey",
+  - "DPS",
+  - "LargeSmallUserFlag",
+  - "SmallOrganisationFlag",
+  - "NotYetBuiltFlag",
+  - "Eastings",
+  - "Northings",
+  - "Latitude",
+  - "Longitude",
+  - "UPRNDerivation",
+  - "GeoDerivation",
+  - "LinkedUDPRNs",
+  - "LinkedUMRRNs",
+  - "LinkedUPRNs",

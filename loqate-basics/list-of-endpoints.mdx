@@ -1,0 +1,119 @@
+---
+title: "List Of Endpoints"
+---
+
+Here you can find a list of all current Loqate endpoints, along with brief
+descriptions of what each one allows you to do.
+
+Please note that this list does not include any Legacy endpoints.
+
+#### Capture
+
+Pass address information into these endpoints - partial addresses, postcodes,
+geolocation data etc. - and they will output address IDs and/or address
+information in return.
+
+| Endpoint    | Description                                                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Find        | Returns one or more addresses or containers based upon the user's input (use the address IDs generated here to pass to Retrieve) |
+| GeoLocation | Returns addresses within a specified radius (based on a latitude/longitude point)                                                |
+| Retrieve    | Returns full address details based on an address ID                                                                              |
+| Utilities   | Returns any addresses matching a specific utility code                                                                           |
+
+[See the Capture documentation](/apis/address-capture/)
+
+#### Verify
+
+This endpoint provides our powerful address verification and cleanse service,
+including certified and enhanced datasets, geocoding and reverse geocoding, and
+transliteration.
+
+| Endpoint                    | Description                                                                             |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| International Batch Cleanse | Returns verified, cleansed address data in batches of up to 500 international addresses |
+
+[See the Verify documentation](/apis/address-verify/)
+
+#### Store Finder
+
+These endpoints work in combination to create a Store Finder tool, allowing you
+to combine precise location information for your organisation's stores and a
+customer's location, then determine the relationship between the two sets of
+information, and present the results in a visual fashion.
+
+| Endpoint               | Description                                                                                                                                                                                  |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Create List            | Creates a list of locations, including their co-ordinates and their IDs (plus additional relevant information) for use with a Store Finder                                                   |
+| Delete List or Point   | Deletes a list of locations or a particular location within a list                                                                                                                           |
+| Update List or Point   | Updates a list of locations or a particular location within a list                                                                                                                           |
+| Get List               | Gets a list of locations to see the details of that list and the locations within it                                                                                                         |
+| Global Geocoding       | Takes an input of one or more address strings (or alternatively a postcode or locality) and returns latitude and longitudes for the given locations (can also be used for reverse geocoding) |
+| Global Distance Finder | Takes an input of an origin location and one or more destination locations, and returns road-based distance and travel times for each of them                                                |
+| Map Tile               | Takes an input of your Loqate key and returns a Signed URL that will allow you to visually represent the output from the Distance Finder API on a map                                        |
+
+[See the Store Finder documentation](/apis/address-verify/)
+
+#### Email Validation
+
+Use these endpoints to validate email addresses as they're entered using either
+our Tag install or API, or alternatively validate a batch of email addresses
+using our API.
+
+| Endpoint       | Description                                               |
+| -------------- | --------------------------------------------------------- |
+| Batch Validate | Synchronously validates up to 100 emails per request      |
+| Validate       | Validates the existence of an individual email address    |
+| Bulk Validate  | Asynchronously validates up to 100,000 emails per request |
+
+[See the Email Validation documentation](/apis/email-validation/)
+
+#### Phone Validation
+
+Use this endpoint to validate phone numbers as they're entered using either our
+Tag install or API.
+
+| Endpoint | Description                                     |
+| -------- | ----------------------------------------------- |
+| Validate | Verifies whether a phone number is valid or not |
+
+[See the Phone Validation documentation](/apis/phone-validation/)
+
+#### Bank Validation
+
+These endpoints allow you to query whether UK account number and sort code
+combinations are valid, or check IBANs for most European countries.
+
+| Endpoint               | Description                                                                                                                                        |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Batch Validate         | Validates the bank account/sort code for batches of UK bank accounts. Returns details of the holding branch, IBAN and correct BACS account details |
+| RetrieveBySortcode     | Returns details of any UK holding branch                                                                                                           |
+| Validate               | Validates the bank account/sort code for individual UK bank accounts. Returns details of the holding branch, IBAN and correct BACS account details |
+| International Validate | Validates whether the international bank account number for an international bank account is correct                                               |
+
+[See the Bank Validation documentation](/apis/bank-validation/)
+
+#### Geocode
+
+These endpoints return direction and/or location information for international
+locations, including additional data from the Postzon database for UK addresses.
+
+| Endpoint                            | Description                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------ |
+| Directions                          | Returns the directions between two points                                                  |
+| Distance                            | Returns the distance between two points                                                    |
+| International Geocode               | Returns the WGS84 latitude/longitude data for a given location                             |
+| International PositionToCountry     | Returns a country based on WGS84 latitude/longitude data                                   |
+| International RetrieveNearestPlaces | Returns the nearest places of interest of a given category to a provided location          |
+| International ReverseGeocode        | Returns the nearest address or location to given coordinates                               |
+| UK Find                             | Returns locations based on the given input                                                 |
+| UK Geocode                          | Returns the OS easting + northing along with WGS84 latitude/longitude for a given postcode |
+| UK Retrieve                         | Returns the OS easting + northing along with WGS84 latitude/longitude for a given location |
+| UK RetrieveNearestPlaces            | Returns the nearest places of interest of a given category to a provided location          |
+| UK ReverseGeocode                   | Returns the nearest address or location to given coordinates                               |
+| RetrieveByCoordinates               | Returns the Postzon record nearest to given coordinates                                    |
+| RetrieveByPostcode                  | Returns the Postzon record for a given postcode                                            |
+| RetrieveByPostcodeOrPlace           | Returns the Postzon record for a given postcode or place name                              |
+| FindPlaceNames                      | Returns the names of places                                                                |
+| RetrieveCoordinates                 | Returns the coordinates of a place found using FindPlaceNames                              |
+
+[See the Geocode documentation](/apis/geocode/#distancesanddirections-interactive-directions)

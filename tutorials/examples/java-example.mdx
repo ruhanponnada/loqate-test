@@ -1,0 +1,101 @@
+---
+title: "Java Example"
+---
+
+```java
+import com.loqate.*;
+import java.io.*;
+import java.net.*;
+public class lqtSample
+{
+ static
+ {
+  System.loadLibrary("lqtjava");
+ }
+ public static void main(String args[])
+ {
+  // Loqate objects
+  lqtServer srv = lqtServer.create();
+  lqtInputRecord rec = lqtInputRecord.create();
+  lqtProcessResult res = lqtProcessResult.create();
+
+  // Initialize the server
+  if (args.length > 0)
+   srv.init(args[0]);
+  else
+   srv.init("../data");
+
+  // Create the process list
+  lqtProcessList lst = lqtProcessList.create();
+  lqtProcessOptions opts = lqtProcessOptions.create();
+  lst.add("Verify", opts);
+  lst.add("Geocode", opts);
+
+  try
+  {
+   // Open the Loqate session
+   int session = srv.open();
+
+   // Process data
+   try
+   {
+    // Set the relevant Loqate values
+    rec.set("Address1", "Via Nicolo'machiavelli 4");
+    rec.set("Address2", "Trieste Italy");
+
+    // Process the record
+    srv.process(rec, lst, res);
+
+    // Output the result
+    System.out.println(res.getAccuracyCode());
+    for (int i = 0; i < res.getCount(); i++)
+    {
+     System.out.println(res.getField(i, "Organization"));
+     System.out.println(res.getField(i, "SubBuilding"));
+     System.out.println(res.getField(i, "Premise"));
+     System.out.println(res.getField(i, "Building"));
+     System.out.println(res.getField(i, "PostBox"));
+     System.out.println(res.getField(i, "DependentThoroughfare"));
+     System.out.println(res.getField(i, "Thoroughfare"));
+     System.out.println(res.getField(i, "DoubleDependentLocality"));
+     System.out.println(res.getField(i, "DependentLocality"));
+     System.out.println(res.getField(i, "Locality"));
+     System.out.println(res.getField(i, "SubAdministrativeArea"));
+     System.out.println(res.getField(i, "AdministrativeArea"));
+     System.out.println(res.getField(i, "SuperAdministrativeArea"));
+     System.out.println(res.getField(i, "PostalCode"));
+     System.out.println(res.getField(i, "Telephone"));
+     System.out.println(res.getField(i, "CountryName"));
+     System.out.println(res.getField(i, "ISO3166-2"));
+     System.out.println(res.getField(i, "Latitude"));
+     System.out.println(res.getField(i, "Longitude"));
+     System.out.println(res.getField(i, "GeoAccuracy"));
+     System.out.println(res.getField(i, "Address"));
+    }
+    System.out.flush();
+   }
+   catch (Exception e)
+   {
+    System.out.println("Exception: " + e);
+   }
+
+   // Close the session
+   srv.close(session);
+  }
+  catch (Exception e)
+  {
+   System.out.println("Exception: " + e);
+  }
+
+  // Destroy the process list
+  lqtProcessList.destroy(lst);
+  lqtProcessOptions.destroy(opts);
+
+  // Tidy up
+  srv.shutdown();
+  lqtInputRecord.destroy(rec);
+  lqtProcessResult.destroy(res);
+  lqtServer.destroy(srv);
+ }
+}
+```

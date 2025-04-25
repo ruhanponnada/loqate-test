@@ -1,0 +1,548 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "willow",
+  "name": "Loqate Documentation",
+  "colors": {
+    "primary": "#4D4DFF",
+    "light": "#7878FF",
+    "dark": "#4D4DFF"
+  },
+  "appearance": { "default": "light" },
+  "background": {
+    "color": {
+      "dark": "#0F0F1A"
+    }
+  },
+  "favicon": "/logo/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Developers",
+        "groups": [
+          {
+            "group": "Loqate Basics",
+            "pages": [
+              "overview",
+              "loqate-basics/start-here",
+              "loqate-basics/ways-to-integrate",
+              "loqate-basics/creating-api-keys",
+              "loqate-basics/list-of-endpoints",
+              "loqate-basics/api-security",
+              "loqate-basics/monitoring-account-usage"
+            ]
+          },
+          {
+            "group": "Product Support",
+            "pages": [
+              "product-support/address-capture",
+              "product-support/address-verify",
+              "product-support/store-finder",
+              "product-support/email-validation",
+              "product-support/phone-validation",
+              "product-support/bank-validation",
+              "product-support/geocode",
+              {
+                "group": "Matchcode",
+                "pages": [
+                  {
+                    "group": "General Information",
+                    "pages": [
+                      "product-support/matchcode/general-information/general-information",
+                      "product-support/matchcode/general-information/addressbase-premium-codes",
+                      "product-support/matchcode/general-information/address-filters",
+                      "product-support/matchcode/general-information/address-results-pagination",
+                      "product-support/matchcode/general-information/email-response-fields",
+                      "product-support/matchcode/general-information/email-validation-faqs",
+                      "product-support/matchcode/general-information/error-codes",
+                      "product-support/matchcode/general-information/result-status-flags",
+                      "product-support/matchcode/general-information/idm-data-structures",
+                      "product-support/matchcode/general-information/integration-fundamentals",
+                      "product-support/matchcode/general-information/location-intelligence-fields",
+                      "product-support/matchcode/general-information/matchcode360-rest-services",
+                      "product-support/matchcode/general-information/multidatabase-data-codes",
+                      "product-support/matchcode/general-information/powersearch-integration-options",
+                      "product-support/matchcode/general-information/premise-level-geocode-fields",
+                      "product-support/matchcode/general-information/web-service-profiles",
+                      "product-support/matchcode/general-information/understanding-email-validation"
+                    ]
+                  },
+                  {
+                    "group": "Integration Guides",
+                    "pages": [
+                      "product-support/matchcode/integration-guides/integration-guides",
+                      "product-support/matchcode/integration-guides/addressbase-lite-integration-guide",
+                      "product-support/matchcode/integration-guides/addressbase-premium-integration-guide",
+                      "product-support/matchcode/integration-guides/address-web-service-integration-guide",
+                      "product-support/matchcode/integration-guides/bank-account-validation-integration-guide",
+                      "product-support/matchcode/integration-guides/business-data-integration-guide",
+                      "product-support/matchcode/integration-guides/eircode-integration-guide",
+                      "product-support/matchcode/integration-guides/eircode-powersearch-integration-guide",
+                      "product-support/matchcode/integration-guides/email-validation-integration-guide",
+                      "product-support/matchcode/integration-guides/global-address-integration-guide",
+                      "product-support/matchcode/integration-guides/global-powersearch-integration-guide",
+                      "product-support/matchcode/integration-guides/global-telephone-validation-integration-guide",
+                      "product-support/matchcode/integration-guides/loqate-rest-client-integration-guide-formerly-matchcode360",
+                      "product-support/matchcode/integration-guides/matchcode360-addressbase-integration-guide",
+                      "product-support/matchcode/integration-guides/matchcode360-geoplus-integration-guide",
+                      "product-support/matchcode/integration-guides/matchcode-uk-address-integration-guide",
+                      "product-support/matchcode/integration-guides/matchcode-uk-powersearch-integration-guide",
+                      "product-support/matchcode/integration-guides/multidatabase-integration-guide",
+                      "product-support/matchcode/integration-guides/uk-telephone-directory-integration-guide",
+                      "product-support/matchcode/integration-guides/utilities-register-integration-guide"
+                    ]
+                  },
+                  {
+                    "group": "Sample Code",
+                    "pages": [
+                      "product-support/matchcode/sample-code/sample-code",
+                      "product-support/matchcode/sample-code/integration-example-c",
+                      "product-support/matchcode/sample-code/integration-example-java",
+                      "product-support/matchcode/sample-code/integration-example-multi-threaded-java-wrapper-for-idm-globalservices"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/support-guides",
+              {
+                "group": "Address Email and Phone Verification",
+                "pages": [
+                  "guides/address-email-and-phone-verification/address-email-and-phone-verification",
+                  "guides/address-email-and-phone-verification/quick-setup-guide",
+                  "guides/address-email-and-phone-verification/advanced-setup-guide",
+                  "guides/address-email-and-phone-verification/address-capture-integration-best-practice",
+                  "guides/address-email-and-phone-verification/enabling-new-capture-features",
+                  "guides/address-email-and-phone-verification/saas-platform-setting-up-a-new-service",
+                  "guides/address-email-and-phone-verification/saas-platform-integration-options",
+                  "guides/address-email-and-phone-verification/saas-platform-sdk",
+                  "guides/address-email-and-phone-verification/the-loqate-saas-platform"
+                ]
+              },
+              {
+                "group": "Data Maintenance",
+                "pages": [
+                  "guides/data-maintenance/data-maintenance",
+                  "guides/data-maintenance/data-maintenance-post-processing"
+                ]
+              },
+              {
+                "group": "Data Set",
+                "pages": [
+                  "guides/data-set/data-set",
+                  "guides/data-set/consuming-premium-data-sets",
+                  "guides/data-set/property-intelligence-user-guide",
+                  "guides/data-set/property-intelligence-data-directory"
+                ]
+              },
+              {
+                "group": "Integrations by Platform",
+                "pages": [
+                  "guides/integrations-by-platform/integrations-by-platform",
+                  "guides/integrations-by-platform/adobe-commerce-magento-integration-guide",
+                  "guides/integrations-by-platform/bigcommerce",
+                  "guides/integrations-by-platform/commercetools-integration",
+                  "guides/integrations-by-platform/loqate-for-microsoft-dynamics-365",
+                  "guides/integrations-by-platform/the-loqate-shopify-integration-guide",
+                  "guides/integrations-by-platform/loqate-plugin-for-shopware-6-configuration-guide"
+                ]
+              },
+              {
+                "group": "Commercetools Integration",
+                "pages": [
+                  "guides/commercetool-integration/commercetools-integration",
+                  "guides/commercetool-integration/feature-overview",
+                  "guides/commercetool-integration/setup-guide",
+                  "guides/commercetool-integration/studio-settings"
+                ]
+              },
+              {
+                "group": "Store Finder",
+                "pages": [
+                  "guides/store-finder/store-finder",
+                  "guides/store-finder/how-does-a-store-finder-work",
+                  "guides/store-finder/creating-and-managing-location-lists",
+                  "guides/store-finder/how-to-implement-a-store-finder",
+                  "guides/store-finder/setting-up-store-finder-keys"
+                ]
+              },
+              {
+                "group": "Utilities Register",
+                "pages": [
+                  "guides/utilities-register/utilities-register",
+                  "guides/utilities-register/loqate-utilities-register-v2-0"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "FAQs",
+            "pages": [
+              "faqs/address-capture",
+              "faqs/address-verification",
+              "faqs/bank-account-verification",
+              "faqs/common-account-errors",
+              "faqs/data-maintenance-annual-subscription",
+              "faqs/email-verification",
+              "faqs/general",
+              "faqs/geocoding",
+              "faqs/geolocation",
+              "faqs/phone-verification",
+              "faqs/technical"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Documentation",
+        "groups": [
+          {
+            "group": "Address Capture",
+            "pages": [
+              "apis/address-capture/address-capture",
+              "apis/address-capture/interactive-find-v1.1",
+              "apis/address-capture/interactive-retrieve-v1.2",
+              "apis/address-capture/interactive-geolocation-v1",
+              "apis/address-capture/saas-platform-capture-find-and-retrieve"
+            ]
+          },
+          {
+            "group": "Address Verify",
+            "pages": [
+              "apis/address-verify/address-verify",
+              "apis/address-verify/international-batch-cleanse"
+            ]
+          },
+          {
+            "group": "Store Finder",
+            "pages": [
+              "apis/store-finder/store-finder",
+              "apis/store-finder/location-management-create-list",
+              "apis/store-finder/map-tile-api",
+              "apis/store-finder/global-geocoding",
+              "apis/store-finder/geocoding-typeahead",
+              "apis/store-finder/global-distance-finder",
+              "apis/store-finder/location-management-update-list-or-point",
+              "apis/store-finder/location-management-delete-list-or-point",
+              "apis/store-finder/location-management-get-list"
+            ]
+          },
+          {
+            "group": "Email Validation",
+            "pages": [
+              "apis/email-validation/email-validation",
+              "apis/email-validation/batch-validate-v1.2",
+              "apis/email-validation/bulk-email-validation",
+              "apis/email-validation/interactive-validate-v2"
+            ]
+          },
+          {
+            "group": "Phone Validation",
+            "pages": [
+              "apis/phone-validation/phone-validation",
+              "apis/phone-validation/interactive-validate-v2.2"
+            ]
+          },
+          {
+            "group": "Bank Validation",
+            "pages": [
+              "apis/bank-validation/bank-validation",
+              "apis/bank-validation/batch-validate-v1",
+              "apis/bank-validation/interactive-validate-v2",
+              "apis/bank-validation/interactive-retrievebysortcode-v1",
+              "apis/bank-validation/internationalbankvalidation-interactive-validate-v1"
+            ]
+          },
+          {
+            "group": "Geocode",
+            "pages": [
+              "apis/geocode/geocode",
+              "apis/geocode/distancesanddirections-interactive-directions-v2",
+              "apis/geocode/distancesanddirections-interactive-distance-v1",
+              "apis/geocode/geocoding-international-geocode-v1.1",
+              "apis/geocode/geocoding-international-positiontocountry-v1",
+              "apis/geocode/geocoding-international-retrievenearestplaces-v1",
+              "apis/geocode/geocoding-international-reversegeocode-v2",
+              "apis/geocode/geocoding-uk-find-v2",
+              "apis/geocode/geocoding-uk-geocode-v2.1",
+              "apis/geocode/geocoding-uk-retrieve-v2",
+              "apis/geocode/geocoding-uk-retrievenearestplaces-v1.2",
+              "apis/geocode/geocoding-uk-reversegeocode-v1.1",
+              "apis/geocode/governmentdata-postzon-retrievebycoordinates-v1.2",
+              "apis/geocode/governmentdata-postzon-retrievebypostcode-v1.5",
+              "apis/geocode/governmentdata-postzon-retrievebypostcodeorplace-v1",
+              "apis/geocode/storefinder-interactive-findplacenames-v1.1",
+              "apis/geocode/storefinder-interactive-retrievecoordinates-v1.1"
+            ]
+          },
+          {
+            "group": "Sandbox",
+            "pages": ["sandbox/introduction"]
+          },
+          {
+            "group": "Generic Errors",
+            "pages": ["apis/generic-errors"]
+          }
+        ]
+      },
+      {
+        "tab": "Support",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "getting-started/introduction",
+              "getting-started/platforms",
+              {
+                "group": "System Requirements",
+                "pages": [
+                  "getting-started/system-requirements/introduction",
+                  "getting-started/system-requirements/aix",
+                  "getting-started/system-requirements/win32bit",
+                  "getting-started/system-requirements/win64bit",
+                  "getting-started/system-requirements/linux64bit"
+                ]
+              },
+              "getting-started/loqate-api-architecture",
+              "getting-started/local-api-install-options",
+              "getting-started/country-improvement-program"
+            ]
+          },
+          {
+            "group": "Release Information",
+            "pages": [
+              "release-information/introduction",
+              "release-information/sftp-content",
+              "release-information/how-to-obtain-version-information",
+              {
+                "group": "Release Notes",
+                "pages": [
+                  "release-information/notes/2025q1-1-api-minor-release",
+                  "release-information/notes/2025q1-0-api-major-release",
+                  "release-information/notes/2024q4-0-api-major-release",
+                  "release-information/notes/2024q3-1-api-minor-release",
+                  "release-information/notes/2024q3-0-major-release",
+                  "release-information/notes/2024q2-1-minor-release",
+                  "release-information/notes/2024q2-0-major-release",
+                  "release-information/notes/2024q1-0-major-release",
+                  "release-information/notes/2024q1-1-minor-release",
+                  "release-information/notes/2023q4-1-minor-release",
+                  "release-information/notes/2023q4-0-major-release",
+                  "release-information/notes/2023q3-1-minor-release",
+                  "release-information/notes/2023q3-0-major-release",
+                  "release-information/notes/2023q2-1-minor-release",
+                  "release-information/notes/2023q2-0-major-release"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Documentation",
+            "pages": [
+              "documentation/introduction",
+              "documentation/server-options",
+              {
+                "group": "Available Processes",
+                "pages": [
+                  "available-processes/introduction",
+                  "available-processes/parse-process",
+                  "available-processes/match-process",
+                  "available-processes/format-process",
+                  "available-processes/verify-process",
+                  "available-processes/search-process",
+                  "available-processes/gkrinfo-process",
+                  "available-processes/reverse-geocode-process",
+                  "available-processes/geocode-process",
+                  "available-processes/report-process",
+                  "available-processes/country-process",
+                  "available-processes/query-process"
+                ]
+              },
+              {
+                "group": "Field Descriptions",
+                "pages": [
+                  "field-descriptions/introduction",
+                  "field-descriptions/addfields",
+                  "field-descriptions/unmatched-field",
+                  "field-descriptions/geocode-fields",
+                  "field-descriptions/objfeilds",
+                  "field-descriptions/processstatus",
+                  "field-descriptions/serverStatus",
+                  "field-descriptions/serp-fields",
+                  "field-descriptions/amas-fields",
+                  {
+                    "group": "Data Enhancement",
+                    "pages": [
+                      "field-descriptions/data-enhancement/overview",
+                      "field-descriptions/data-enhancement/data-enhancement-us-census-data-fields",
+                      "field-descriptions/data-enhancement/us-census-data-enhancement",
+                      "field-descriptions/data-enhancement/data-enhancement-administrativearea-iso-2-code",
+                      "field-descriptions/data-enhancement/gb-enhancement-data-fields",
+                      "field-descriptions/data-enhancement/timezone",
+                      "field-descriptions/data-enhancement/residential-commercial-flag",
+                      "/field-descriptions/data-enhancement/data-enhancement-sample-api-call"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Report Codes",
+                "pages": [
+                  "report-codes/introduction",
+                  "report-codes/address-verification-code",
+                  "report-codes/fieldstatus",
+                  "report-codes/geoaccuracy-code",
+                  "report-codes/address-quality-index"
+                ]
+              },
+              {
+                "group": "Local APIs",
+                "pages": [
+                  "local-apis/introduction",
+                  "local-apis/serp-overview",
+                  "local-apis/transaction-logging"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Data Coverage",
+            "pages": [
+              "data-coverage/introduction",
+              "data-coverage/coverage-guide",
+              "data-coverage/iso"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "support/file-a-bug",
+              "support/integration",
+              "support/case-handling",
+              "support/cass2-output-field-descriptions",
+              "support/usa-cass-v2",
+              "support/lqtinter-guide",
+              "support/batch-processor",
+              "support/character-scripts",
+              "support/match-rules-syntax",
+              "support/md5-hash-values-guide",
+              "support/geographic-hierachy-data",
+              "support/duplicatehandlingmask-option",
+              "support/geocode-accuracy-codes-demystified",
+              "support/data-enhancement-administrativearea-iso-2-code",
+              "support/result-string",
+              "support/verify-fields-available-when-running-cass2",
+              {
+                "group": "Installed API",
+                "pages": [
+                  "support/installed-api/introduction",
+                  "support/installed-api/lqtinputrecord",
+                  "support/installed-api/lqtmatchinfo",
+                  "support/installed-api/lqtprocesslist",
+                  "support/installed-api/lqtprocessoption",
+                  "support/installed-api/lqtprocessresult",
+                  "support/installed-api/lqtserver"
+                ]
+              },
+              {
+                "group": "Installers",
+                "pages": [
+                  "installers/introduction",
+                  "installers/installation-manager",
+                  "installers/installation-manager-install-process",
+                  "installers/local-api-install-process",
+                  "installers/data-installation-and-update-process",
+                  {
+                    "group": "Example of Installation Scenarios",
+                    "pages": [
+                      "installers/example/installation-scenarios",
+                      "installers/example/online-installation",
+                      "installers/example/offline-installation"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tutorials",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "tutorials/introduction",
+              "tutorials/cpp-api",
+              "tutorials/java-api",
+              "tutorials/dotnet-api",
+              "tutorials/loqate-video-tutorials",
+              "tutorials/local-install-guide",
+              "tutorials/multithread",
+              "tutorials/loqate-installation-instructions",
+              {
+                "group": "Sample Code",
+                "pages": [
+                  "tutorials/sample-code/introduction",
+                  "tutorials/sample-code/cpp-sample-code",
+                  "tutorials/sample-code/cass2-java-sample-code",
+                  "tutorials/sample-code/java-sample-code",
+                  "tutorials/sample-code/cass2-csharp-sample-code",
+                  "tutorials/sample-code/register-java-example",
+                  "tutorials/sample-code/python-sample-code",
+                  "tutorials/sample-code/verify-gui-in-csharp",
+                  "tutorials/sample-code/register-gui-in-csharp",
+                  "tutorials/sample-code/query-gui-in-csharp"
+                ]
+              },
+              {
+                "group": "Examples",
+                "pages": [
+                  "tutorials/examples/c-example",
+                  "tutorials/examples/java-example",
+                  "tutorials/examples/java-multithread",
+                  "tutorials/examples/java-threadrunner"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Community",
+          "href": "https://loqate-workspace.slack.com/join/shared_invite/zt-v2xhkfmb38-3iIhtlRGO88k6dub4F4qzQ",
+          "icon": "slack"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://www.loqate.com/en-gb/blog/",
+          "icon": "newspaper"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/logo_light.svg",
+    "dark": "/logo/logo_dark.svg"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Get a demo",
+      "href": "https://www.loqate.com/en-gb/demo/"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/loqate",
+      "github": "https://github.com/loqate",
+      "linkedin": "https://www.linkedin.com/company/loqate"
+    }
+  }
+}

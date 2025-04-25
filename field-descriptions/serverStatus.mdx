@@ -1,0 +1,49 @@
+---
+title: "serverStatus"
+---
+
+## Enumeration Values
+
+### **0: ssOK**
+
+The library has been successfully initialized and ready to accept requests.
+
+### **1: ssUninitialized**
+
+The library has not yet been successfully initialized.
+
+### **2: ssInvalidDataDirectory**
+
+The supplied data directory does not contain a Global Knowledge Repository.
+
+### **3: ssInvalidUnicodeFileVersion**
+
+The installed unicode.lfs file is mismatched with the installed software.
+
+### **4: ssInvalidCountryFileVersion**
+
+The installed country.lfs file is mismatched with the installed software.
+
+### **5: ssInvalidContextFileVersion**
+
+The installed context.lfs file is mismatched with the installed software.
+
+### **6: ssInvalidFormatFileVersion**
+
+The installed format.lfs file is mismatched with the installed software.
+
+### **7: ssInvalidLexiconFileVersion**
+
+The installed lexicon file attempting to be opened is mismatched with the installed software.
+
+### **8: ssInvalidReferenceFileVersion**
+
+The installed lexicon file attempting to be opened is mismatched with the installed software.
+
+### **9: ssException**
+
+An exception was thrown.
+
+### **10: ssError**
+
+An error has reported by loqate server, use getLastError() function in lqtServer object to get error description.

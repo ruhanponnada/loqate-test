@@ -1,0 +1,166 @@
+---
+title: "Creating And Managing Location Lists"
+---
+
+import { CustomInfo } from "/snippets/CustomInfo.mdx";
+
+Location Lists allow you to group together multiple locations - including
+associated information about each - that you can then use as part of a Store
+Finder tool.
+
+There are two ways to create a Location List - via the
+[Create List API](/apis/store-finder/location-management-create-list/ "Location Management Create List"),
+or via your Loqate account at
+[account.loqate.com](https://account.loqate.com/account#/). In this guide we'll
+take you through the process of creating, editing and deleting Location Lists
+within the account section. These lists can then be used in our
+[Distance Finder API](/apis/store-finder/global-distance-finder/ "Global Distance Finder")
+to calculate distances between an end user and your stores (or other locations).
+
+<CustomInfo image="/images/1020137f-support-customer.svg" imageSize="120px">
+  A Location List should contain all the information you want to display to
+  customers about your stores, including their names, co-ordinates and their
+  IDs. It can also contain additional information (such as a description of each
+  location, opening times, and address), to provide further context that your
+  end users might find helpful.
+</CustomInfo>
+This guide is split up into the following sections:
+
+- Creating a Location List
+- Uploading locations
+- Viewing and editing locations
+- Deleting a list
+- Finding an existing list
+
+### Creating a Location List
+
+To create a new Location list, go to the
+[Add Service page](https://account.loqate.com/account#/Setup/) in your account
+section and select **Location List** from the grid of service options.
+
+<Frame caption="">
+  <img src="/images/c0258408-location-list-1.png" />
+</Frame>
+
+### Naming your list
+
+This will open the Location List setup screen where you can give your list a
+name and description. We recommend you give your list a clear, easy to remember
+name and description for easier identification later on.
+
+<Frame caption="">
+  <img src="/images/b744722c-location-list-2.png" />
+</Frame>
+
+### Uploading your locations
+
+Once you have given your list a name, the option to upload your list as a CSV
+file will appear.
+
+<Frame caption="">
+  <img src="/images/93be9c95-location-list-3.png" />
+</Frame>
+
+Any CSV file you upload must contain the mandatory headers of **Name**,
+**Description**, **Address**, **Latitude** and **Longitude**, while it can also
+contain additional optional headers related to store opening hours. You can
+download an example CSV template at the bottom of the page.
+
+If you want to geocode your locations (i.e. you have the addresses but no
+co-ordinates), you can select the **Geocode Address** toggle and we will append
+those for you up to a maximum of 500 locations per list.
+
+<CustomInfo image="/images/1020137f-support-customer.svg" imageSize="120px">
+  Please note that each address geocoded constitutes one geocoding charge
+  against your account. When using this option please ensure that you have a
+  valid address for each line in your CSV, otherwise the upload will fail.
+</CustomInfo>
+Click on the **Browse&#x20;**&#x62;utton to select your file, then the
+**Upload&#x20;**&#x62;utton to upload and save your locations.
+
+<Frame caption="">
+  <img src="/images/1a550e8d-location-list-4.png" />
+</Frame>
+
+You'll see the name of your selected file displayed underneath, along with its
+upload status.
+
+<CustomInfo image="/images/1020137f-support-customer.svg" imageSize="120px">
+  When locations are uploaded they are automatically assigned an ID. This means
+  that if you download a list at a later date you can edit the fields of
+  individual locations and, provided you don't change their IDs, can reupload it
+  to modify an existing list.
+</CustomInfo>
+
+Once your file is uploaded, you now have a complete Location List with an ID
+that's ready to use with our Distance Finder endpoint. Please keep a note of the
+List ID that is automatically generated as this will be the primary identifier
+used with any of our APIs.
+
+<Frame caption="">
+  <img src="/images/5941d313-location-list-5.png" />
+</Frame>
+
+### Viewing and editing locations
+
+Once a list has been uploaded, you can go to the **Locations&#x20;**&#x74;ab to
+view all of the locations within that list. You can use the search field to
+filter through these if required, or select **Download list** to export the list
+back to a CSV file.
+
+<Frame caption="">
+  <img src="/images/a97a43ec-location-list-6.png" />
+</Frame>
+
+From here you can either edit or delete individual locations. To **delete** a
+location, click the bin icon on the relevant line of the table.
+
+Click the notepad icon next to a location to **edit** it - this will take you to
+the following screen.
+
+<Frame caption="">
+  <img src="/images/132cfae9-location-list-7.png" />
+</Frame>
+
+From here you can edit each of the individual fields associated with a location,
+including opening times.
+
+### Deleting a list
+
+If you decide that you no longer need a Location List, you can remove it in the
+**Delete&#x20;**&#x74;ab.
+
+<Frame caption="">
+  <img src="/images/01b5d7b7-location-list-8.png" />
+</Frame>
+
+<Warning>
+  **Please note that deletion is permanent as we do not keep backups once a list
+  has been marked as deleted.**
+</Warning>
+
+### Finding an existing list
+
+Once you have created a list, you'll need to know where to find it in your
+Account section if you want to edit or delete it in future.
+
+To do this, start by going to the Menu in the top right of the Account section
+and selecting **Your Services**.
+
+<Frame caption="">
+  <img src="/images/3684e480-location-list-9.png" />
+</Frame>
+
+From there you will be presented with a list of your installations, API keys and
+Location Lists. You can filter through these by using the search bar.
+
+<Frame caption="">
+  <img src="/images/ae49de96-location-list-10.png" />
+</Frame>
+
+Once you have found your list, select it to go to the Configuration screen for
+that list.
+
+<Frame caption="">
+  <img src="/images/5e6a66a3-location-list-11.png" />
+</Frame>

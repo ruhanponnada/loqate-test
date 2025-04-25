@@ -1,0 +1,78 @@
+---
+title: "GKRInfo Tool"
+sidebarTitle: "GKR Info Process"
+---
+
+## Overview
+
+Each GKR file has a set of parameters and corresponding values. The GKRInfo process is designed to provide information about the GKR files’ parameters. The GKR files are read from the data folder provided.
+
+## API Usage
+
+The following code walks through API usage.
+
+### Initialize the server
+
+```java
+lqtServer srv = lqtServer.create();
+srv.init("C:\\loqate\\data");
+lqtProcessList lst = lqtProcessList.create();
+lqtProcessOptions opts = lqtProcessOptions.create();
+```
+
+### Set the tool
+
+```java
+lst.add("GKRInfo", opts);
+```
+
+### Execute the process
+
+```java
+lqtInputRecord rec = lqtInputRecord.create();
+lqtProcessResult res = lqtProcessResult.create();
+srv.process(rec, lst, res);
+```
+
+### Dump the output from the GKRInfo
+
+```java
+FileWriter outputFile = new FileWriter("C:\\output.txt");
+PrintWriter out = new PrintWriter(outputFile);
+for (int record = 0; record < res.getCount(); record++)
+{
+    out.print( "\n");
+    for (long field=0; field < res.getFieldCount(record); field++)
+    {
+        out.print( res.getFieldName(record, field) + ": " +"\t");
+        out.print( res.getField(record, field) + "\n");
+    }
+}
+```
+
+## Output information
+
+GKRInfo tool can be used by specifying GKRInfo as the required tool in the API. The output can be retrieved by processing the Records inside the ProcessResult structure.\
+The tool will enumerate the data files available in the data folder and collect all the GKRInfo parameters and their corresponding values and make them available in the ProcessResult. Each data file information will be stored in a seperate Record inside the ProcessResult structure. The most common parameters for the various data files that are output are:
+
+- **Name**: Name of the data file
+- **DataVersion**: Release version
+- **GKRVersion**: Version number of data format
+- **Reference.FieldCount**: The fields that have available data in the Reference data file for the specific country.
+- **Reference.ContentType.()**: These are the actual fields.
+- **Reference.FieldBlank.()**: This gives the count of the number of records for which the particular field is blank. This is output for each field that is relevant from the fieldCount.
+- **Reference.FieldDistinct.()**: This gives the count of the number of records for which the particular field is unique and not blank. This is output for each field that is relevant from the fieldCount.
+
+Most of the other parameters will vary from file to file and provide miscellaneous information about the respective files.
+
+For example, the following are the parameters and the corresponding values for context.lfs .
+
+- Name context.lfs
+- CompressionType 0
+- Context.MaxNodeSize 256
+- Context.NodeLookupPos 2036
+- Context.RecordLookupPos 167805
+- File.Build.Context 1357346307
+- File.Version.Context 1
+- DataVersion 2013Q1.0
+- GKRVersion 1

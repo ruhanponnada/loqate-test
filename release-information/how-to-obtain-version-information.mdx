@@ -1,0 +1,30 @@
+---
+title: "How to Obtain Version Information"
+---
+
+The Loqate release (e.g. 2013Q4) is made up of an API version and a set of data files.
+
+Various methods to find the API version:
+
+1. Call getVersion()
+   You can call the getVersion() method from the API using String variable to store the API version information.
+
+2. Lookup on [released](/release-information/)
+
+3. Run `lqtBatch -v`
+
+4. Since 2014Q1.0 release, Loqate Software Installation directory contains a file called version.txt. Examine the contents of the 'version.txt' file.
+
+5. Run Install Manager, look at the bottom left of the window or at the command line
+
+Various methods to find the data files version:
+
+1. Run Install Manager and check the date of the currently installed datapacks.
+
+2. Each datapack has their own manifest and data files. Check in the \_manifest.properties files in the data folder, and look for the ReleaseDate entry. The release date and version corresponds to the files associated with that datapack.
+
+3. Run lqtBatch without an input file, e.g. 'lqtBatch -d /opt/loqate/data' and examine the `File.Build.*` timestamp on each file
+
+4. Run the GKRInfo tool in the API and examine the File.Build.\* timestamp on each file
+
+5. Examine the downloaded lfz files, which have the format `<Product>_<Min API version>_<Release Date YYYYMMDD>_<Filesize in Mb>.lfz`

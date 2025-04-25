@@ -1,0 +1,42 @@
+---
+title: "MD5 Hashes For Data Download & Installation"
+sidebarTitle: "MD5 Hash Values Guide"
+---
+
+MD5 hash values for datapacks and data files are available when using Install Manager at release 2020Q1.0 or later. The values are written to text files at the end of download and installation processes. The new files containing MD5 hash values are located in both the download and data installation folders, and will only be included for data and certification products that have been selected for download (not for all products listed in the license key).
+
+## File Naming Convention
+
+|                 |                                       |                                                                                                                                                                                 |
+| --------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Folder**      | **Files**                             | **Notes**                                                                                                                                                                       |
+| Download folder | datapacks_server\_\<timestamp>.txt    | Hash values from server for the datapacks selected for download are available in this file                                                                                      |
+|                 | datapacks_local\_\<timestamp>.txt     | Hash values locally generated for the datapacks downloaded is available in this file                                                                                            |
+|                 | datapacks_error_log\_\<timestamp>.txt | List of datapacks that failed installation as available will be listed in this file                                                                                             |
+| Data folder     | data_server\_\<timestamp>.txt         | Hash values from server for the data files selected for download is available in this file (see footnotes for additional information about the timestamp used for the filename) |
+|                 | data_local\_\<timestamp>.txt          | Hash values generated locally for data files installed is available in this file                                                                                                |
+
+**1. Sample file names from the Download folder (datapack download):**
+
+- datapacks_server_md5_2020-01-28_15-08-11.txt
+- datapacks_local_md5_2020-01-28_15-59-27.txt
+
+**2. Sample file names from the Data folder (dataset install):**
+
+- data_server_md5_2020-01-28_16-45-02.txt
+- data_local_md5_2020-01-28_16-45-02.txt
+
+## Certified Product Data
+
+MD5 hash values for certification products (CASS, AMAS, and SERP) are available when using Install Manager **version 12.0.0** or later (first released in 2020Q2.0). These are written to txt files following the download and installation. Certification datapacks (\*.lfz) will be written to datapacks\_\* file under the download folder.
+
+Starting with the 2020Q2.0 release, the data folder will include two new files for the md5sum hash values for certifications:
+
+- certification_server_md5\<timestamp>.txt
+- certification_local_md5\<timestamp>.txt
+
+## MD5 Hashes Footnotes
+
+- MD5 hash values are not available for offline installations. This is because the hashes are generated from information provided by the licensing web service when a license key is queried.
+- The hash files in the data folder (“data.local.md5…” and “data.server.md5…”) will have the same timestamp. This is because the server generated hash was retrieved by the install manager but not written until the local hashes have been computed.
+- For this reason, the hash files in the data folder (“data.local.md5…” and “data.server.md5…”) will have the same timestamp.

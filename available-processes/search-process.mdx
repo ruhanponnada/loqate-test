@@ -1,0 +1,31 @@
+---
+title: "Product Update June 2022"
+sidebarTitle: "Search Process"
+---
+
+The Search function in Verify is now deprecated and in Maintenance Mode – no fixes will be made to any issues discoverd.This means that no further development or fixes to the functionality will be undertaken by Loqate. The existing functionality will remain but strategically Loqate Capture+ is the API to use to search for addresses. You can find detailson Address Capture [here](https://www.loqate.com/en-gb/address-verification/address-capture/) and to get started use our [Address Capture Quick Setup Guide](/guides/address-email-and-phone-verification/quick-setup-guide/).
+
+## Search Process
+
+The Search process is designed for interactive environments where full or partial address data is provided as input and a list of closely matching results is returned as output.
+
+## Relevant Options
+
+- MaxResults
+- ConfidenceThreshold
+- MinimumSimilarity
+- SuppressFields
+- SuppressAdditionFields
+- OutputCasing
+- OutputScript
+- OutputSortType
+
+## Algorithm Options
+
+**SearchAutocompleteIndexCheck:** (Yes, No, default Yes). Specifies whether or not to use the ‘autocomplete index’ algorithm (useful for guaranteed response times of queries like ‘4916 est’ in the USA). Related to this is the AutocompleteIndexOnly option (Yes, No, default No) which if set to Yes stops the use of any other search algorithms so gives a guaranteed response time in all situations.
+
+**SearchLikeFieldCheck:** (Yes, No, default Yes). Specifies whether or not to use the ‘like field’ algorithm (looks for an exact field match in the address field, useful for single items like postcodes, building names, organization names, etc)
+
+**SimpleParse:** (Yes, No, default Yes). Specifies whether or not to use the ‘simple parse’ algorithm (looks for something like premise + street in the address field, but is not particularly tolerant of invalid input data)
+
+**CombinedSearchMethods:** (Yes, No, default Yes). Specifies whether or not to use a word-based search algorithm (similar to a web search engine approach).

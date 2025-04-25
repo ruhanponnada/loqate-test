@@ -1,0 +1,76 @@
+---
+title: "Address Capture"
+---
+
+<AccordionGroup>
+  <Accordion title="Which way of integrating Address Capture will work best for me?">
+    There are three main ways to integrate Address Capture, and which method is most appropriate will depend on your business and what you want to achieve. Our [**Ways to Integrate** page](/loqate-basics/ways-to-integrate/) takes you through each of the different methods.
+  </Accordion>
+
+  <Accordion title="How do I best take the fields from an Address Capture response and map them back to my address fields?">
+
+    We provide each address in three different formats:
+
+    * **Address label:&#xA0;**&#x67;reat for displaying the complete formatted address in a single field or on an envelope
+    * **Address lines (recommended):** use these where you have multiple address line fields. Used alongside Company, town and postal code fields most commonly
+    * **Address elements**:&#xA0;&#x65;ach individual element of the address (e.g. building, street) where you need to separate our the lines of an address into individual fields
+
+    Any one of the above approaches will lead to a complete address. The full set of fields can be found in our [API documentation pages](/apis/address-capture/).
+
+    Note: It is best not to mix fields from the different formats, as this can lead to missing or duplicated information.
+
+  </Accordion>
+
+<Accordion title="Should I make my API calls client-side or server-side?">
+  When deciding how to integrate the Address Capture APIs, your decision should
+  take into account performance, technical complexity and, most importantly,
+  security. Whether or not to make calls client-side or server-side is part of
+  the decision-making process regarding security; our [API Security
+  page](/loqate-basics/api-security/#integration-pptions)
+  has a section relating to integration options, which should help you decide
+  which option is best for you.
+</Accordion>
+
+  <Accordion title= "Is it possible to get latitude and longitude coordinates when I retrieve an address?">
+
+    Yes - various additional fields are available, when you get an address from our Retrieve endpoint, and (where the data is available) this includes latitude and Longitude.
+
+    When using the API, this is achieved by the field*x*format parameters within the Retrieve method. In order to request the latitude and longitude you need to add them into the parameters, like below:
+
+    ```javascript
+    &field1format={Latitude}&field2format={Longitude}
+    ```
+
+    This will then Return Latitude and Longitude in Field1 and Field2 in the response respectively.
+
+    If consuming the service via [the Tag method](/loqate-basics/ways-to-integrate/), you can enter the same input into the mappings wizard.
+
+  </Accordion>
+  
+  <Accordion title="    Browser auto-fill is interfering with my address lookup, can I turn it off?">
+
+    Yes - for the best experience when using Address Capture, we recommend you turn off the browser autofill functionality for address form fields.
+
+    Firstly, below where the Loqate Tag script has been placed on the page, insert the following JavaScript code snippet:
+
+    ```javascript
+    pca.on("load", function(type, id, control){
+      var isChrome = !!window.chrome || !!window.chrome.webstore;
+      if (isChrome == true){
+        for (i=0; control.fields.length > i; i++){
+          pca.getElement(control.fields[i].element).autocomplete = "GBGTEST";
+        };
+      };
+    });
+    ```
+
+    On the Address Form Fields, we have found success in adding the attribute **autocomplete="none"**, to disable the browser's autofill. For example:
+
+    ```javascript
+    autocomplete="none" placeholder="Start typing your address"  autofocus name=“searchTerm” />
+    ```
+
+    We recommended that you test this code across multiple popular web browsers.
+
+  </Accordion>
+</AccordionGroup>

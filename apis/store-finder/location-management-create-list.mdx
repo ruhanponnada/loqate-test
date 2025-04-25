@@ -1,0 +1,563 @@
+---
+title: "Location Management Create List"
+description: ""
+sidebarTitle: "Location Management Create List"
+---
+
+Create a list of locations that can be used with our
+
+[Distance Finder endpoint](/apis/store-finder/global-distance-finder/).
+
+<Warning>
+  This endpoint requires the use of a Loqate **Management** key. Management keys
+  are used to provide access to server-side functions in place of your standard
+  API key, ensuring that were any of your keys to be scraped from a customer
+  facing website, they could not be used to edit or delete your Location Lists.
+  For information on how to create a Management key please see the [Setting Up
+  Store Finder Keys guide](/guides/store-finder/setting-up-store-finder-keys/).
+</Warning>
+
+The Create List API allows you to create a list of locations, including their
+co-ordinates and their IDs. It can also store additional information such as a
+description of each location, opening times, and address, to provide more
+context.
+
+This API also supports the use of a "metaInfo" object which can be used to store
+any other relevant information such as contact details, accessibility
+information etc.
+
+When uploading a list, co-ordinates for each location are mandatory. If you do
+not have the co-ordinates of a location but have the address instead, we can
+geocode those for you. If the geocoding option is selected we will geocode every
+address in your request, any existing geocodes you send us will be overwritten.
+
+When Geocoding a list, if a geocode cannot be found for one of your locations
+then the request will fail. You will not be charged, and we will outline which
+address(es) had caused the issue.
+
+<Info>
+  **Please note that each address geocoded is chargeable based on your [standard
+  geocoding cost](https://www.loqate.com/en-gb/pricing/).**
+</Info>
+
+Geocoding supports most international locations. For a full list of coverage
+please see [here](/data-coverage/introduction/).
+
+- [Request parameters](#request)
+- [Response fields](#response)
+- [Errors](#errors)
+
+#### Base URL
+
+```
+https://api.addressy.com/LocationServices/LocationManagement/CreateList/v1.00
+```
+
+<Note>
+  Note: we don\'t support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+#### JSON
+
+```
+https://api.addressy.com/LocationServices/LocationManagement/CreateList/v1.00/json4.ws?
+```
+
+<Note>
+  Note: A REST endpoint with a JSON payload is the only call style supported.
+</Note>
+
+### Request
+
+Each request to the web service requires a number of parameters, all of which
+are listed below. All requests require a key which can be generated
+in [your account](https://account.loqate.com/account/#/Setup/).
+
+<Note>
+  **Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.**
+</Note>
+
+#### Request parameters
+
+| Parameter       | Required | Type             | Description                                                                                                                                               |
+| --------------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key             | Required | String           | The [Loqate Management key](/guides/store-finder/setting-up-store-finder-keys/) used to authenticate with the service. For example: `AA11-AA11-AA11-AA11` |
+| listName        | Required | String           | The name of the list being created.                                                                                                                       |
+| listDescription | Optional | String           | A description of the list being created.                                                                                                                  |
+| locations       | Required | Array of Strings | An array of strings that is populated with information about a location. **If latitude and longitude are blank then Geocoding must be set to true.**      |
+| Geocoding       | Optional | Boolean          | A Boolean that determines whether the addresses passed in the locations object will be geocoded. Set to FALSE by default.                                 |
+
+ 
+
+#### Locations fields
+
+Further information on the fields contained within the `locations` Array.
+
+<Note>
+  **Note: Most of these fields are not required and exist to provide contextual
+  information about the location if results are being displayed.**
+</Note>
+
+| Field        | Required | Type                         | Description                                                                                                                                                            |
+| ------------ | -------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| latitude     | Required | String                       | The WGS 84 latitude in decimal degrees format. This is mandatory unless Geocoding is set to TRUE.                                                                      |
+| longitude    | Required | String                       | The WGS 84 longitude in decimal degrees format. This is mandatory unless Geocoding is set to TRUE.                                                                     |
+| name         | Optional | String                       | The name of the location.                                                                                                                                              |
+| description  | Optional | String                       | The description of the location for display purposes.                                                                                                                  |
+| address      | Optional | String                       | The address of the location for display purposes. If Geocoding is set to TRUE then this parameter is mandatory.                                                        |
+| isoCountry   | Optional | String                       | The ISO2 or ISO3 country code. If Geocoding is set to TRUE then this parameter is mandatory.                                                                           |
+| metaInfo     | Optional | Dictionary `<string,string>` | A key value pair that can be used to store any other relevant information. For example, this could be used to store contact information as "ContactNumber":"123456789" |
+| openingHours | Optional | Object                       | An object containing opening hours information for the specified location. Each day can have optional Open, Close and Information fields of type String.               |
+
+#### Example Create List request
+
+```
+POST https://api.addressy.com/LocationServices/LocationManagement/CreateList/v1.00/json4.ws?
+```
+
+Content-Type: application/json
+
+Add your API key into the code below for a sample request:
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "listName": "UK Offices",
+  "listDescription": "A List containing our UK Offices",
+  "geocoding": "False",
+  "locations": [
+    {
+      "Name": "Worcester Office",
+      "Description": "Our office in Worcester",
+      "Address": "Waterside, Basin Rd, Worcester WR5 3DA",
+      "latitude": "52.18284",
+      "longitude": "-2.22194",
+      "metaInfo": { "Contact Number": "01244657333" },
+      "OpeningHours": {
+        "Monday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Tuesday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Wednesday": {
+          "Open": "9",
+          "Close": "1",
+          "Information": "half day closing"
+        },
+        "Thursday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9AM-5PM"
+        },
+        "Friday": {
+          "Open": "8",
+          "Close": "6",
+          "Information": "8am - 6pm"
+        },
+        "Saturday": {
+          "Open": "8",
+          "Close": "7",
+          "Information": "8am - 7pm"
+        },
+        "Sunday": {
+          "Open": "",
+          "Close": "",
+          "Information": "Closed"
+        }
+      }
+    },
+    {
+      "Name": "Chester Office",
+      "Description": "Our office in Chester",
+      "Address": "The Foundation Business Park, Heronsway, Chester CH4 9GB",
+      "latitude": "53.16147",
+      "longitude": "-2.90621",
+      "metaInfo": { "Contact Number": "01244657333" },
+      "OpeningHours": {
+        "Monday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Tuesday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Wednesday": {
+          "Open": "9",
+          "Close": "1",
+          "Information": "half day closing"
+        },
+        "Thursday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9AM-5PM"
+        },
+        "Friday": {
+          "Open": "8",
+          "Close": "6",
+          "Information": "8am - 6pm"
+        },
+        "Saturday": {
+          "Open": "8",
+          "Close": "7",
+          "Information": "8am - 7pm"
+        },
+        "Sunday": {
+          "Open": "",
+          "Close": "",
+          "Information": "Closed"
+        }
+      }
+    },
+    {
+      "Name": "London Office",
+      "Description": "Our London Office",
+      "Address": "128 Queen Victoria St, London EC4V 4BJ",
+      "latitude": "51.51209",
+      "longitude": "-0.09770",
+      "metaInfo": { "Contact Number": "02074281250" },
+      "OpeningHours": {
+        "Monday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Tuesday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Wednesday": {
+          "Open": "9",
+          "Close": "1",
+          "Information": "half day closing"
+        },
+        "Thursday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9AM-5PM"
+        },
+        "Friday": {
+          "Open": "8",
+          "Close": "6",
+          "Information": "8am - 6pm"
+        },
+        "Saturday": {
+          "Open": "8",
+          "Close": "7",
+          "Information": "8am - 7pm"
+        },
+        "Sunday": {
+          "Open": "",
+          "Close": "",
+          "Information": "Closed"
+        }
+      }
+    }
+  ]
+}
+```
+
+#### Example Create List request with Geocoding
+
+```
+POST https://api.addressy.com/LocationServices/LocationManagement/CreateList/v1.00/json4.ws?
+```
+
+Content-Type: application/json
+
+Add your API key into the code below for a sample request:
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "listName": "UK Offices Geocoded",
+  "listDescription": "A List containing our UK Offices",
+  "geocoding": "True",
+  "locations": [
+    {
+      "Name": "Worcester Office",
+      "Description": "Our office in Worcester",
+      "Address": "Waterside, Basin Rd, Worcester WR5 3DA",
+      "isoCountry": "GB",
+      "metaInfo": { "Contact Number": "01244657333" }
+    },
+    {
+      "Name": "Chester Office",
+      "Description": "Our office in Chester",
+      "Address": "The Foundation Business Park, Heronsway, Chester CH4 9GB",
+      "isoCountry": "GB",
+      "metaInfo": { "Contact Number": "01244657333" }
+    },
+    {
+      "Name": "London Office",
+      "Description": "Our London Office",
+      "Address": "128 Queen Victoria St, London EC4V 4BJ",
+      "isoCountry": "GB",
+      "metaInfo": { "Contact Number": "02074281250" }
+    }
+  ]
+}
+```
+
+### Response
+
+The response from the web service is a table with the specification below. Where
+no items are found, the response will be empty (although all endpoints specify
+the columns). If an error occurs, the response will not follow this format.
+Instead the response will be an [error table](#errors).
+
+#### Response fields
+
+| Field           | Type             | Description                                                                                                                 |
+| --------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| ListID          | String           | An automatically generated GuID used to uniquely identify a list.                                                           |
+| ListName        | String           | The name of the list passed in the request.                                                                                 |
+| ListDescription | String           | The description of the list passed in the request.                                                                          |
+| Locations       | Array of Strings | An array of strings that is populated with information about a location. Also contains a uniquely generated GuID per point. |
+| CreatedOn       | DateTime         | The date and time of when the list was initially created.                                                                   |
+| LastModifiedOn  | DateTime         | The date and time of when the list was last modified.                                                                       |
+
+#### Example Create List response
+
+```json
+{
+  "ListId": "bc0898aa-8303-4d1c-bf48-ff20d6a5c2ae",
+  "ListName": "UK Offices",
+  "ListDescription": "A List containing our UK Offices",
+  "Locations": [
+    {
+      "Id": "a5b45721-f9ee-4d7f-bab3-712b2d12bb4d",
+      "Name": "Worcester Office",
+      "Description": "Our office in Worcester",
+      "Address": "Waterside, Basin Rd, Worcester WR5 3DA",
+      "Latitude": "52.18284",
+      "Longitude": "-2.22194",
+      "MetaInfo": {
+        "Contact Number": "01244657333"
+      },
+      "OpeningHours": {
+        "Monday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Tuesday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Wednesday": {
+          "Open": "9",
+          "Close": "1",
+          "Information": "half day closing"
+        },
+        "Thursday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9AM-5PM"
+        },
+        "Friday": {
+          "Open": "8",
+          "Close": "6",
+          "Information": "8am - 6pm"
+        },
+        "Saturday": {
+          "Open": "8",
+          "Close": "7",
+          "Information": "8am - 7pm"
+        },
+        "Sunday": {
+          "Open": "",
+          "Close": "",
+          "Information": "Closed"
+        }
+      }
+    },
+    {
+      "Id": "776d2ca7-70bc-4af0-8a55-ff213be1f5bd",
+      "Name": "Chester Office",
+      "Description": "Our office in Chester",
+      "Address": "The Foundation Business Park, Heronsway, Chester CH4 9GB",
+      "Latitude": "53.16147",
+      "Longitude": "-2.90621",
+      "MetaInfo": {
+        "Contact Number": "01244657333"
+      },
+      "OpeningHours": {
+        "Monday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Tuesday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Wednesday": {
+          "Open": "9",
+          "Close": "1",
+          "Information": "half day closing"
+        },
+        "Thursday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9AM-5PM"
+        },
+        "Friday": {
+          "Open": "8",
+          "Close": "6",
+          "Information": "8am - 6pm"
+        },
+        "Saturday": {
+          "Open": "8",
+          "Close": "7",
+          "Information": "8am - 7pm"
+        },
+        "Sunday": {
+          "Open": "",
+          "Close": "",
+          "Information": "Closed"
+        }
+      }
+    },
+    {
+      "Id": "e2c40ce6-b394-44fa-acf1-add027c46689",
+      "Name": "London Office",
+      "Description": "Our London Office",
+      "Address": "128 Queen Victoria St, London EC4V 4BJ",
+      "Latitude": "51.51209",
+      "Longitude": "-0.0977",
+      "MetaInfo": {
+        "Contact Number": "02074281250"
+      },
+      "OpeningHours": {
+        "Monday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Tuesday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9am - 5pm"
+        },
+        "Wednesday": {
+          "Open": "9",
+          "Close": "1",
+          "Information": "half day closing"
+        },
+        "Thursday": {
+          "Open": "9",
+          "Close": "5",
+          "Information": "9AM-5PM"
+        },
+        "Friday": {
+          "Open": "8",
+          "Close": "6",
+          "Information": "8am - 6pm"
+        },
+        "Saturday": {
+          "Open": "8",
+          "Close": "7",
+          "Information": "8am - 7pm"
+        },
+        "Sunday": {
+          "Open": "",
+          "Close": "",
+          "Information": "Closed"
+        }
+      }
+    }
+  ],
+  "CreatedOn": "2023-12-14T14:30:28.343Z",
+  "LastModifiedOn": "2023-12-14T14:30:28.343Z"
+}
+```
+
+#### Example Create List response with Geocoding
+
+```json
+{
+  "ListId": "7bbcbea3-c995-4ed7-9be2-bfb25b3b2cef",
+  "ListName": "UK Offices Geocoded",
+  "ListDescription": "A List containing our UK Offices",
+  "Locations": [
+    {
+      "Id": "971558ff-c725-4b66-bfee-42e7cbb2be7f",
+      "Name": "Worcester Office",
+      "Description": "Our office in Worcester",
+      "Address": "Waterside, Basin Rd, Worcester WR5 3DA",
+      "Latitude": "52.182747",
+      "Longitude": "-2.222145",
+      "MetaInfo": {
+        "Contact Number": "01244657333"
+      }
+    },
+    {
+      "Id": "4ba9b14d-4fa9-4ce3-8cbf-e7b19d268720",
+      "Name": "Chester Office",
+      "Description": "Our office in Chester",
+      "Address": "The Foundation Business Park, Heronsway, Chester CH4 9GB",
+      "Latitude": "53.161261",
+      "Longitude": "-2.90642",
+      "MetaInfo": {
+        "Contact Number": "01244657333"
+      }
+    },
+    {
+      "Id": "a8caeada-0ed7-476e-8706-d4656ff7ee0d",
+      "Name": "London Office",
+      "Description": "Our London Office",
+      "Address": "128 Queen Victoria St, London EC4V 4BJ",
+      "Latitude": "51.51205",
+      "Longitude": "-0.097604",
+      "MetaInfo": {
+        "Contact Number": "02074281250"
+      }
+    }
+  ],
+  "CreatedOn": "2023-09-04T11:19:27.395Z",
+  "LastModifiedOn": "2023-09-04T11:19:27.395Z"
+}
+```
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs,
+an error table like the one below will be returned. To check for an error
+response, test for a 4-column table with columns `Number`, `Description`,
+`Cause` and `Resolution` containing a single row.
+
+Here's an example, for reference:
+
+```json
+{
+  "Number": 1010,
+  "Description": "Location Management operations required a Management Key",
+  "Cause": "Location Management operations required a Management Key",
+  "Resolution": "Ensure you are using a Management key created by adding a Store Finder service to your Loqate account"
+}
+```
+
+For a list of errors applicable to all APIs, have a look at the
+[list of common errors](/apis/generic-errors/).
+
+| Number | Description                                              | Cause                                                    | Resolution                                                                                            |
+| ------ | -------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 1002   | Listname Not Supplied                                    | Listname Not supplied                                    | Please supply Listname                                                                                |
+| 1003   | Address Not Supplied                                     | Address Not supplied                                     | Please supply Address                                                                                 |
+| 1004   | Invalid lat or long Supplied for point.`<Point name>`    | Invalid lat or long Supplied                             | Check input data                                                                                      |
+| 1005   | Point Supplied with no name                              | Point Supplied with no name                              | Check point data                                                                                      |
+| 1009   | Internal Server Error. Please try again later            | Internal Server Error. Please try again later            | Internal server error. Please try again later                                                         |
+| 1010   | Location Management operations required a Management Key | Location Management operations required a Management key | Ensure you are using a Management key created by adding a Store Finder service to your Loqate account |

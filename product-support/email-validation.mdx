@@ -1,0 +1,141 @@
+---
+title: "Email Validation"
+sidebarTitle: ""
+---
+
+Our Email Validation lets you validate email addresses as they're entered using
+our tag install or API, or instead validate a batch of email addresses via our
+API. Whatever you're looking to do, you can find answers to your questions here.
+
+<CardGroup>
+  <Card
+  href="/guides/address-email-and-phone-verification/"
+  >
+    Guides
+  </Card>
+  <Card
+  href="/apis/email-validation/"
+  >
+    APIs
+  </Card>
+  <Card
+  href="https://www.loqate.com/en-gb/demos/email-validation/"
+  >
+    Demo
+  </Card>
+  <Card
+  href="/sandbox/"
+  >
+    Sandbox
+  </Card>
+
+</CardGroup>
+
+### Frequently asked questions
+
+<AccordionGroup>
+  <Accordion
+  title="How does Email Validation work - are addresses checked against a database?"
+  >
+    Loqate's Email Validation service can validate emails either individually or in
+    bulk, and follows a series of steps to confirm whether email addresses are valid
+    or not. Those steps include:
+
+    - Checking the syntax of the inputted address to ensure it's a plausible address
+      (i.e. it contains an '@' sign and an email domain, etc.)
+    - Verifying the validity of the email domain to make sure it can send and
+      receive emails
+    - 'Pinging' the mailbox to check whether it will accept emails to the specified
+      account. We can validate whether an email address exists on an email server
+      with 97% accuracy
+
+      - We also have proprietary integrations with mailbox providers which allow us
+        to verify things like whether a mailbox is a catch-all mailbox, whether the
+        domain is disposable or temporary, etc.
+
+  </Accordion>
+  <Accordion 
+  title="Can Email Validation handle business and personal email addresses?"
+  >
+    Yes, you can use Email Validation to check any email addresses, whether
+    they're for business or personal accounts.
+  </Accordion>
+  <Accordion
+  title="Does Email Validation work internationally?"
+  >
+    Yes, Email Validation is an international service with global coverage.
+  </Accordion>
+  <Accordion
+  title="What types of information are returned in the Email Validation results?"
+  >
+    Besides detecting if in email address is valid or not, the Email Validation
+    service returns a wide range of information, including - but not limited to -
+    the following:
+
+    - Whether an email address is disposable
+    - If the domain is considered 'high risk' to send email to
+    - If the mailbox is a role-based address (i.e. support@, marketing@, etc.)
+    - If the mailbox is full
+
+    You can find complete details of which fields are returned in our
+    [Email Validation API documentation](https://www.loqate.com/api/email-validation/)
+    (please note that the exact available fields may differ depending on which
+    service you use).
+
+  </Accordion>
+  <Accordion
+  title="What does a 'catch all' response code mean?"
+  >
+    Each of the Email Validation endpoints includes a 'catch all' field as one of
+    the response parameters:
+
+    - [Batch Validate (v1.2)](https://www.loqate.com/api/email-validation/Batch/Validate/1.2/):
+      the **Accept_All** Status
+    - [Interactive Validate (v2)](https://www.loqate.com/api/email-validation/Interactive/Validate/2/):
+      the **Valid_CatchAll** ResponseCode
+    - [Bulk Email Validation](https://www.loqate.com/apis/email-validation/bulk-email-validation/):
+      the **accept_all** Primary Status
+
+    These 'catch all' responses indicate email domains that will accept emails to
+    **any** email account, meaning that it is not possible to fully validate an
+    email account at this domain, often due to firewall restrictions. We provide
+    these 'catch all' responses so that you can decide whether or not you want to
+    email these addresses.
+
+  </Accordion>
+</AccordionGroup>
+
+### Get started
+
+Email Validation is super simple to set up and we've created these step-by-step
+guides to help you get up and running as quickly as possible.
+
+<CardGroup>
+  <Card
+    title="Quick setup guide - Email Validation"
+    href="/guides/address-email-and-phone-verification/quick-setup-guide"
+    icon="book"
+  >
+    Our most simple and quick setup method. No need for coding knowledge. The
+    quick setup guide will walk you through the process step-by-step.
+    <br />
+    [View guide](/guides/address-email-and-phone-verification/quick-setup-guide)
+  </Card>
+
+  <Card
+    title="Quick setup guide - Address, Email and Phone Validation"
+    href="/guides/address-email-and-phone-verification/quick-setup-guide"
+    icon="book"
+  >
+    Looking for Address, Email and Phone Validation? This easy guide helps you
+    set up all three within minutes.
+    <br />
+    [View guide](/guides/address-email-and-phone-verification/quick-setup-guide)
+  </Card>
+</CardGroup>
+
+### Easy set up video
+
+Our email validation is easy to install. There is no need for a developer or
+coding knowledge. You just need to be able to add a piece of code to your
+website and our video shows you step by step how to do this.

@@ -1,0 +1,75 @@
+---
+title: "US Census Data Fields"
+---
+
+US Census Data may be appended to one of the following three fields:
+
+- **AdministrativeArea**
+- **SubAdministrativeArea**
+- **Locality**
+
+The data takes the form of multiple value fields, which are outlined in the next section. For each value field, there is a corresponding status field named “ValueFieldName”Status which indicates whether a value was returned for that value field or not. If a value is returned the status field will contain fsAdded.
+
+## Value Fields
+
+### CensusIndicator
+
+This field indicates the address level for which the census data was returned.
+
+Since CENSUS data currently only covers the United States, only 3 levels of data will be shown: “Locality”, “SubAdministrativeArea”, and “AdministrativeArea”. In the best case scenario the value will be “Locality”, the most accurate address level CENSUS data covers.
+
+If input Locality is not found in CENSUS data, it may return “SubAdministrativeArea” indicating it can only find CENSUS data for “SubAdministrativeArea” level.
+
+### CensusCode
+
+Census Code defines that the Census data is referencing the Census Codes, previously known as the Federal Information Processing Standard (FIPS) code. Census Codes are used as the government codes currently published for Admin Places in the U.S. This data is also published as Census data for completeness.
+
+Census Codes and GNIS Feature IDs are published for Administrative Areas (Admin Level 1-4 in the U.S.) and all Zones with official government codes.
+
+### CensusClassCode
+
+Census Class Code defines the census classification of a place.
+
+Census Class Code corresponding to the FIPS 55-3 standard. Census Class Codes are alphanumeric
+
+and defined at http://geonames.usgs.gov/pls/gnispublic . Census Class Codes are published only for level 3 and 4 Administrative Areas and Zones.
+
+An example would be:
+
+C1: Identifies an active incorporated place that is not also recognized as an Alaska Native Village statistical area, and does not also serve as a primary county division; that is, it is included in and is part of a primary county division. For example, the city of Hammond, Indiana is within and part of North township; the city of Austin, Texas is within and part of several census county divisions in several counties; Hammond and Austin are coded C1.
+
+### GNISFeatureID
+
+GNIS Feature ID defines that the Census data is referencing the Geographic Names Information System (GNIS) Feature ID. GNIS Feature IDs are similar to Census Codes. GNIS includes geographic names for all known places, features, and areas in the United States that are identified by a proper name. Census Codes defined for level 4 Administrative Areas and Zones are being phased out by the U.S. government and replaced by GNIS Feature IDs. However, GNIS Feature IDs are an addition to and not a replacement of Census Codes. New places only get a GNIS Feature ID assigned. For new places the government code publishes the GNIS feature ID.
+
+Census Codes and GNIS Feature IDs are published for Administrative Areas (Admin Level 1-4 in the U.S.) and all Zones with official government codes.
+
+### CBSAMetropolitanStatisticalArea
+
+CBSA Metropolitan Statistical Area defines that the Census data is referencing the Core Based Statistical Area (CBSA). CBSA is a collective term for both metro and micro areas. A metro area contains a core urban area of 50,000 or more population, and a micro area contains an urban core of at least 10,000 (but less then 50,000) population. Each metro or micro area consists of one or more counties and includes the counties containing the core urban area, as well as any adjacent counties that have a high degree of social and economic integration with the urban core (as measured by commuting to work).
+
+\*CBSA Metropolitan or Micropolitan areas can span multiple Counties. There is one CBSA that defines a partial county. St. Louis, MO-IL Metropolitan Statistical Area only includes the Sullivan City part of Crawford County, MO. For this specific case the complete Crawford County are published with the CBSA code (41180) for St. Louis, MO-IL.
+
+### CBSAMicropolitanStatisticalArea
+
+CBSA Micropolitan Statistical Area. See definition above.
+
+### NECTAMetropolitanStatisticalArea
+
+NECTA Metropolitan Statistical Area defines a set of geographic areas that are defined using cities and towns in the six New England states. The New England City and Town Areas (NECTAs) are defined using the same criteria as Metropolitan and Micropolitan Statistical Areas and are identified as either Metropolitan or Micropolitan. A metro area contains a core urban area of 50,000 or more population, and a micro area contains an urban core of at least 10,000 (but less then 50,000) population.
+
+NECTAs are published for one or more cities or towns where applicable.
+
+### NECTAMicropolitanStatisticalArea
+
+NECTA Micropolitan Statistical Area. See definition above.
+
+### MetropolitanDivision
+
+Metropolitan Division defines that the Census data is referring to a county or group of closely tied contiguous counties that serve as a distinct employment region within a metropolitan statistical area that has a population core of at least 2.5 million. While a Metropolitan Division is a subdivision of a larger metropolitan statistical area, if often functions as a distinct social, economic, and cultural area within a larger region.
+
+### NECTADivision
+
+NECTA Division defines NECTAs (see definition above) containing a single core with a population of at least 2.5 million that are subdivided to form smaller groupings of cities and towns referred to as NECTA Divisions.
+
+[Learn more about other address enhancement datasets](/field-descriptions/data-enhancement/)

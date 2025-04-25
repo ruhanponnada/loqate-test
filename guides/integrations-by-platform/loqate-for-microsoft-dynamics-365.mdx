@@ -1,0 +1,261 @@
+---
+title: "Microsoft Dynamics 365 Integration Guide"
+sidebarTitle: "Microsoft Dynamics 365"
+---
+
+[Download the Microsoft Dynamics 365 plugin](https://assets.loqate.com/dynamics-integration/latest/loqate_dynamics_latest.zip)
+
+This guide will take you through the steps require to install and configure the
+Loqate Dynamics 365 integration in your Dynamics 365 instance.
+
+## Prerequisites
+
+In order to install and configure the Loqate Dynamics 365 integration you will
+need the following:
+
+- The Loqate solution zip file
+- A Loqate API key (for more information see our
+  [Creating API Keys page](/loqate-basics/creating-api-keys/ "Creating API keys"))
+- Administrative access to your Dynamics 365 environment
+
+## **Installation**
+
+Installing the Loqate Dynamics 365 integration involves the following steps:
+
+1. [Import the solution](#Import)
+2. [Configure your forms to use Loqate controls](#Config) (for each form you can
+   add controls for Email Verification, Phone Verification and Address Search)
+
+We will talk you through how to complete each step, using a standard contact
+form as an example (you can then apply the same process to each of your forms as
+required).
+
+## Importing the solution
+
+- From your Dynamics 365 environment select Settings > **Advanced
+  Settings**.This will open your Business Settings in a new tab
+- From the Customisation section of the menu, select **Solutions**
+- Select **Import Solution**
+
+<Frame caption="">
+  <img src="/images/2b89ef61-d365-install-1s.png" />
+</Frame>
+
+- A menu will appear allowing you to browse for the Loqate solution zip file -
+  select this and click **Next**
+- The version of the solution you're importing will display, and you will see a
+  warning if you're updating an existing installation to a new version, or
+  installing a version you’ve already installed previously
+
+<Frame caption="">
+  <img src="/images/6229ac0a-d365-install-2s.png" />
+</Frame>
+
+- Select **Import**
+- A bar will appear at the top of the page reading 'Currently importing solution
+  “loqate_dynamics”.'
+
+<Frame caption="">
+  <img src="/images/bf71b3ed-d365-install-3s.png" />
+</Frame>
+
+- If you need to navigate away while this is importing, you can - the process
+  will run in the background
+- Once the import is complete, the progress bar will turn green and read
+  'Solution “loqate_dynamics” imported successfully'
+
+<Frame caption="">
+  <img src="/images/091e8052-d365-install-4s.png" />
+</Frame>
+
+At this point you can move on to the next step, and start configuring your
+forms.
+
+## Configuring your forms
+
+With the solution imported into your environment, the next step is to configure
+your forms to use Loqate controls. There is a control for each of the services
+available in the solution (you can click the links below to go to the relevant
+section of this document):
+
+- [Email Verification](#Email)
+- [Phone Verification](#Phone)
+- [Address Search](#Address)
+
+The configuration method is similar for each control, although the specific
+configuration options are different depending on which control you're using.
+
+For this example we’re going to add the controls to the standard Customer
+Contact form, which looks like this:
+
+<Frame caption="">
+  <img src="/images/88f76eeb-dynamics-contact-list.jpeg" />
+</Frame>
+
+Your forms may well be different and contain different fields or configurations,
+but you can apply the same principles.
+
+We’re going to add Loqate controls to the Email, the Mobile Phone and Address 1
+fields. All control configurations happen on the form editor.
+
+### Email
+
+Here are the steps to take to add Loqate controls to the Email field.
+
+- From your Dynamics 365 environment select Settings > **Advanced
+  Settings**.This will open your Business Settings in a new tab
+- From the Customisation section of the menu, select Customizations >
+  **Customise the system**
+- Select the form you want to update (for this example we're editing “AI for
+  sales”) to open the form editor
+
+<Frame caption="">
+  <img src="/images/024f4c23-dynamics-form-list.jpeg" />
+</Frame>
+
+The form editor is where you will be configuring the Loqate controls for your
+fields. If you’re following the guides for Phone and Email and the steps say “Go
+to the form editor for your form”, this is where you want to be.
+
+- Select the Email field in your form to open its Properties menu on the
+  right-hand side of the screen
+- Expand the Components section, and select the **+ Component&#x20;**&#x62;utton
+
+<Frame caption="">
+  <img src="/images/a2f53a78-dynamics-add-component.jpg" />
+</Frame>
+
+- If you’ve installed or used Loqate before, the Email control may already be in
+  the quick selection menu. If this is the first time you’re installing Loqate,
+  however, you’ll likely need to look the component up
+- To do this, select **Get more components**
+
+<Frame caption="">
+  <img src="/images/b547c89b-dynamics-components-list.jpeg" />
+</Frame>
+
+- Use the search bar to search for “Loqate”. The control is called **Loqate -
+  Email Verification**
+- Once you have selected the control you will be prompted for some configuration
+  information
+
+<Frame caption="">
+  <img src="/images/b1ad7c8f-dynamics-email-configuring.jpeg" />
+</Frame>
+
+- The options available for Email Verification are:
+- - **API Key**: your API key for accessing Loqate services (this is a
+    **required field**)
+  - **Prevent saving invalid emails**: with this set to True, when an email is
+    verified and found to be invalid a user will not be able to save the form
+    until they have entered and validated a correct email address With those
+    settings entered, select Done to set the component
+- You should now see the component update in the preview
+
+<Frame caption="">
+  <img src="/images/72893dc1-dynamics-email-field-updated.jpeg" />
+</Frame>
+
+- Select **Save and Publish** to update your form and publish the control.
+  Depending on your form setup, this can take a little time.
+
+Once the form is published, the Email field will be using the Loqate control. By
+clicking the button you will now be able to validate an entered email address.
+
+### Phone
+
+Installing the phone control is a similar process to the Email control, just
+with a couple of extra options.
+
+- Go to the Form editor for your form
+- Select the **Phone&#x20;**&#x66;ield to open its Properties menu
+- Expand the Components section, and select the **+ Component** button
+- Find the **Loqate - Phone Verification** control and select it
+- Here are the options for this control:
+- - **API Key:** your API key for accessing Loqate services (this is
+    a **required** field)
+  - **Prevent saving invalid numbers:** with this set to True, when a number is
+    verified and found to be invalid a user will not be able to save the form
+    until they have entered and validated a correct number
+  - **Pass if Maybe:** it's possible for the Phone Validation service to respond
+    with a status of “Maybe”. This option will allow you to select how you want
+    the control to behave in this scenario: setting this to True will mean the
+    control returns a positive result for a maybe, while
+    **False&#x20;**&#x77;ill result in a negative response When you have set
+    your options, select **Done**
+- You should see the control update in the preview window
+
+<Frame caption="">
+  <img src="/images/87d5f2be-dynamics-phone-control-updated.jpeg" />
+</Frame>
+
+- Select **Save and Publish** to update your form and publish the control.
+  Depending on your form setup, this can take a little time
+
+Once the form is published, the Phone field will be using the Loqate control. By
+selecting a country and clicking the button you will be able to validate an
+entered phone number.
+
+### Address
+
+Installing the address control is a similar process to the Email and Phone
+controls, but might require an extra step or two.
+
+NOTE: in the Form editor for your form, you might notice that the address fields
+are included as a set, and you're not able to select them individually:
+
+<Frame caption="">
+  <img src="/images/851c221f-dynamics-address-fields.jpeg" />
+</Frame>
+
+This is because the Compound field is often used to add addresses to forms.There
+are a couple of options for how you manage this:
+
+- - You could remove this part of the form and add the other parts individually
+  - Or you could add another separate field to handle the address lookup
+
+For this example we’ll do the second option. Here are the steps to take to do
+this:
+
+- Drag the **Address 1: Street 1&#xA0;**&#x66;ield from the column list on the
+  left, and drop it above the existing address fields
+
+- Select the new field to open its Properties menu, and set its Label to
+  "Address Finder" (or another description of your choice)
+
+- Expand the Components section, and select the **+ Component** button
+
+- Find and select the **Loqate - Address Search** control
+
+- Here are the available options for this control:
+
+  - **API Key:** your API key for accessing Loqate services (this is
+    a **required** field)
+  - **Input fields:&#x20;**&#x74;he set of options from 'Origin' down to
+    'Field20Format' all relate to Loqate input fields, and how you want to use
+    them. You can find more information on what these options do in the
+    **Request parameters** section ofour
+    [Capture Find API page](/apis/address-capture/interactive-find-v1.1/)
+  - **Address:** the set of options from 'Address Line 1' onwards allow you to
+    set where each different address item is inputted into your form when an
+    address is returned. For each option in this section that you want to
+    return, make sure you select the relevant field from your form that you want
+    the address item to map to (note that if you don't want to return a
+    particular field, you don't need to map to it)
+
+<Frame caption="">
+  <img src="/images/a7f9f98a-dynamics-field-mappings.jpg" />
+</Frame>
+
+- When you have set your options, select **Done**
+- Select **Save and Publish** to update your form and publish the control.
+  Depending on your form setup, this can take a little time.
+
+Once the form is published you will be able to perform address lookups using the
+new control.
+
+Here's an example of how that might look:
+
+<Frame caption="">
+  <img src="/images/7adccc56-dynamics-using-address-finder.jpeg" />
+</Frame>

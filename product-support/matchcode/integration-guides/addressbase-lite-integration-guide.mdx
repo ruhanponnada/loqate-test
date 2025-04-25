@@ -1,0 +1,354 @@
+---
+title: "AddressBase Lite Integration Guide"
+---
+
+AddressBase Lite from Ordnance Survey is a Premium source of detailed address intelligence for both business and government.
+
+It is built through a combination of the Ordnance Survey’s own research, the LLPG (Council Data) and PAF (Postal Address File).
+
+It includes:
+
+- 40m records
+- Unique Property Reference Number (UPRN) - which remains constant for the entire lifecycle of all buidlings in the UK
+- Alternative, Historic and Provisional address versions for all buildings (linked via UPRN)
+
+### About This Guide
+
+This guide explains how to access GBGroup's web service products using their Identity Management Platform (IdM), available via SOAP web services. The document provides a general description of the available functionality along with a definition of the corresponding interfaces used to access different datasets and services.
+
+The fundamentals of integrating with the service are described here: Integration Fundamentals
+
+The Input Format section of the document gives product specific details regarding the use of the Matchcode AddressBase Premium Web Service products via IdM.
+
+The Matchcode AddressBase Premium service provides access to the AddressBase Premium data, in a similar manner to Matchcode UK Address searching (see Matchcode UK Address Integration Guide)
+
+The Matchcode AddressBase Premium web service products are available via the Identity Management ExecuteCapture web service method.
+
+Please note: Wherever `<LatestWSDLVersion>` is shown in Example Code below, please replace this with GlobalServices21a.wsdl.
+
+### Input Format
+
+The ExecuteCapture method takes in a ExecuteCaptureRequest data structure, which contains all the information necessary to carry out the request.
+
+**Type: ExecuteCaptureRequest**
+
+| Field Name     | Type                  | Description                                                      |
+| -------------- | --------------------- | ---------------------------------------------------------------- |
+| securityHeader | SecurityHeader        | The username and authentication token used to access the system. |
+| profileRequest | ProfileRequestCapture | Details of the request                                           |
+
+The SecurityHeader structure holds security data to access products and services in the IdM Platform.
+
+The ProfileRequestCapture structure contains the criteria to identify the target product being called and the search data for the product request.
+
+Within the profileRequest element, the profileGuid element should contain the GUID value listed below:
+
+| Profile          | GUID                                 |
+| ---------------- | ------------------------------------ |
+| AddressBase Lite | BCB96C1A-BC4C-4110-8A9E-A097B55380BB |
+
+#### Search Criteria
+
+The address search criteria should be entered into the IdmDataSearchAddress data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → address**
+
+**Alternative Search Criteria** <br/>
+Along with the standard address search criteria, this service supports address searching by one of the address identifiers listed below.
+
+This search criteria is specified by using the additionalItems property of the search address. To carry out a search with one of these identifiers, a key-value pair must be included in the additional items property, with the key being the identifier and the value being the search value. Only one identifier can be used in a search, if more than one are specified the others will be ignored.
+
+This alternative search criteria overrides the standard address search criteria, which will be ignored if a valid identifier is provided in the IDM request.
+
+| Key      | Description                                       |
+| -------- | ------------------------------------------------- |
+| UPRN     | Unique property reference number                  |
+| RM_UDPRN | Royal Mail unique delivery point reference number |
+
+Additional Request Options
+The additional search options, used for configuring options such as casing or transliteration of output results, can be set in the IdmRequestOptions structure located in the ProfileRequestCaptureData.options property.
+
+#### Additional Return Data
+
+Additional data can be returned, or excluded from being returned, for each address by providing one or more values in the `IdmRequestOption.relatedDataItems` property.
+
+For each value provided, the corresponding additional data is returned, and the corresponding additional data for all the values not provided are not returned.
+
+The following values are supported by this service.
+
+| Key Mnemonic      | Description                                       | Returned By Default |
+| ----------------- | ------------------------------------------------- | ------------------- |
+| COUNTRYCODE       | Country code                                      | Yes                 |
+| UDPRN             | PAF unique delivery point reference number        | Yes                 |
+| RM_UDPRN          | Royal Mail unique delivery point reference number | Yes                 |
+| POSTCODE_LOCATOR  | Postcode Locator                                  | Yes                 |
+| LPI_STATUS        | LPI Logical Status                                | Yes                 |
+| SAO_START_NUMBER  | SAO Start Number                                  | Yes                 |
+| SAO_START_SUFFIX  | SAO Start Suffix                                  | Yes                 |
+| SAO_END_NUMBER    | SAO End Number                                    | Yes                 |
+| SAO_END_SUFFIX    | SAO End Suffix                                    | Yes                 |
+| SAO_TEXT          | SAO Text                                          | Yes                 |
+| PAO_START_NUMBER  | PAO Start Number                                  | Yes                 |
+| PAO_START_SUFFIX  | PAO Start Suffix                                  | Yes                 |
+| PAO_END_NUMBER    | PAO End Number                                    | Yes                 |
+| PAO_END_SUFFIX    | PAO End Suffix                                    | Yes                 |
+| PAO_TEXT          | PAO Text                                          | Yes                 |
+| AREA_NAME         | Area Name                                         | Yes                 |
+| ST_DESCRIPTION    | Street Description                                | Yes                 |
+| ST_LOCALITY       | Street Locality                                   | Yes                 |
+| ST_TOWN           | Street Town                                       | Yes                 |
+| ST_ADMIN_AREA     | Street Administrative Area                        | Yes                 |
+| ORG_ORGANISATION  | Organisation Name                                 | Yes                 |
+| ORG_LEGAL_NAME    | Legal Name                                        | Yes                 |
+| DPA_ORG_NAME      | DPA Organisation                                  | Yes                 |
+| DPA_DEP_NAME      | DPA Department                                    | Yes                 |
+| DPA_SUB_NAME      | DPA Sub-Building                                  | Yes                 |
+| DPA_BLD_NAME      | DPA Building Name                                 | Yes                 |
+| DPA_BLD_NO        | DPA Building Number                               | Yes                 |
+| DPA_DEPTFARE_NAME | DPA Dependent Thoroughfare                        | Yes                 |
+| DPA_TFARE_NAME    | DPA Thoroughfare                                  | Yes                 |
+| DPA_DEPLOC        | DPA Double Dependent Locality                     | Yes                 |
+| DPA_LOCALITY      | DPA Dependent Locality                            | Yes                 |
+| DPA_POSTTOWN      | DPA Post Town                                     | Yes                 |
+| DPA_POSTCODE      | DPA Postcode                                      | Yes                 |
+| DPA_CYM_DEPTFARE  | DPA Welsh Dependent Thoroughfare                  | Yes                 |
+| DPA_CYM_TFARE     | DPA Welsh Thoroughfare                            | Yes                 |
+| DPA_CYM_DEPLOC    | DPA Welsh Double Dependent Locality               | Yes                 |
+| DPA_CYM_LOCALITY  | DPA Welsh Dependent Locality                      | Yes                 |
+| DPA_CYM_POSTTOWN  | DPA Welsh Post Town                               | Yes                 |
+| DPA_POBOX         | DPA PO Box Number                                 | Yes                 |
+| DPA_DPS           | DPA Delivery Point Suffix                         | Yes                 |
+
+#### Additional Request Datasets
+
+Data from additional datasets can be enabled or disabled for an address search, by populating the ProfileRequestCaptureData.additionalData property with key-value pairs from the applicable list table below. To use a particular dataset, the user must be subscribed to the dataset.
+
+This information should be entered into the IdmDataArrayAdditionalData data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → additionalData**
+
+| Key             | Possible Values | Description                                              |
+| --------------- | --------------- | -------------------------------------------------------- |
+| LOC_INT         | "Yes" or "No"   | Request Location Intelligence information to be returned |
+| PREMISE_GEOCODE | "Yes" or "No"   | Request Premise Level Geocode information to be returned |
+
+**Location Intelligence**
+The location intelligence dataset is detailed here.
+
+**Premise Level Geocodes**
+The premise level geocodes dataset is detailed here.
+
+**Address Filters**
+Addresses which have been found by the web service, which match a particular kind of address, can be filtered out from the search results by using the address filters functionality described here.
+
+## Output Format
+
+The results of the Matchcode Names web service search are returned in a ProfileResponseDetails structure with a ProfileResponseDetail.responseType of 'CAPTURE'.
+
+The ProfileResponseDetails structure contains a single CaptureResponse data structure which holds an array of IdmDataAddress records containing the returned address data.
+
+ExecuteCaptureResponse > ProfileResponse [0] > ProfileResponseDetails [0] > CaptureResponse > CaptureResponseData > IdmDataAddress [n]
+
+Additional data from a search may be returned in the additionalItems or the groupedAdditionalItems of the IdmDataAddress.
+
+#### Output Fields
+
+Apart from the standard address fields, the following additional fields are returned by the service:
+
+| Field             | Related Data Item Key | Location In Response                                                    |
+| ----------------- | --------------------- | ----------------------------------------------------------------------- |
+| UDPRN             | UDPRN                 | IdmDataAddress → uprn                                                   |
+| RM_UDPRN          | RM_UDPRN              | IdmDataAddress → rmUDPRN                                                |
+| POSTCODE_LOCATOR  | POSTCODE_LOCATOR      | IdmDataAddress → IdmDataBLPU → postcodeLocator                          |
+| LPI_STATUS        | LPI_STATUS            | IdmDataAddress → IdmDataLPI → lpiLogicalStatus                          |
+| SAO_START_NUMBER  | SAO_START_NUMBER      | IdmDataAddress → IdmDataLPI → saoStartNumber                            |
+| SAO_START_SUFFIX  | SAO_START_SUFFIX      | IdmDataAddress → IdmDataLPI → saoStartSuffix                            |
+| SAO_END_NUMBER    | SAO_END_NUMBER        | IdmDataAddress → IdmDataLPI → saoEndNumber                              |
+| SAO_END_SUFFIX    | SAO_END_SUFFIX        | IdmDataAddress → IdmDataLPI → saoEndSuffix                              |
+| SAO_TEXT          | SAO_TEXT              | IdmDataAddress → IdmDataLPI → saoText                                   |
+| PAO_START_NUMBER  | PAO_START_NUMBER      | IdmDataAddress → IdmDataLPI → paoStartNumber                            |
+| PAO_START_SUFFIX  | PAO_START_SUFFIX      | IdmDataAddress → IdmDataLPI → paoStartSuffix                            |
+| PAO_END_NUMBER    | PAO_END_NUMBER        | IdmDataAddress → IdmDataLPI → paoEndNumber                              |
+| PAO_END_SUFFIX    | PAO_END_SUFFIX        | IdmDataAddress → IdmDataLPI → paoEndSuffix                              |
+| PAO_TEXT          | PAO_TEXT              | IdmDataAddress → IdmDataLPI → paoText                                   |
+| AREA_NAME         | AREA_NAME             | IdmDataAddress → IdmDataLPI → areaName                                  |
+| ST_DESCRIPTION    | ST_DESCRIPTION        | IdmDataAddress → IdmDataStreetDescriptor → streetDescription            |
+| ST_LOCALITY       | ST_LOCALITY           | IdmDataAddress → IdmDataStreetDescriptor → locality                     |
+| ST_TOWN           | ST_TOWN               | IdmDataAddress → IdmDataStreetDescriptor → townName                     |
+| ST_ADMIN_AREA     | ST_ADMIN_AREA         | IdmDataAddress → IdmDataStreetDescriptor → administrativeArea           |
+| ORG_ORGANISATION  | ORG_ORGANISATION      | IdmDataAddress → IdmDataCompanyInformation → organisationName           |
+| ORG_LEGAL_NAME    | ORG_LEGAL_NAME        | IdmDataAddress → IdmDataCompanyInformation → legalOrganisationLegalName |
+| DPA_ORG_NAME      | DPA_ORG_NAME          | IdmDataAddress → additionalItems → DPA_ORG_NAME                         |
+| DPA_DEP_NAME      | DPA_DEP_NAME          | IdmDataAddress → additionalItems → DPA_DEP_NAME                         |
+| DPA_SUB_NAME      | DPA_SUB_NAME          | IdmDataAddress → additionalItems → DPA_SUB_NAME                         |
+| DPA_BLD_NAME      | DPA_BLD_NAME          | IdmDataAddress → additionalItems → DPA_BLD_NAME                         |
+| DPA_BLD_NO        | DPA_BLD_NO            | IdmDataAddress → additionalItems → DPA_BLD_NO                           |
+| DPA_DEPTFARE_NAME | DPA_DEPTFARE_NAME     | IdmDataAddress → additionalItems → DPA_DEPTFARE_NAME                    |
+| DPA_TFARE_NAME    | DPA_TFARE_NAME        | IdmDataAddress → additionalItems → DPA_TFARE_NAME                       |
+| DPA_DEPLOC        | DPA_DEPLOC            | IdmDataAddress → additionalItems → DPA_DEPLOC                           |
+| DPA_LOCALITY      | DPA_LOCALITY          | IdmDataAddress → additionalItems → DPA_LOCALITY                         |
+| DPA_POSTTOWN      | DPA_POSTTOWN          | IdmDataAddress → additionalItems → DPA_POSTTOWN                         |
+| DPA_POSTCODE      | DPA_POSTCODE          | IdmDataAddress → additionalItems → DPA_POSTCODE                         |
+| DPA_CYM_DEPTFARE  | DPA_CYM_DEPTFARE      | IdmDataAddress → welshSubStreet                                         |
+| DPA_CYM_TFARE     | DPA_CYM_TFARE         | IdmDataAddress → welshStreet                                            |
+| DPA_CYM_DEPLOC    | DPA_CYM_DEPLOC        | IdmDataAddress → welshSubLocality                                       |
+| DPA_CYM_LOCALITY  | DPA_CYM_LOCALITY      | IdmDataAddress → welshLocality                                          |
+| DPA_CYM_POSTTOWN  | DPA_CYM_POSTTOWN      | IdmDataAddress → welshTown                                              |
+| DPA_POBOX         | DPA_POBOX             | IdmDataAddress → additionalItems → DPA_POBOX                            |
+| DPA_DPS           | DPA_DPS               | IdmDataAddress → additionalItems → DPA_DPS                              |
+
+### Example Requests & Responses
+
+#### Example Requests
+
+The following example shows how to use the alternative search criteria mentioned previously, to to search for an address by its UPRN value.
+
+```java SOAP
+<soapenv:envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:a="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/"
+                  xmlns:head="http://gbworld.gb.co.uk/types/header/"
+                  xmlns:req="http://gbworld.gb.co.uk/types/core/request/"
+                  xmlns:data="http://gbworld.gb.co.uk/types/core/data/">
+    <soapenv:header/>
+    <soapenv:body>
+        <a:executecapturerequest>
+            <a:securityheader>
+                <head:authenticationtoken>C18AB65D-85A0-4C48-81A9-C5E23058C819</head:authenticationtoken>
+                <head:username>CENSORED</head:username>
+            </a:securityheader>
+            <a:profilerequest>
+                <req:customerreference>Sample ABL Lookup</req:customerreference>
+                <req:profileguid>BCB96C1A-BC4C-4110-8A9E-A097B55380BB</req:profileguid>
+                <req:configurationid>1</req:configurationid>
+                <req:requestdata>
+                    <req:address>
+                        <data:additionalItems>
+                            <data:item>
+                                <data:key>UPRN</data:key>
+                                <data:value>200000069805</data:value>
+                                <!-- "Bank Of England,Threadneedle Street,London,EC2R 8AH" -->
+                            </data:item>
+                        </data:additionalItems>
+                    </req:address>
+                    <req:filters tmp="?"/>
+                    <req:options>
+                        <req:addressenvelopeformat>A4P</req:addressenvelopeformat>
+                        <req:offset>0</req:offset>
+                        <req:maxreturn>50</req:maxreturn>
+                        <req:transliteration>NATIVE</req:transliteration>
+                        <req:countrycodeformat>ISO3</req:countrycodeformat>
+                    </req:options>
+                    <req:additionaldata tmp="?"/>
+                </req:requestdata>
+            </a:profilerequest>
+        </a:executecapturerequest>
+    </soapenv:body>
+</soapenv:envelope>
+```
+
+#### Example Responses
+
+```java
+SOAP
+<soap-env:envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap-env:header/>
+    <soap-env:body>
+        <ns5:executecaptureresponse xmlns:ns5="http://gbworld.gb.co.uk/idm-globalservices/messages/`<LatestWSDLVersion>`/"
+                                    xmlns:data="http://gbworld.gb.co.uk/types/core/data/"
+                                    xmlns:head="http://gbworld.gb.co.uk/types/header/"
+                                    xmlns:req="http://gbworld.gb.co.uk/types/core/request/">
+            <ns5:securityheader>
+                <head:authenticationtoken>1273F4FA-3AE7-4742-A0C6-626D006A445A</head:authenticationtoken>
+                <head:authenticationtime>2014-02-14T13:05:11.000Z</head:authenticationtime>
+                <head:sessionexpirytime>2014-02-14T13:35:20.449Z</head:sessionexpirytime>
+            </ns5:securityheader>
+            <ns5:transactionguid>8F9F9258-E772-45FC-B486-7F09FD3F067B</ns5:transactionguid>
+            <ns5:profileresponse>
+                <req:profileheader>
+                    <req:profileguid>BCB96C1A-BC4C-4110-8A9E-A097B55380BB</req:profileguid>
+                    <req:profilename>Matchcode AddressBase</req:profilename>
+                    <req:transactionguid>8F9F9258-E772-45FC-B486-7F09FD3F067B</req:transactionguid>
+                    <req:transactiontimestamp>2014-02-14T13:05:20.537Z</req:transactiontimestamp>
+                    <req:profilestatus>SUCCESS</req:profilestatus>
+                </req:profileheader>
+                <req:profileresponsedetails>
+                    <req:transactionguid>87F581B6-5EC4-4F5D-9335-245B95C33B05</req:transactionguid>
+                    <req:componentname>AddressBase</req:componentname>
+                    <req:componentstatus>SUCCESS</req:componentstatus>
+                    <req:componentaction>VERIFY</req:componentaction>
+                    <req:responsetype>CAPTURE</req:responsetype>
+                    <req:notes>[]</req:notes>
+                    <req:invoice>
+                        <req:invoicelist>
+                            <req:invoiceguid>8BBC5551-5093-4563-B03A-867E6482B7E6</req:invoiceguid>
+                            <req:billinginformationguid>CCB1C022-BF7C-4C71-B445-710110FA0FC7
+                            </req:billinginformationguid>
+                            <req:billingpoints>1</req:billingpoints>
+                            <req:creditsused>1</req:creditsused>
+                            <req:datasetinvoices>
+                                <req:datasetcode>ABL</req:datasetcode>
+                                <req:billingpoints>1</req:billingpoints>
+                                <req:recordsreturned>1</req:recordsreturned>
+                                <req:datalicenceguid>CCB1C022-BF7C-4C71-B445-710110FA0FC7</req:datalicenceguid>
+                            </req:datasetinvoices>
+                        </req:invoicelist>
+                    </req:invoice>
+                    <req:captureresponse>
+                        <req:resultStatus>SINGLE</req:resultStatus>
+                        <req:recordsReturned>1</req:recordsReturned>
+                        <req:moreData>false</req:moreData>
+                        <req:totalRecordCount>1</req:totalRecordCount>
+                        <req:totalPages>1</req:totalPages>
+                        <req:matchScore>100</req:matchScore>
+                        <req:matchLevel>PREMISE</req:matchLevel>
+                        <req:outputStatus>VERIFIED</req:outputStatus>
+                        <req:fieldStatus>33003000</req:fieldStatus>
+                        <req:responseCount>1</req:responseCount>
+                        <req:response>
+                            <req:address>
+                                <data:street>Threadneedle Street</data:street>
+                                <data:town>LONDON</data:town>
+                                <data:postCode>EC2R 8AH</data:postCode>
+                                <data:buildingName>The Bank Of England</data:buildingName>
+                                <data:stateRegion>London</data:stateRegion>
+                                <data:countryCode>GBR</data:countryCode>
+                                <data:dpsZipPlus>9ZG</data:dpsZipPlus>
+                                <data:formattedAddress>The Bank Of England,Threadneedle Street,,LONDON,,EC2R 8AH</data:formattedAddress>
+                                <data:additionalItems>
+                                    <data:item>
+                                        <data:key>DPA_DPS</data:key>
+                                        <data:value>1A</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>DATASOURCE</data:key>
+                                        <data:value>ABL</data:value>
+                                    </data:item>
+                                </data:additionalItems>
+                                <data:uprn>200000069805</data:uprn>
+                                <data:lpi>
+                                    <data:lpiLogicalStatus>1</data:lpiLogicalStatus>
+                                    <data:paoText>THE BANK OF ENGLAND</data:paoText>
+                                </data:lpi>
+                                <data:blpu>
+                                    <data:postcodeLocator>EC2R 8AH</data:postcodeLocator>
+                                </data:blpu>
+                                <data:streetDescriptor>
+                                    <data:streetDescription>THREADNEEDLE STREET</data:streetDescription>
+                                    <data:townName>LONDON</data:townName>
+                                    <data:administrativeArea>CITY OF LONDON</data:administrativeArea>
+                                </data:streetDescriptor>
+                                <data:companyInformation/>
+                                <data:rmUDPRN>27599055</data:rmUDPRN>
+                            </req:address>
+                        </req:response>
+                    </req:captureresponse>
+                </req:profileresponsedetails>
+            </ns5:profileresponse>
+        </ns5:executecaptureresponse>
+    </soap-env:body>
+</soap-env:envelope>
+```
+
+### Error Information
+
+Information on possible error codes is given here: [Error Code Information](/product-support/matchcode/general-information/error-codes/)

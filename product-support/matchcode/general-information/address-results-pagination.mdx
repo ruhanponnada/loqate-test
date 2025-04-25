@@ -1,0 +1,17 @@
+---
+title: "Address Results Pagination"
+---
+
+The Matchcode address web services support pagination of search results, allowing chunks of results to be returned as the user wants. This pagination is controlled via the maxReturn and offset properties within the options component of a IDM request.
+
+The maxReturn property specifies the maximum number of results to return per page, and the offset property specifies the index (starting at zero) within the total number of results to start the page at.
+
+To request a specified page within the search results, the search should be re-submitted again, with updated values for the maxReturn and offset properties.
+
+The captureResponse component of the IDM response contains several properties related to pagination, listed below:
+
+| Property         | Description                                                                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| moreData         | Set to "true" when there are more results available in other pages, i.e. more than maxReturn results are available, and "false" when this is not the case |
+| totalRecordCount | Number of results available across all the pages                                                                                                          |
+| totalPages       | Number of pages which the results are split into                                                                                                          |

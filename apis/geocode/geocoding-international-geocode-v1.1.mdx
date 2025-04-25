@@ -1,0 +1,142 @@
+---
+title: "Geocoding International Geocode v1.1"
+description: ""
+sidebarTitle: "Geocoding International Geocode v1.1"
+---
+
+Returns the WGS84 latitude and longitude for the given location. Supports most international locations.
+
+**This method will consume credit.**
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+### Base URL
+
+```
+https://api.addressy.com/geocoding/international/geocode/v1.1/
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+### Secure SOAP WSDL
+
+```
+https://api.addressy.com/geocoding/international/geocode/v1.1/wsdl3.ws
+```
+
+### Request parameters
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.
+</Note>
+
+`*` = required field
+
+| Name       | Type   | Values | Description                                                                                                                                                               |
+| ---------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key\*      | String |        | The key to use to authenticate to the service.                                                                                                                            |
+| Country\*  | String |        | The name or ISO 2 or 3 character code for the country to search in. Most country names will be recognised but the use of the ISO country code is recommended for clarity. |
+| Location\* | String |        | The location to geocode. This can be a postal code or place name.                                                                                                         |
+
+### Response
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+| Name      | Type   | Example           | Description                                |
+| --------- | ------ | ----------------- | ------------------------------------------ |
+| Name      | String | 90210             | The name of the location found.            |
+| Latitude  | Float  | 34.1075775639288  | The WGS84 latitude of the found location.  |
+| Longitude | Float  | -118.416587904777 | The WGS84 longitude of the found location. |
+
+Try it now
+Use the form below to test the service.
+Note: there is a usage limit on the demo key, but you can swap it for one of your own if you need to.
+
+Key _
+AA11-AA11-AA11-AA11 (Demo key)
+Country _
+Location \*
+Try it
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the list of common errors.
+
+| Id   | Error             | Cause                                                                                                                     | Resolution                                                                                              |
+| ---- | ----------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1001 | Country Required  | The Country parameter was not supplied.                                                                                   | Please ensure that you supply the Country parameter and try again.                                      |
+| 1002 | Country Unknown   | The Country parameter was not recognised. Check the spelling and, if in doubt, use a valid ISO 2 or 3 digit country code. | Provide a valid ISO 2 or 3 digit country code or use a web service to convert country name to ISO code. |
+| 1003 | Location Required | No Location data was supplied but one is needed.                                                                          | Please ensure that you supply a location and try again.                                                 |
+
+### Example requests
+
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+#### Available endpoints
+
+Dataset (ADO.NET)
+
+#### Example request
+
+```
+https://api.addressy.com/Geocoding/International/Geocode/v1.10/dataset.ws?Key=AA11-AA11-AA11-AA11&Country=US&Location=90210
+```
+
+### Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Language
+
+```asp ASP function
+function Geocoding_International_Geocode_v1_10(Key, Country, Location)
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/Geocoding/International/Geocode/v1.10/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&Country=" & Server.UrlEncode(Country)
+      strUrl = strUrl & "&Location=" & Server.UrlEncode(Location)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set Geocoding_International_Geocode_v1_10 = rst
+
+      'FYI: The recordset returns the following columns:
+      'Name
+      'Latitude
+      'Longitude
+
+end function
+```

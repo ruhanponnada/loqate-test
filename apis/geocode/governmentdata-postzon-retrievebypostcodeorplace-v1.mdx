@@ -1,0 +1,195 @@
+---
+title: "Governmentdata Postzon Retrievebypostcodeorplace v1"
+description: ""
+sidebarTitle: "Governmentdata Postzon Retrievebypostcodeorplace v1"
+---
+
+Returns the Postzon record for the given postcode.
+
+**This method will consume credit.**
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+### Base URL
+
+```
+https://api.addressy.com/governmentdata/postzon/retrievebypostcodeorplace/v1/
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+### Secure SOAP WSDL
+
+```
+https://api.addressy.com/governmentdata/postzon/retrievebypostcodeorplace/v1/wsdl3.ws
+```
+
+### Request parameters
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.
+</Note>
+
+`*` = required field
+
+| Name              | Type   | Values | Description                                                                            |
+| ----------------- | ------ | ------ | -------------------------------------------------------------------------------------- |
+| Key\*             | String |        | The key to use to authenticate to the service.                                         |
+| PostcodeOrPlace\* | String |        | The postcode or place name to use to search with.                                      |
+| UserName          | String |        | The username associated with the Royal Mail license (not required for click licenses). |
+
+### Response
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+| Name                            | Type    | Example                                                 | Description                                                                                                                                  |
+| ------------------------------- | ------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Location                        | String  |                                                         | The name of the location.                                                                                                                    |
+| Easting                         | Integer | 517200                                                  | The easting coordinate of the location. Represents a distance in meters east from the most south westerly position of the GB mapping grid.   |
+| Northing                        | Integer | 208200                                                  | The northing coordinate of the location. Represents a distance in meters north from the most south westerly position of the GB mapping grid. |
+| Latitude                        | Float   | 51.7602                                                 | The WGS84 latitude coordinate of the location.                                                                                               |
+| Longitude                       | Float   | -0.3032                                                 | The WGS84 longitude coordinate of the location.                                                                                              |
+| OsGrid                          | String  | TL 17200 08200                                          | The OS grid reference for the location.                                                                                                      |
+| CountryCode                     | String  | 064                                                     | The ONS country code for the location.                                                                                                       |
+| CountryName                     | String  | England                                                 | The name corresponding to CountryCode.                                                                                                       |
+| CountyCode                      | String  | 26                                                      | The ONS county code for the location. For locations without 2 tier local administration, this will be 00.                                    |
+| CountyName                      | String  | Hertfordshire                                           | The name corresponding to CountyCode.                                                                                                        |
+| DistrictCode                    | String  | 26UG                                                    | The ONS district code for the location.                                                                                                      |
+| DistrictName                    | String  | St Albans                                               | The name corresponding to DistrictCode.                                                                                                      |
+| WardCode                        | String  | 26UGGH                                                  | The ONS ward code for the location.                                                                                                          |
+| WardName                        | String  | Marshalswick North                                      | The name corresponding to WardCode.                                                                                                          |
+| NhsShaCode                      | String  | Y51                                                     | The ONS code for the NHS Strategic Health Authority for the location.                                                                        |
+| NhsShaName                      | String  | North, Midlands and the East Programme for IT (NMEPFiT) | The name corresponding to NhsShaCode.                                                                                                        |
+| NhsPctCode                      | String  | 5P4                                                     | The ONS code for the NHS Primary Care Trust for the location.                                                                                |
+| NhsPctName                      | String  | West Hertfordshire PCT                                  | The name corresponding to NhsPctCode.                                                                                                        |
+| LeaCode                         | String  | 919                                                     | The ONS code for the Local Education Authority for the location.                                                                             |
+| LeaName                         | String  | Hertfordshire                                           | The name corresponding to LeaCode.                                                                                                           |
+| GovernmentOfficeCode            | String  | G                                                       | The ONS code for the Government Office for the location.                                                                                     |
+| GovernmentOfficeName            | String  | East of England                                         | The name corresponding to GovernmentOfficeCode.                                                                                              |
+| WestminsterConstituencyCode     | String  | 218                                                     | The ONS code for the Westminster parliamentary constituency for the location.                                                                |
+| WestminsterConstituencyName     | String  | Hitchin and Harpenden                                   | The name corresponding to WestminsterConstituencyCode.                                                                                       |
+| WestminsterMP                   | String  | Rt Hon Peter Lilley                                     | The name of the Westminster Member of Parliament for the location.                                                                           |
+| WestminsterParty                | String  | Conservative                                            | The party for WestminsterMP.                                                                                                                 |
+| WestminsterConstituencyCode2010 | String  | 382                                                     | The ONS code (or temporary if > 900) for the Westminster parliamentary constituency for the location in 2010.                                |
+| WestminsterConstituencyName2010 | String  | St Albans                                               | The name corresponding to WestminsterConstituencyCode2010.                                                                                   |
+
+#### Try it now
+
+Use the form below to test the service.
+
+<Note>
+  Note: there is a usage limit on the demo key, but you can swap it for one of
+  your own if you need to.
+</Note>
+
+Key _
+AA11-AA11-AA11-AA11 (Demo key)
+PostcodeOrPlace _
+UserName
+Try it
+
+## Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the list of common errors.
+
+| Id   | Error                    | Cause                                           | Resolution                                                                 |
+| ---- | ------------------------ | ----------------------------------------------- | -------------------------------------------------------------------------- |
+| 1001 | PostcodeOrPlace Required | The PostcodeOrPlace parameter was not supplied. | Please ensure that you supply the PostcodeOrPlace parameter and try again. |
+
+### Example requests
+
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+### Available endpoints
+
+#### Dataset (ADO.NET)
+
+#### Example request
+
+```
+https://api.addressy.com/GovernmentData/Postzon/RetrieveByPostcodeOrPlace/v1.00/dataset.ws?Key=AA11-AA11-AA11-AA11&PostcodeOrPlace=AL4 0BS&UserName=David
+```
+
+### Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Language
+
+```asp ASP function
+function GovernmentData_Postzon_RetrieveByPostcodeOrPlace_v1_00(Key, PostcodeOrPlace, UserName)
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/GovernmentData/Postzon/RetrieveByPostcodeOrPlace/v1.00/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&PostcodeOrPlace=" & Server.UrlEncode(PostcodeOrPlace)
+      strUrl = strUrl & "&UserName=" & Server.UrlEncode(UserName)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set GovernmentData_Postzon_RetrieveByPostcodeOrPlace_v1_00 = rst
+
+      'FYI: The recordset returns the following columns:
+      'Location
+      'Easting
+      'Northing
+      'Latitude
+      'Longitude
+      'OsGrid
+      'CountryCode
+      'CountryName
+      'CountyCode
+      'CountyName
+      'DistrictCode
+      'DistrictName
+      'WardCode
+      'WardName
+      'NhsShaCode
+      'NhsShaName
+      'NhsPctCode
+      'NhsPctName
+      'LeaCode
+      'LeaName
+      'GovernmentOfficeCode
+      'GovernmentOfficeName
+      'WestminsterConstituencyCode
+      'WestminsterConstituencyName
+      'WestminsterMP
+      'WestminsterParty
+      'WestminsterConstituencyCode2010
+      'WestminsterConstituencyName2010
+
+end function
+```

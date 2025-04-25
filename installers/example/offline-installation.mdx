@@ -1,0 +1,225 @@
+---
+title: "Offline Installation"
+---
+
+This section will describe offline installation scenario where the user is not able to connect to the internet and has a license pack file, and proceeds to download and install the data packs.
+
+In order to proceed with offline installation, the license pack and the data packs need be downloaded separately in a machine which has internet connectivity and then copied over to the install machine so that the Install Manager can access them at install time.
+
+The recommended steps for installation are as follows:
+
+- Download License pack on a machine with internet access using the License Key
+- Download datapacks(\*.lfz files) on a machine with internet access
+- Copy the downloaded license pack and downloaded datapacks to the machine where they have to be installed (with no internet access).
+- Run the Install Manager on the install machine to install the datapacks.
+  The following sections demonstrate the steps in the data installation process.
+
+## Graphical User Interface Mode
+
+Download
+
+Install Manager should be run on a machine which can access the internet.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image1-e1420596320437.png" />
+</Frame>
+
+If a proxy server is used, the checkbox "Use Proxy Server" needs to be checked and the Proxy server name and port need to be entered as shown below. If the proxy server needs authentication, the checkbox "Use authentication for proxy server" should also be checked & the user name and password need to be provided.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image2 (1).png" />
+</Frame>
+
+The first step is to provide the installation folder. The Loqate License Pack will be written to this folder. Until 2015Q1 release, the Loqate license pack was named loqateLicense. From 2015Q1 release the license pack format is changed from "loqateLicense" to "license.lfs".
+
+<Frame caption="">
+  <img src="/images/IM_Online_image2 (1).png" />
+</Frame>
+
+In the next step provide a license key. When a license key is entered, Install Manager will communicate with licensing.loqate.com. If the license key is valid, the server will return the corresponding license pack to Install Manager and then Install Manager will write the license pack to the installation folder.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image4 (1).png" />
+</Frame>
+
+Once the license pack is saved to disk, Install Manager will display the contents of the license for reference.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image5 (1).png" />
+</Frame>
+
+There are 2 options available for downloading as shown below. Select the "Download datapacks" option to download the required datapacks.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image6 (1).png" />
+</Frame>
+
+After a valid option is selected, Install Manager will communicate with licensing.loqate.com and fetch details about the latest available licensed data packs that are compatible with the Local API version that is currently installed. The details of available data packs to install will be shown next. In the case a user selects an existing data folder for installation, it will show newer data packs available to download and install. The release date of the available data packs will also be displayed. The user can select the required data packs from this screen by checking the checkboxes next to each product.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image7 (1).png" />
+</Frame>
+
+If the user selects the download option, Install Manager will download the data packs.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image8 (1).png" />
+</Frame>
+
+The download can be paused and resumed at any point. If the "Pause Download" button is pressed the UI will change as follows:
+
+<Frame caption="">
+  <img src="/images/IM_Online_image9 (1).png" />
+</Frame>
+
+The next screen displays location where the downloaded data packs will be installed. Since the datapacks are to be installed on a different machine, the installation can be stopped at this stage by closing the window or by the 'Cancel' button.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image10 (1).png" />
+</Frame>
+
+Installation
+
+Once the downloaded license pack and datapacks are copied to the Install machine, run the Install Manager on the install machine.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image1-e1420596320437 (1).png" />
+</Frame>
+
+Select the installation folder, the license pack can be placed in this folder.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image3 (2).png" />
+</Frame>
+
+Choose the option "I have a license pack" and select the license pack file. From 2015Q1 release onwards, if the older format license pack "loqateLicense" is selected, it will be changed to the new format "license.lfs"
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image24.png" />
+</Frame>
+
+Install Manager will display the contents of the license for reference.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image5 (1).png" />
+</Frame>
+
+In the next screen choose the option "use local data packs" and select the folder where the downloaded datapacks were copied to.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image25.png" />
+</Frame>
+
+The available datapacks will be displayed for selection. Once the required datapacks are selected for installation, continue by clicking 'Next' button.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image26.png" />
+</Frame>
+
+The next screen displays location where the downloaded data packs will be installed.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image27.png" />
+</Frame>
+
+Next, the user is shown the data license agreement.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image28.png" />
+</Frame>
+
+Once the user accepts the license agreement, the next screen will proceed to installing the selected data packs.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image29.png" />
+</Frame>
+
+Finally, Install Manager will complete the installation as shown. The install folder will now have the _.lfs files along with _\_manifest.properties for the datapacks which were selected for installation.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image13 (1).png" />
+</Frame>
+
+## Command Line Interface Mode
+
+Install Manager can be started in command line mode by providing the command line option: mode=commandline. Command line mode is the default in Linux and UNIX platforms. On Linux/Unix platforms, Install Manager can be launched by running the script InstallManager.sh.
+
+Download
+
+The first screen displays the version of the Local API currently installed.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image14 (1).png" />
+</Frame>
+
+If a proxy server is used, the Proxy server name and port need to be entered as shown below. If the proxy server needs authentication, the user name and password need to be provided.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image15 (1).png" />
+</Frame>
+
+<Frame caption="">
+  <img src="/images/IM_Online_image16 (1).png" />
+</Frame>
+
+The first step is to provide the installation folder. If the user selects an empty folder the installation will proceed as a fresh installation of the data packs. If the user selects an existing data folder, the installer will proceed as an update installation.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image17 (1).png" />
+</Frame>
+
+The next step is to provide a license key. When a license key is entered, Install Manager will communicate with licensing.loqate.com. If the license key is valid, the server will return the corresponding license pack to Install Manager and then Install Manager will write the license pack to the installation folder. Choose the option to download the datapacks.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image30 (1).png" />
+</Frame>
+
+When the list of available data packs is shown, enter "all" to select all data packs. Alternatively, if only certain products are desired for installation, enter the numbers next to those products, ending the selection by entering "done". Install Manager downloads data packs from download.loqate.com.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image31.png" />
+</Frame>
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image32.png" />
+</Frame>
+
+Installation
+
+Once the downloaded license pack and datapacks are copied to the Install machine, run the Install Manager on the install machine.
+
+<Frame caption="">
+  <img src="/images/IM_Online_image14 (2).png" />
+</Frame>
+
+Select the installation folder, the license pack can be placed in this folder. Choose the option "I have a license pack" and select the license pack file. From 2015Q1 release onwards, if the older format license pack "loqateLicense" is selected, it will be changed to the new format "license.lfs".
+
+Install Manager will display the contents of the license for reference.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image33.png" />
+</Frame>
+
+Choose the option "install using locally available data packs" and select the folder where the downloaded datapacks were copied to.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image34.png" />
+</Frame>
+
+The available datapacks will be displayed for selection.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image35.png" />
+</Frame>
+
+Next, the user is shown the data license agreement.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image36.png" />
+</Frame>
+
+Once the user accepts the license agreement, the Install Manager will proceed to installing the selected data packs.
+
+<Frame caption="">
+  <img src="/images/IM_Offline_image37.png" />
+</Frame>

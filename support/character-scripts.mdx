@@ -1,0 +1,37 @@
+---
+title: "Supported Character Sets"
+sidebarTitle: "Character Scripts"
+---
+
+**The Verify process features the option to transliterate between Latin and a number of native scripts. All supported scripts are listed below, along with the primary countries or territories where they are officially supported.\&#xA;**
+
+The transliteration method is run following the reference matching stage in the Verify process. Most transliteration data is referential, rather than being mapped by character and sound. For example, a street value verified in Japan using Kanji will be mapped to the corresponding Latin value that could be found in the main Japan reference data. In cases where the reference data cannot provide a value in the native or Latin script, a character mapping may be used to convert the value.
+
+It is possible that a country will output some values in non-Latin scripts where the requested script is neither native or dominant. These, however, are not supported by Loqate. For example, the reference data for some regions in Eastern Europe may have a subset of Cyrillic values for larger geographic or urban areas. It is not recommended to use transliteration outside of the supported script/country combinations below, as data coverage and quality can be limited and inconsistent.
+
+### Using OutputScript
+
+By default, the server option has no value. This means the process will attempt to detect and match the script used within the input record. This is also the default behavior if the option is passed a value other than those specified below.
+
+The codes below follow the ISO 15924 standard for character scripts. Transliteration between native and Latin is only available in the stated countries indicated next to the script name.
+
+Latn – Latin (English transliteration wherever possible)\
+Cyrl – Cyrillic (Russia)\
+Grek – Greek (Greece)\
+Hebr – Hebrew (Israel)\
+Hani – Kanji (Japan)\
+Hans – Simplified Chinese (China)\
+Arab – Arabic (United Arab Emirates)\
+Thai – Thai (Thailand)\
+Hang – Hangul (South Korea)\
+Native – Output in the native script wherever possible
+
+**_Note: Transliteration is bi-directional and generally happens from Native to Latin and Latin to Native using data for countries stated above next to the scripts. Loqate does not support processing nor transliteration between Latin and native scripts outside of these stated countries. For example, if Greek (Grek) is used on a Portugal address, Loqate will not be able to parse or validate the record, nor transliterate it into Latin script. Similarly, a Portugal address entered in Latin will not transliterate to any other script._**
+
+### Transliteration, not translation
+
+Transliteration is not translation. Translation is the process of converting text in one language into text in another language while keeping the underlying meaning.
+
+Transliteration is simply the process of converting fields or characters from one alphabet to another without keeping the underlying meaning. The sounds are being replicated phonetically in another language, not the meaning.
+
+For example, if you go to a sushi restaurant, you might see 鰤 on a menu. It gets transliterated into Hamachi. If it was translated, it would be called Japanese amberjack or yellowtail. う なぎ is transliterated to Unagi, but translated to eel.

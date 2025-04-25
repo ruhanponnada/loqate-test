@@ -1,0 +1,193 @@
+---
+title: "MultiDatabase Related Data Codes"
+---
+
+#### AddressBase Premium Fields
+
+| Related Data Field in Request | Description                                       | Return Field response.address                                                  |
+| ----------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
+| UDPRN                         | Royal Mail Unique Delivery Point Reference Number | address.additionalItems.UDPRN and address.rmUDPRN                              |
+| UPRN                          | UPRN (Unique Property Reference Number)           | address.additionalItems.UPRN and address.uprn                                  |
+| LPI_KEY                       | LPI Key                                           | address.additionalItems.LPI_KEY and address.lpi.LPIKey                         |
+| LPI_STATUS                    | LPI Logical Status                                | address.lpi.LPILogicalStatus                                                   |
+| USRN                          | USRN (Unique Street Reference Number)             | address.lpi.USRN                                                               |
+| USRN_MATCH_INDI               | USRN Match Indicator                              | address.lpi.USRNMatchIndicator                                                 |
+| LEVEL                         | Memorandum of Vertical Position                   | address.lpi.level                                                              |
+| OFFICIAL_FLAG                 | Status of the Address                             | address.lpi.OfficialFlag                                                       |
+| BLPU_STATUS                   | BLPU Logical Status                               | address.blpu.BLPULogicalStatus                                                 |
+| BLPU_STATE                    | BLPU State                                        | address.blpu.BLPUState                                                         |
+| PARENT_UPRN                   | Parent UPRN                                       | address.additionalItems.ParentUPRN and address.blpu.ParentUPRN                 |
+| X_COORDINATE                  | Easting                                           | address.blpu.Easting                                                           |
+| Y_COORDINATE                  | Northing                                          | address.blpu.Northing                                                          |
+| RPC                           | Representative Point Code                         | address.blpu.RPC                                                               |
+| BLPU_CUSTODIAN                | LLPG Custodian                                    | address.blpu.LocalCustodianCode                                                |
+| BLPU_END_DATE                 | BLPU End Date                                     | address.blpu.BLPUEndDate                                                       |
+| POSTAL_ADDRESS                | Postal Address                                    | address.blpu.PostalAddressable                                                 |
+| MULTI_OCC_COUNT               | Multi-Occupancy Count                             | address.blpu.MultiOccCount                                                     |
+| BLPU_STATE_DATE               | BLPU State Date                                   | address.blpu.BLPUStateDate                                                     |
+| BLPU_START_DATE               | BLPU Start Date                                   | address.blpu.BLPUStartDate                                                     |
+| BLPU_UPDATE_DATE              | BLPU Update Date                                  | address.blpu.BLPULastUpdateDate                                                |
+| BLPU_ENTRY_DATE               | BLPU Entry Date                                   | address.blpu.BLPUEntryDate                                                     |
+| CLASS_CODE                    | Class Code                                        | address.classification,ClassificationCode                                      |
+| CLASS_PRIMARY                 | Class Primary                                     | address.classification ClassPrimaryText                                        |
+| CLASS_SECONDARY               | Class Secondary                                   | address.classification ClassPrimaryText                                        |
+| CLASS_TERTIARY                | Class Tertiary                                    | address.classification ClassTertiaryText                                       |
+| CLASS_QUATERNARY              | Class Quaternary                                  | address.classification.ClassQuaternaryText                                     |
+| CLASS_END_DATE                | Class End Date                                    | address.classification.ClassEndDate                                            |
+| CLASS_START_DATE              | Class Start Date                                  | address.classification.ClassStartDate                                          |
+| CLASS_UDPATE_DATE             | Class Update Date                                 | address.classification.ClassLastUpdateDate                                     |
+| CLASS_ENTRY_DATE              | Class Entry Date                                  | address.classification.EntryDate                                               |
+| CLASS_SCHEME                  | Scheme                                            | address.classification.ClassScheme                                             |
+| ORG_KEY                       | Unique Key for Organisation Record                | address.additionalItems.ORG_KEY and address.companyInformation.organisationKey |
+| ORG_ORGANISATION              | ABP Organisation Name                             | address.companyInformation.organisationName                                    |
+| ORG_LEGAL_NAME                | Organisation Registered Legal Name                | address.companyInformation.legalOrganisationLegalName                          |
+| ORG_START_DATE                | Organisation Start Date                           | address.companyInformation.organisationStartDate                               |
+| ORG_END_DATE                  | Organisation End Date                             | address.companyInformation .organisationEndDate                                |
+| ORG_UPDATE_DATE               | Organisation Update Date                          | address.companyInformation.organisationLastUpdateDate                          |
+| ORG_ENTRY_DATE                | Organisation Entry Date                           | address.companyInformation.organisationEntryDate                               |
+| XREFMA                        | XREFMA Address Layer 2 TOID                       | address.osAl2Toid                                                              |
+| XREFMI                        | XREFMI Transport Network TOID                     | address.osItnToid                                                              |
+| XREFMT                        | XREFMT Topography Layer TOID                      | address.osTopoToid                                                             |
+| XREFVC                        | XREFVC Council Tax                                | address.voaCtRecord                                                            |
+| XREFVN                        | XREFVN Non-Domestic Rates                         | address.voaNdrRecord                                                           |
+| CLASS_KEY                     | Class Key                                         | address.classification.ClassKey                                                |
+| SAO_START_NUMBER              | SAO Start Number                                  | address.lpi.SAOStartNumber                                                     |
+| SAO_START_SUFFIX              | SAO Start Suffix                                  | address.lpi.SAOStartSuffix                                                     |
+| SAO_END_NUMBER                | SAO End Number                                    | address.lpi.SAOEndNumber                                                       |
+| SAO_END_SUFFIX                | SAO End Suffix                                    | address.lpi.SAOEndSuffix                                                       |
+| PAO_START_NUMBER              | PAO Start Number                                  | address.lpi.PAOStartNumber                                                     |
+| PAO_START_SUFFIX              | PAO Start Suffix                                  | address.lpi.PAOStartSuffix                                                     |
+| PAO_END_NUMBER                | PAO End Number                                    | address.lpi.PAOEndNumber                                                       |
+| PAO_END_SUFFIX                | PAO End Suffix                                    | address.lpi.PAOEndSuffix                                                       |
+| LANGUAGE                      | Language                                          | address.lpi.LPILanguage                                                        |
+| LPI_START_DATE                | LPI Start Date                                    | address.lpi.LPIStartDate                                                       |
+| LPI_END_DATE                  | LPI End Date                                      | address.lpi.LPIEndDate                                                         |
+| LPI_UPDATE_DATE               | LPI Update Date                                   | address.lpi.LPILastUpdateDate                                                  |
+| LPI_ENTRY_DATE                | LPI Entry Date                                    | address.lpi.LPIEntryDate                                                       |
+| AREA_NAME                     | Area Name                                         | address.lpi.AreaName                                                           |
+| SAO_TEXT                      | SAO Text                                          | address.lpi.SAOText                                                            |
+| PAO_TEXT                      | PAO Text                                          | address.lpi.PAOText                                                            |
+| ST_TYPE                       | Street Type                                       | address.streetInformation.StreetType                                           |
+| ST_STATE                      | Street State                                      | address.streetInformation.StreetState                                          |
+| ST_SURFACE                    | Street Surface Finish                             | address.streetInformation.StreetSurface                                        |
+| ST_CLASS                      | Street Class                                      | address.streetInformation.StreetClassification                                 |
+| ST_VERSION                    | Street Version                                    | address.streetInformation.StreetVersion                                        |
+| ST_END_DATE                   | Street End Date                                   | address.streetInformation.StreetEndDate                                        |
+| ST_START_X                    | Street Start X (Easting)                          | address.streetInformation.StreetStartEasting                                   |
+| ST_START_Y                    | Street Start Y (Northing)                         | address.streetInformation.StreetStartNorthing                                  |
+| ST_END_X                      | Street End X (Easting)                            | address.streetInformation.StreetEndEasting                                     |
+| ST_END_Y                      | Street End Y (Northing)                           | address.streetInformation.StreetEndNorthing                                    |
+| ST_TOLERANCE                  | Street Tolerance                                  | address.streetInformation.StreetTolerance                                      |
+| ST_STATE_DATE                 | Street State Date                                 | address.streetInformation.StateDate                                            |
+| ST_START_DATE                 | Street Start Date                                 | address.streetInformation.StreetStartDate                                      |
+| ST_UPDATE_DATE                | Street Update Date                                | address.streetInformation.StreetLastUpdateDate                                 |
+| ST_ENTRY_DATE                 | Street Entry Date                                 | address.streetInformation.StreetEntryDate                                      |
+| ST_DESCRIPTION                | Street Name                                       | address.streetDescriptor.StreetDescription                                     |
+| ST_LOCALITY                   | Street Locality Name                              | address.streetDescriptor.Locality                                              |
+| ST_TOWN                       | Street Town Name                                  | address.streetDescriptor.TownName                                              |
+| ST_ADMIN_AREA                 | Highway Authority Name                            | address.streetDescriptor.AdministrativeArea                                    |
+| ST_LANGUAGE                   | Street Descriptor Language                        | address.streetDescriptor.StreetLanguage                                        |
+
+#### Multiple Residence Fields
+
+| Related Data Field in Request | Description             | Return Field response.address       |
+| ----------------------------- | ----------------------- | ----------------------------------- |
+| UMRRN                         | UMRRN                   | address.additionalItems.UMRRN       |
+| Owning UDPRN                  | OwningUDPRN             | address.additionalItems.OwningUDPRN |
+| OwningAK                      | Owning Address Key      | address.additionalItems.OwningAK    |
+| OwningOK                      | Owning Organisation Key | address.additionalItems.OwningOK    |
+
+#### Business Fields
+
+| Related Data Field in Request | Description                         | Return Field response.address                                                             |
+| ----------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------- |
+| TEL                           | Telephone Number                    | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "TEL"            |
+| FAX                           | Fax Number                          | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "FAX"            |
+| SIC03                         | UK 2003 SIC Code                    | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "SIC03"          |
+| NUMEMPCO                      | Employees at Company                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "NUMEMPCO"       |
+| NUMEMP                        | Employees at Site                   | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "NUMEMP"         |
+| HOF                           | Head Office Flag                    | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "HOF"            |
+| TO                            | Turnover                            | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "TO"             |
+| YEARSTAR                      | Year Started                        | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "YEARSTAR"       |
+| SIC03TEXT                     | 2003 SIC Description                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "SIC03TEXT"      |
+| ExecutiveCount                | Count of named executives           | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "ExecutiveCount" |
+| Ex1_Function                  | Executive 1 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex1_Function"   |
+| Ex1_FirstName                 | Executive 1 first name              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex1_FirstName"  |
+| Ex1_Surname                   | Executive 1 surname                 | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex1_Surname"    |
+| Ex1_Salutation                | Executive 1 salutation              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex1_Salutation" |
+| Ex1_Sex                       | Executive 1 gender                  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex1_Sex"        |
+| Ex2_Function                  | Executive 2 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex2_Function"   |
+| Ex2_FirstName                 | Executive 2 first name              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex2_FirstName"  |
+| Ex2_Surname                   | Executive 2 surname                 | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex2_Surname"    |
+| Ex2_Salutation                | Executive 2 salutation              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex2_Salutation" |
+| Ex2_Sex                       | Executive 2 gender                  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex2_Sex"        |
+| Ex3_Function                  | Executive 3 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex3_Function"   |
+| Ex3_Function                  | Executive 3 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex1_Surname"    |
+| Ex3_FirstName                 | Executive 3 first name              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex3_FirstName"  |
+| Ex3_Surname                   | Executive 3 surname                 | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex3_Surname"    |
+| Ex3_Salutation                | Executive 3 salutation              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex3_Salutation" |
+| Ex3_Sex                       | Executive 3 gender                  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex3_Sex"        |
+| Ex4_Function                  | Executive 4 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex4_Function"   |
+| Ex4_FirstName                 | Executive 4 first name              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex4_FirstName"  |
+| Ex4_Surname                   | Executive 4 surname                 | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex4_Surname"    |
+| Ex4_Salutation                | Executive 4 salutation              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex4_Salutation" |
+| Ex4_Sex                       | Executive 4 gender                  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex4_Sex"        |
+| Ex5_Function                  | Executive 5 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex5_Function"   |
+| Ex5_FirstName                 | Executive 5 first name              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex5_FirstName"  |
+| Ex5_Surname                   | Executive 5 surname                 | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex5_Surname"    |
+| Ex5_Salutation                | Executive 5 salutation              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex5_Salutation" |
+| Ex5_Sex                       | Executive 5 gender                  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex5_Sex"        |
+| Ex6_Function                  | Executive 6 function                | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex6_Function"   |
+| Ex6_FirstName                 | Executive 6 first name              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex6_FirstName"  |
+| Ex6_Surname                   | Executive 6 surname                 | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex6_Surname"    |
+| Ex6_Salutation                | Executive 6 salutation              | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex6_Salutation" |
+| Ex6_Sex                       | Executive 6 gender                  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "Ex6_Sex"        |
+| DecsFunction                  | Decisions responsibility function   | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "DecsFunction"   |
+| DecsFirstName                 | Decisions responsibility first name | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "DecsFirstName"  |
+| DecsSurname                   | Decisions responsibility surname    | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "DecsSurname"    |
+| DecsSalutation                | Decisions responsibility salutation | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "DecsSalutation" |
+| DecsGender                    | Decisions responsibility gender     | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "DecsGender"     |
+| CRONUMBER                     | Company Registration Number         | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "CRONUMBER"      |
+| UCRN                          | Unique Company Registration Number  | address.groupedAdditionalItems - keyed on "BusinessData" item - keyed on "UCRN"           |
+
+#### Not Yet Built Specific Fields
+
+| Related Data Field in Request | Description   | Return Field response.address       |
+| ----------------------------- | ------------- | ----------------------------------- |
+| NOTYETBUILT                   | Not Yet Built | address.additionalItems.NOTYETBUILT |
+
+#### LPS Pointer Specific Fields
+
+| Related Data Field in Request | Description                                                                                                                      | Return Field response.address                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| TOWNLAND                      | The town allocated as the main postal centre for an area. May differ from the TOWN field in the main address                     | address.OnsPointerInformation.Ptr.Townland                                                     |
+| UNIQUE_BUILDING_ID            | 12-digit identifying a Primary Addressable Object defined by the 'physical footprint' of the building shell                      | address.additionalItems.UniqueBuildingId and address.OnsPointerInformation.PtrUniqueBuildingId |
+| LOCAL_COUNCIL                 | The name of the administrative area (local council) in which the building exists                                                 | address.OnsPointerInformation.PtrLocalCouncil                                                  |
+| X_COR                         | 1m accurate easting coordinate based on the Irish Grid                                                                           | address.onsPointerInformation.PtrXcor                                                          |
+| Y_COR                         | 1m accurate northing coordinate based on the Irish Grid                                                                          | address.OnsPointerInformation.PtrYcor                                                          |
+| TEMP_COORDS                   | If "Y", then indicates that PrtXcor and PtrYcor are temporary coordinates. Null indicates that PtrXcor and PtrYcor are permanent | address.OnsPointerInformation.PtrTempCoord                                                     |
+| BUILDING_STATUS               | The current physical status of the building. See codelist: LPS_BUILDING_STATUS                                                   | address.OnsPointerInformation.PtrBuildingStatus                                                |
+| ADDRESS_STATUS                | The current logical status of the address. See codelist: LPS_ADDRESS_STATUS                                                      | address.OnsPointerInformation.PtrAddressStatus                                                 |
+| CLASSIFICATION                | A code signifying the current use of the building e.g. "ND_culture"                                                              | address.OnsPointerInformation.PtrClassCode                                                     |
+| CREATION_DATE                 | The date when an address was first entered into the system by the local council                                                  | address.OnsPointerInformation.PtrCreationDate                                                  |
+| COMMENCEMENT_DATE             | The date when the construction of the property began                                                                             | address.OnsPointerInformation.PtrCommencementDate                                              |
+| ARCHIVED_DATE                 | The date when an address is deemed to be no longer in use                                                                        | address.OnsPointerInformation.PtrArchivedDate                                                  |
+
+#### Geographic Fields
+
+| Related Data Field in Request | Description                             | Return Field response.address           |
+| ----------------------------- | --------------------------------------- | --------------------------------------- |
+| EASTING                       | 6-digit grid co-ordinate e.g. 341449.21 | address.geographicInformation.easting   |
+| NORTHING                      | 6-digit grid co-ordinate e.g. 368192.68 | address.geographicInformation.northing  |
+| LATITUDE                      | Digital latitude value (future use)     | address.geographicInformation.latitude  |
+| LONGITUDE                     | Digital longitude value (future use)    | address.geographicInformation.longitude |
+
+#### GBG and RM Unique IDs
+
+| Related Data Field in Request | Description                          | Return Field response.address         |
+| ----------------------------- | ------------------------------------ | ------------------------------------- |
+| GBGURN_1                      | Unique address key                   | address.additionalItems.GBGURN_1      |
+| GBGURN_2                      | Unique key (future use)              | address.additionalItems.GBGURN_2      |
+| ADDRESSSOURCE                 | Data source for the returned address | address.additionalItems.ADDRESSSOURCE |
+| ORGKEY                        | Royal Mail Organisation Key          | address.additionalItems.ORGKEY        |
+| ADDKEY                        | Royal Mail Address Key               | address.additionalItems.ADDKEY        |

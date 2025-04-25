@@ -1,0 +1,117 @@
+---
+title: "US Census Plus Data Fields"
+---
+
+US Census Plus Data may be appended to one or more of the following fields:
+
+- **AdministrativeArea**
+- **SubAdministrativeArea**
+- **Locality**
+- **Thoroughfare**
+- **Premise**
+
+This data comes from the US Census Tiger File and will provide multiple value fields which are outlined in the next section.
+
+For each value field, there is a corresponding status field named “ValueFieldName”Status which indicates whether a value was returned for that value field or not. If a value is returned the status field will contain fsAdded.
+
+Please note it is important that when you use the new Census Plus data set you set the server option :
+
+**_ReferenceDatasetCacheSize=15_**
+
+This is due to the increased volume of data files in use as part of the Census Plus enhanced dataset.
+
+Please also note as a result of the increased size of this dataset we recommend an increase of 5Gb of memory is allocated to your existing integration.
+
+## Value Fields
+
+### BlockCode
+
+BlockCode defines the census data that represent the smallest geographic unit used by the US Census Bureau. Blocks may be bounded by visible features such as roads/highways, rivers and other natural features, railroad tracks and non-visible features such as political boundaries of a city/town/county or property lines and school district. Blocks typically have a 4-digits value. In Loqate, this value field is appended to Thoroughfare and Premise field.
+
+### BlockGroupCode
+
+BlockGroupCode defines the census data that represent the group of Blocks. BlockGroupCode typically have a 1-digit value, and it is also represented in the first digit value in BlockCode field value. In Loqate, this value field is appended to Thoroughfare and Premise field.
+
+### CBSACode
+
+CBSACode defines that the Census data is referencing the Core-Based Statistical Area (CBSA), in typically 5-digits value. CBSA is a collective term for both metro and micro areas. A metro area contains a core urban area of 50,000 or more population, and a micro area contains an urban core of at least 10,000 (but less than 50,000) population. Each metro or micro area consists of one or more counties and includes the counties containing the core urban area, as well as any adjacent counties that have a high degree of social and economic integration with the urban core (as measured by commuting to work).
+
+CBSAs defined according to the population standards above were applied since the Census 2000 data, that was announced by OMB (US Office of Management and Budget) in June 2003. These standards are used to replace the definitions of metropolitan areas (MSA) that were defined in 1990.
+
+### CBSAName
+
+CBSAName refers to the official name given to the CBSAs which complements the CBSACode field value as defined above. For definition of CBSA, please refer to the CBSACode field definition above.
+
+### CensusCode
+
+Census Code defines that the Census data is referencing the Census Codes, previously known as the Federal Information Processing Standard (FIPS) code. Unlike its previous FIPS code value, Census Codes are currently used as the government code to represent Admin Places in the U.S.
+
+Census Codes are published for Administrative Areas (Admin Level 1-4 in the U.S.) and all Zones with official government codes.
+
+### CensusClassCode
+
+Census Class Code defines the census classification of a place. Census Class Code corresponding to the FIPS 55-3 standard. Census Class Codes are alphanumeric and can be referred at https://www.census.gov/library/reference/code-lists/class-codes.html. Census Class Codes are published only for level 3 and 4 Administrative Areas and Zones.
+
+An example would be:
+
+C1: Identifies an active incorporated place that is not also recognized as an Alaska Native Village statistical area and does not also serve as a primary county division; that is, it is included in and is part of a primary county division. For example, the city of Hammond, Indiana is within and part of North township; the city of Austin, Texas is within and part of several census county divisions in several counties; Hammond and Austin are coded C1.
+
+### CensusIndicator
+
+This field indicates the address level for which the census data was returned. In Census Plus, this field will show the value “Premise”, the most accurate address level in Census Plus data, when there is Premise level match found. Otherwise, the value field would not be visible.
+
+### CountyCode
+
+The primary legal divisions of most states are termed counties. While not all states have them or call them counties, the census bureau will assign one for statistical purposes. These are three-character numeric codes that are unique within each state.
+
+### GNISFeatureID
+
+GNIS Feature ID defines the census data that is referencing the Geographic Names Information System (GNIS) Feature ID. GNIS Feature IDs are similar to Census Codes. GNIS includes geographic names for all known places, features, and areas in the United States that are identified by a proper name. Census Codes defined for level 4 Administrative Areas and Zones are being phased out by the U.S. government and replaced by GNIS Feature IDs. However, GNIS Feature IDs are an addition to and not a replacement of Census Codes. New places only get a GNIS Feature ID assigned. For new places the government code publishes the GNIS feature ID.
+
+Census Codes and GNIS Feature IDs are published for Administrative Areas (Admin Level 1-4 in the U.S.) and all Zones with official government codes.
+
+### MetroDivisionCode
+
+MetroDivisionCode (Metropolitan Division Code) defines the census data that is referring to a county or group of closely tied contiguous counties that serve as a distinct employment region within a metropolitan statistical area that has a population core of at least 2.5 million. While a Metropolitan Division is a subdivision of a larger metropolitan statistical area, if often functions as a distinct social, economic, and cultural area within a larger region.
+
+Metropolitan Division Code is typically represented in 5-digits value.
+
+### MetroDivisionName
+
+MetroDivisionName refers to the official name given to the Metropolitan Division which complements the MetroDivisionCode field value as defined above. For definition of Metropolitan Division, please refer to the MetroDivisionCode field definition above.
+
+### NECTACode
+
+NECTACode refers to a set of geographic areas that are defined using cities and towns in the six New England states, in typically 5-digits value. The New England City and Town Areas (NECTAs) are defined using the same criteria as Metropolitan and Micropolitan Statistical Areas and are identified as either Metropolitan or Micropolitan. A metro area contains a core urban area of 50,000 or more population, and a micro area contains an urban core of at least 10,000 (but less than 50,000) population.
+
+NECTAs are published for one or more cities or towns where applicable.
+
+### NECTAName
+
+NECTAName refers to the official name given to the NECTAs which complements the NECTACode field value as defined above. For definition of NECTA, please refer to the NECTACode field definition above.
+
+### NECTADivisionCode
+
+NECTA Division defines NECTAs (see definition under NECTACode field above) containing a single core with a population of at least 2.5 million that are subdivided to form smaller groupings of cities and towns referred to as NECTA Divisions.
+
+NECTADivisionCode is typically represented in a 5-digits value.
+
+### NECTADivisionName
+
+NECTADivisionName refers to the official name given to the NECTA Divisions which complements the NECTADivisionCode field value as defined above. For definition of NECTA Division, please refer to the NECTADivisionCode field definition above.
+
+### OldMSACode
+
+OldMSACode represents an obsolete value of MSA (metropolitan areas) that were defined by the OMB in 1990. With the introduction of CBSA definitions (see CBSACode field definition above), these MSA codes are replaced with the CBSA codes and names and not updated by the OMB since 1990. Therefore, the typical 4-digits value of OldMSACode will remain static in Census Plus product.
+
+### OldMSAName
+
+OldMSAName refers to the official name given to the MSA (metropolitan areas) which complements the OldMSACode field value as defined above. For definition of MSA, please refer to the OldMSACode field definition above.
+
+### StateCode
+
+StateCode refers to the census data that defines the official geographic (FIPS) code given to a US state. This field is a supplementary field given as part of Census Plus data. It can be used to complement the field value of CensusCode, in which when appended (in the format of StateCode-CensusCode) provides the **old** CensusCode value which represented the FIPS code. See CensusCode field value above for the current definition.
+
+### TractCode
+
+TractCode represents the census data that defines geographic entities within counties, where each TractCode is typically a 6-digit codes (including any leading zeros, and also two “trailing” zeros in the many cases in which the basic tract codes has no suffix). A census TractCode may not be used more than once in a single county, but it may be used again in a different county in the same state or in a county of a different state. In Loqate, this value field is appended to Thoroughfare and Premise field.

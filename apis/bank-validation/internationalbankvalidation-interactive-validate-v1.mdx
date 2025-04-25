@@ -1,0 +1,134 @@
+---
+title: "Interactive Validate v1"
+---
+
+Validates if the international bank account number for an international bank account is correct. (Does not apply to US banks)
+
+This method will consume credit.
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+## Base URL
+
+```
+https://api.addressy.com/internationalbankvalidation/interactive/validate/v1/
+```
+
+Note: we don't support API connections using HTTP - all calls should use HTTPS.
+
+### Secure SOAP WSDL
+
+```
+https://api.addressy.com/internationalbankvalidation/interactive/validate/v1/wsdl3.ws
+```
+
+### Request parameters
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.
+</Note>
+
+`*`= required field
+
+| Name   | Type   | Values | Description                                        |
+| ------ | ------ | ------ | -------------------------------------------------- |
+| Key\*  | String |        | The key to use to authenticate to the service.     |
+| IBAN\* | String |        | The international bank account number to validate. |
+
+### Response
+
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an error table.
+
+| Name      | Type    | Example | Description                          |
+| --------- | ------- | ------- | ------------------------------------ |
+| IsCorrect | Boolean | True    | Indicates whether the IBAN is valid. |
+
+### Try it now
+
+Use the form below to test the service.
+
+<Note>
+  Note: there is a usage limit on the demo key, but you can swap it for one of
+  your own if you need to.
+</Note>
+
+Key _
+AA11-AA11-AA11-AA11 (Demo key)
+IBAN _
+Try it
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the list of common errors.
+
+| Id   | Error         | Cause                                | Resolution                                                                            |
+| ---- | ------------- | ------------------------------------ | ------------------------------------------------------------------------------------- |
+| 1001 | IBAN Required | The IBAN parameter was not supplied. | Please ensure that you supply the IBAN parameter and try again.                       |
+| 1002 | IBAN Invalid  | The IBAN parameter was not valid.    | The IBAN parameter should contain only numbers and letters and be the correct length. |
+
+### Example requests
+
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+### Available endpoints
+
+Dataset (ADO.NET)
+
+### Example request
+
+```
+https://api.addressy.com/InternationalBankValidation/Interactive/Validate/v1.00/dataset.ws?Key=AA11-AA11-AA11-AA11&IBAN=GB29NWBK60161331926819
+```
+
+### Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Language
+
+```asp ASP function
+function InternationalBankValidation_Interactive_Validate_v1_00(Key, IBAN)
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/InternationalBankValidation/Interactive/Validate/v1.00/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&IBAN=" & Server.UrlEncode(IBAN)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set InternationalBankValidation_Interactive_Validate_v1_00 = rst
+
+      'FYI: The recordset returns the following columns:
+      'IsCorrect
+
+end function
+```

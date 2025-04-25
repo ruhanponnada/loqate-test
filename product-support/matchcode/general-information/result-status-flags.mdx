@@ -1,0 +1,15 @@
+---
+title: "Explanation Of 'ResultStatus' Flags"
+---
+
+For the IdM Services, it is possible to have various returns for the 'ResultStatus' flags. Here is additional explanation of these result flags:
+
+NONE, SINGLE and MULTIPLE reflect the number of matches returned from a query
+
+**NA** means we can’t determine any other result status because of either incorrect user input or there was some error or otherwise from the service. (e.g. there’s a maximum of 10 emails you can verify, if the user enters > 10 then the response will indicate that more than 10 were attempted but the resultStatus will be NA because ultimately no verifications were actually carried out).
+
+(This is different from **NONE** which means a definite lookup was performed and no records were found.)
+
+**PICKLIST** means the results offer a pick list to choose from in order to further refine a search – (currently only used in telephone service if a user has to choose from a list of possible localities because the original locality searched was too vague)
+
+**VERIFY** is used in our validation products (e.g. telephone or email validation) it shows the response is a result of a validation rather than e.g. an address lookup.

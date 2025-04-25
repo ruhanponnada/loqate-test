@@ -1,0 +1,75 @@
+---
+title: "FieldStatus"
+sidebarTitle: "Field Status"
+---
+
+### 0: fsNotApplicable
+
+Field is not applicable to return field status.
+
+### 1: fsVerifiedNoChange
+
+Field has been verified using relevant reference data, no changes were needed.
+
+### 2: fsVerifiedAliasChange
+
+Field has been verified using relevant reference data, an alias change was made during parsing (see fsIdentifiedAlias).
+
+### 3: fsVerifiedSmallChange
+
+Field has been verified using relevant reference data, a small spelling change was made.
+
+### 4: fsVerifiedLargeChange
+
+Field has been verified using relevant reference data, a large spelling change was made.
+
+### 5: fsAdded
+
+Field has been added using relevant reference data.
+
+### 6: fsIdentifiedNoChange
+
+Field has been identified using relevant lexicon data, no changes were needed. e.g. an input value of ‘PO Box 1234’ may be identifiable as a PostBox, but if it is unable to be verified then a status of fsIdentifiedNoChange will be returned.
+
+### 7: fsIdentifiedAlias
+
+Field has been identified using relevant lexicon data, an alias change was made. e.g. an input value of ‘Avnue’ may be identifiable as an alias to the ThoroughfareType ‘Ave’.
+
+### 8: fsIdentifiedContext
+
+Field has been identified using relevant context rules. e.g. an input Address of ‘123 sdovnsdv San Bruno CA USA’ may identify the word ‘sdovnsdv’ as a Thoroughfare, but only because of the context in which it appears (after an identifiable PremiseNumber, and before an identifiable Locality).
+
+### 9: fsEmpty
+
+Field is empty.
+
+### 10: fsUnrecognized
+
+Field was unrecognized.
+
+Field statuses propagate up the field hierarchy, combining under the following rules:
+
+|     |     |     |     |     |     |     |     |     |     |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|     | VNC | VAC | VSC | VLC | ADD | INC | IAL | ICO | EMP |
+| VNC | VNC | VAC | VSC | VLC | VSC | VNC | VAC | VNC | VNC |
+| VAC |     | VAC | VAC | VAC | VAC | VAC | VAC | VAC | VAC |
+| VSC |     |     | VSC | VSC | VSC | VSC | VSC | VSC | VSC |
+| VLC |     |     |     | VLC | VLC | VLC | VLC | VLC | VLC |
+| ADD |     |     |     |     | ADD | ADD | ADD | ADD | ADD |
+| INC |     |     |     |     |     | INC | IAL | INC | INC |
+| IAL |     |     |     |     |     |     | IAL | IAL | IAL |
+| ICO |     |     |     |     |     |     |     | ICO | ICO |
+| EMP |     |     |     |     |     |     |     |     | EMP |
+
+### Key
+
+- VNC = fsVerifiedNoChange
+- VAC = fsVerifiedAliasChange
+- VSC = fsVerifiedSmallChange
+- VLC = fsVerifiedLargeChange
+- ADD = fsAdded
+- INC = fsIdentifiedNoChange
+- IAL = fsIdentifiedAliasChange
+- ICO = fsIdentifiedContext
+- EMP = fsEmpty

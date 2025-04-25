@@ -1,0 +1,30 @@
+---
+title: "Loqate Multilthread Sample Code (LqtThreadRunner.java)"
+---
+
+## Sample Java Code: LqtThreadRunner.java
+
+```java
+package lqtmultithreadtestdriver;
+import com.loqate.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class LqtThreadRunner implements Runnable {
+     // Thread local objects
+     private lqtServer srv;
+     private lqtInputRecord rec;
+     private lqtProcessResult res;
+     private lqtProcessList lst;
+     private lqtProcessOptions opts;
+
+     public void processRecordSegment(int SegmentNo)
+     {
+          // Open the Loqate session
+          int session = srv.open();
+
+          // Run a record segment
+          for (int recordNo = 1; recordNo <= 100; recordNo++)           {                // Set the relevant input values                //(single value shown for sample purposes only)                rec.clear();                rec.set("Address1", "1111 Bayhill Drive Suite 290");                rec.set("Address2", "San Bruno, CA 94066");                rec.set("Address3", "US");                // Process the record                srv.process(rec, lst, res);                // Output the result                System.out.println("Thread: " + Thread.currentThread().getId()                + "\tSegment: " + SegmentNo                + "\tRecord: " + recordNo                + "\tResult: " + res.getAccuracyCode());           }           // Close the session           srv.close(session);      }      public void run()      {           // Loqate objects           srv = lqtServer.create();           rec = lqtInputRecord.create();           res = lqtProcessResult.create();           // Initialize the server           srv.init("C:\\Program Files\\Loqate\\data");           // Create the process list           lst = lqtProcessList.create();           opts = lqtProcessOptions.create();           lst.add("Verify", opts);           lst.add("Geocode", opts);           // Run record segments           for (int segmentNo = 1; segmentNo <= 1000; segmentNo++)           {                processRecordSegment(segmentNo);           }           // Destroy the process list           lqtProcessList.destroy(lst);           lqtProcessOptions.destroy(opts);           // Tidy up           srv.shutdown();           lqtInputRecord.destroy(rec);           lqtProcessResult.destroy(res);           lqtServer.destroy(srv);      } }
+
+```

@@ -1,0 +1,23 @@
+---
+title: "processStatus"
+---
+
+## **0: psOK**
+
+The command completed normally. The accuracy score must be examined to determine result accuracy.
+
+## **1: psException**
+
+An exception occurred during processing, normally as a result of malformed input data.
+
+## **2: psServerUninitialized**
+
+The command could not be completed as the server has not yet been initialized.
+
+## **3: psInvalidInputRecord**
+
+The input record contains invalid data, often due to the supply of non-UTF8/Unicode data.
+
+## **4: psError**
+
+An error has reported by loqate process, use getLastError() function in lqtProcessResult object to get error description.

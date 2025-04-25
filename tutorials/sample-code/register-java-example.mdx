@@ -1,0 +1,142 @@
+---
+title: "Sample Java Code: LoqateJavaRegisterDemo.java"
+---
+
+<Warning>
+  Search is in maintenance mode with no planned future development of bug fixes.
+</Warning>
+
+```java
+package com.loqate.javademo;
+import com.loqate.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+
+/**
+* LoqateJavaRegisterDemo
+*
+* This sample program calls the Loqate Local API to
+* process an input text file including multiple address
+* records and produces and output file with the results
+* from the Register and Geocoding processes.
+*
+* @author loqate.com
+*
+*/
+public class LoqateJavaRegisterDemo {
+
+public static final String INPUT_FILENAME = “AddressDataRecords_input.txt”;
+public static final String OUTPUT_FILENAME = “AddressDataRecords_out.txt”;
+
+/**
+* printRecord
+* Prints record to output file
+* @param res lqtProcessResult Loqate Process Result
+* @param out PrintWriter prints to output file
+*/
+public static void printOutputRecord( lqtProcessResult res,
+PrintWriter out ) {
+
+// Output the result
+out.println(” ——————– “);
+
+out.println(“Result Count : ” + res.getCount());
+
+for (int i = 0; i < res.getCount(); i++)      {        out.println(“Accuracy Code : ” + res.getAccuracyCode());        out.println(“Organization : ”            + res.getField(i, “Organization”));        out.println(“Address : ”            + res.getField(i, “Address”));        out.println(“SubBuilding : ”            + res.getField(i, “SubBuilding”));        out.println(“Premise : ”            + res.getField(i, “Premise”));        out.println(“Building : ”            + res.getField(i, “Building”));        out.println(“PostBox : ”            + res.getField(i, “PostBox”));        out.println(“DependentThoroughfare : ”            + res.getField(i, “DependentThoroughfare”));        out.println(“Thoroughfare : ”            + res.getField(i, “Thoroughfare”));        out.println(“DoubleDependentLocality : ”            + res.getField(i, “DoubleDependentLocality”));        out.println(“DependentLocality : ”            + res.getField(i, “DependentLocality”));        out.println(“Locality : ”            + res.getField(i, “Locality”));        out.println(“SubAdministrativeArea : ”            + res.getField(i, “SubAdministrativeArea”));        out.println(“AdministrativeArea : ”            + res.getField(i, “AdministrativeArea”));        out.println(“SuperAdministrativeArea : ”            + res.getField(i, “SuperAdministrativeArea”));        out.println(“PostalCode : ”            + res.getField(i, “PostalCode”));        out.println(“Telephone : ”            + res.getField(i, “Telephone”));        out.println(“CountryName : ”            + res.getField(i, “CountryName”));        out.println(“ISO3166-2 : ”            + res.getField(i, “ISO3166-2”));        out.println(“Latitude : ”            + res.getField(i, “Latitude”));        out.println(“Longitude : ”            + res.getField(i, “Longitude”));        out.println(“GeoAccuracy : ”            + res.getField(i, “GeoAccuracy”));        out.println(” *** “);        }      }    public static void main(String [] args) {         try {        System.loadLibrary(“lqtjava”);      } catch (UnsatisfiedLinkError e) {      System.err.println(“Native code library ”        + “failed to load.\n” + e );      }      // Set Loqate server object      lqtServer srv = lqtServer.create();           // Initialize the server      if (args.length > 0) {
+srv.init(args[0]);
+} else {
+// Provide path to Loqate /data directory
+srv.init(“C:\\Program Files\\Loqate\\data”);
+}
+
+// Create the process list
+lqtProcessList lst = lqtProcessList.create();
+lqtProcessOptions opts = lqtProcessOptions.create();
+
+//lst.add(“Verify”, opts); // Sets Verify option
+
+// Provides Register capability in Loqate 2012Q3.0 and later
+lst.add(“Search”, opts);
+
+// Sets Geocoding option
+lst.add(“Geocode”, opts);
+
+try {
+// Open the Loqate session
+int session = srv.open();
+
+try {
+
+// Read data from input file
+BufferedReader inputReader = new BufferedReader(
+new FileReader( INPUT_FILENAME ));
+
+// Write records to output file
+FileWriter outputFile =
+new FileWriter( OUTPUT_FILENAME );
+PrintWriter out = new PrintWriter(outputFile);
+
+// Parse and load input data
+String inputLine;
+while((inputLine = inputReader.readLine()) != null){
+
+String[] splitArray = inputLine.split(“\t”);
+
+// Skip header line of input file
+if (splitArray[0].equals(“Address1”)) {
+continue;
+}
+
+// Create record
+lqtInputRecord rec = lqtInputRecord.create();
+lqtProcessResult res = lqtProcessResult.create();
+
+// Set the Loqate values
+rec.set(“Address1”, splitArray[0]);
+rec.set(“Address2”, splitArray[1]);
+rec.set(“Locality”, splitArray[2]);
+rec.set(“AdministrativeArea”, splitArray[3]);
+rec.set(“PostalCode”, splitArray[4]);
+rec.set(“Country”, splitArray[5]);
+
+// Process the record
+srv.process(rec, lst, res);
+
+// Print single record to output file
+printOutputRecord(res, out);
+lqtInputRecord.destroy(rec);
+
+lqtProcessResult.destroy(res);
+System.out.flush();
+
+}
+inputReader.close();
+out.close();
+
+} catch (IOException io) {
+System.out.println(“Exception caught ”
++ “opening input file or ”
++ “writing to output file.”);
+}
+
+// Close the session
+srv.close(session);
+
+// Destroy the process list
+lqtProcessList.destroy(lst);
+lqtProcessOptions.destroy(opts);
+
+// Tidy up
+&srv.shutdown();
+lqtServer.destroy(srv);
+
+} catch (Exception e) {
+System.out.println(“Exception caught opening ”
++ “the Loqate session.”);
+}
+}
+}
+```

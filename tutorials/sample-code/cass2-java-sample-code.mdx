@@ -1,0 +1,145 @@
+---
+title: "CASS2 Java sample code"
+---
+
+```java
+import com.loqate.*;
+import java.io.*;
+import java.net.*;
+
+public class lqtSample
+{
+static
+{
+System.loadLibrary(“lqtjava”);
+}
+
+public static void main(String args[])
+{
+// Loqate objects
+lqtServer srv = lqtServer.create();
+lqtInputRecord rec = lqtInputRecord.create();
+lqtProcessResult res = lqtProcessResult.create();
+
+// Initialize the server
+if (args.length > 0)
+srv.init(args[0]);
+else
+srv.init(“C:\\win32\\Loqate_2018Q1.0_9441\\data”);
+
+// Create the process list
+lqtProcessList lst = lqtProcessList.create();
+lqtProcessOptions opts = lqtProcessOptions.create();
+
+/*Option 1 : To Run CASS
+Use Verify + Server Option “CertifiedCountryList=USA”
+*/
+lst.add(“Verify”, opts);
+srv.setOption(“CertifiedCountryList”,”USA”);
+
+/*Option 2 : To Run CASS
+Use process CASS2
+*/
+//lst.add(“CASS2”, opts);
+
+try
+{
+// Open the Loqate session
+int session = srv.open();
+System.out.println(“Server Version : ” + srv.getVersion());
+// Process data
+try
+{
+// Set the relevant Loqate values
+rec.set(“Address1”, “805 Veterans Blvd Ste 320”);
+rec.set(“Locality”, “Redwood City”);
+rec.set(“AdministrativeArea”, “CA”);
+rec.set(“PostalCode”, “94063”);
+rec.set(“Country”, “USA”);
+
+// Process the record
+srv.process(rec, lst, res);
+
+// Output the result
+System.out.println(res.getAccuracyCode());
+for (int i = 0; i < res.getCount(); i++)
+{
+System.out.println(res.getField(i, “Organization”));
+System.out.println(res.getField(i, “SubBuilding”));
+System.out.println(res.getField(i, “Premise”));
+System.out.println(res.getField(i, “Building”));
+System.out.println(res.getField(i, “PostBox”));
+System.out.println(res.getField(i, “DependentThoroughfare”));
+System.out.println(res.getField(i, “Thoroughfare”));
+System.out.println(res.getField(i, “DoubleDependentLocality”));
+System.out.println(res.getField(i, “DependentLocality”));
+System.out.println(res.getField(i, “Locality”));
+System.out.println(res.getField(i, “SubAdministrativeArea”));
+System.out.println(res.getField(i, “AdministrativeArea”));
+System.out.println(res.getField(i, “SuperAdministrativeArea”));
+System.out.println(res.getField(i, “PostalCode”));
+System.out.println(res.getField(i, “Telephone”));
+System.out.println(res.getField(i, “CountryName”));
+System.out.println(res.getField(i, “ISO3166-2”));
+System.out.println(res.getField(i, “Latitude”));
+System.out.println(res.getField(i, “Longitude”));
+System.out.println(res.getField(i, “GeoAccuracy”));
+System.out.println(res.getField(i, “Address”));
+
+System.out.println(“************ CASS2 Fields ************”);
+System.out.println(“AutoZoneIndicator : ” + res.getField(i,”AutoZoneIndicator”));
+System.out.println(“CarrierRoute : ” + res.getField(i,”CarrierRoute”));
+System.out.println(“CMRAIndicator : ” + res.getField(i,”CMRAIndicator”));
+System.out.println(“CongressionalDistrict : ” + res.getField(i,”CongressionalDistrict”));
+System.out.println(“DefaultFlag : ” + res.getField(i,”DefaultFlag”));
+System.out.println(“DeliveryPointBarCode : ” + res.getField(i,”DeliveryPointBarCode”));
+System.out.println(“DPVConfirmedIndicator : ” + res.getField(i,”DPVConfirmedIndicator”));
+System.out.println(“DPVFootnotes : ” + res.getField(i,”DPVFootnotes”));
+System.out.println(“eLOTCode : ” + res.getField(i,”eLOTCode”));
+System.out.println(“eLOTNumber : ” + res.getField(i,”eLOTNumber”));
+System.out.println(“EWSFlag : ” + res.getField(i,”EWSFlag”));
+System.out.println(“FalsePositiveIndicator : ” + res.getField(i,”FalsePositiveIndicator”));
+System.out.println(“FIPSCountyCode : ” + res.getField(i,”FIPSCountyCode”));
+System.out.println(“Footnotes : ” + res.getField(i,”Footnotes”));
+System.out.println(“LACSLinkCode : ” + res.getField(i,”LACSLinkCode”));
+System.out.println(“LACSLinkIndicator : ” + res.getField(i,”LACSLinkIndicator”));
+System.out.println(“LACSStatus : ” + res.getField(i,”LACSStatus”));
+System.out.println(“NoStatIndicator : ” + res.getField(i,”NoStatIndicator”));
+System.out.println(“PMBNumber : ” + res.getField(i,”PMBNumber”));
+System.out.println(“PMBType : ” + res.getField(i,”PMBType”));
+System.out.println(“PrimaryAddressLine : ” + res.getField(i,”PrimaryAddressLine”));
+System.out.println(“RecordType : ” + res.getField(i,”RecordType”));
+System.out.println(“ReturnCode : ” + res.getField(i,”ReturnCode”));
+System.out.println(“ResidentialDelivery : ” + res.getField(i,”ResidentialDelivery”));
+System.out.println(“SecondaryAddressLine : ” + res.getField(i,”SecondaryAddressLine”));
+System.out.println(“SUITELinkFootnote : ” + res.getField(i,”SUITELinkFootnote”));
+System.out.println(“VacantIndicator : ” + res.getField(i,”VacantIndicator”));
+
+}
+System.out.flush();
+}
+catch (Exception e)
+{
+System.out.println(“Exception: ” + e);
+}
+
+// Close the session
+srv.close(session);
+}
+catch (Exception e)
+{
+System.out.println(“Exception: ” + e);
+}
+
+// Destroy the process list
+lqtProcessList.destroy(lst);
+lqtProcessOptions.destroy(opts);
+
+// Tidy up
+srv.shutdown();
+lqtInputRecord.destroy(rec);
+lqtProcessResult.destroy(res);
+lqtServer.destroy(srv);
+}
+}
+```

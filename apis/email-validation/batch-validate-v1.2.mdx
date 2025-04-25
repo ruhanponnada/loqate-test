@@ -1,0 +1,153 @@
+---
+title: "Batch Validate v1.2"
+description: ""
+sidebarTitle: "Batch Validate v1.2"
+---
+
+This batch processing service verifies up to 100 emails per batch.
+
+This method will consume credit.
+
+- [Request parameters](#request-parameters)
+- [Response fields](#response)
+- [Try it](#try-it-now)
+- [Errors](#errors)
+- [Example requests](#example-requests)
+- [Sample code](#sample-code)
+
+## Base URL
+
+```
+https://api.addressy.com/emailvalidation/batch/validate/v1.2/
+```
+
+<Note>
+  Note:we don't support API connections using HTTP - all calls should use HTTPS.
+</Note>
+
+## Secure SOAP WSDL
+
+```
+https://api.addressy.com/emailvalidation/batch/validate/v1.2/wsdl3.ws
+```
+
+## Request parameters
+
+Each request to the web service requires a number of parameters, all of which are listed below. All requests require a key which can be generated in your account.
+
+<Note>
+  Note:where potentially sensitive data is used in these parameters, remember to
+  make the request as secure as possible.
+</Note>
+
+`*` = required field
+
+| Name     | Type   | Values | Description                                                                                                     |
+| -------- | ------ | ------ | --------------------------------------------------------------------------------------------------------------- |
+| Key\*    | String |        | The key to use to authenticate to the service.                                                                  |
+| Emails\* | String |        | The email addresses to verify, as a comma-seperated string. Blank entries will be ignored. Maximum 100 records. |
+
+Response
+The response from the web service is a table with the specification below. Where no items are found, the response will be empty (although all endpoints specify the columns). If an error occurs, the response will not follow this format. Instead the response will be an [error table](/apis/email-validation/batch-validate-v1.2/).
+
+| Name            | Type    | Example             | Description                                                                                                                                                                                                                                                                                          |
+| --------------- | ------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status          | String  | Valid               | Valid - The email address is valid Invalid - The email address is invalid and shouldn't be accepted Unknown - Unable to complete the verification process (normally due to SMTP timeout) Accept_All - The mail server is set to accept all verification requests so full verification isn't possible |
+| EmailAddress    | String  | testing@test123.com | The email address that verification was attempted on.                                                                                                                                                                                                                                                |
+| Account         | String  | testing             | The account portion of the email address provided.                                                                                                                                                                                                                                                   |
+| Domain          | String  | test123.com         | The domain portion of the email address provided.                                                                                                                                                                                                                                                    |
+| IsDisposible    | Boolean | False               | Whether the email address provided is a disposable mailbox (some companies create temporary mailboxes which shouldn't be used for marketing communications).                                                                                                                                         |
+| IsSystemMailbox | Boolean | True                | Whether the email address provided is a system mailbox (e.g. sales@, support@, accounts@ etc).                                                                                                                                                                                                       |
+
+## Try it now
+
+Use the form below to test the service.
+
+<Note>
+  Note:there is a usage limit on the demo key, but you can swap it for one of
+  your own if you need to.
+</Note>
+
+Key _
+AA11-AA11-AA11-AA11 (Demo key)
+Emails _
+Try it
+
+## Errors
+
+Below are the errors which are specific to this web service. If an error occurs, an error table like the one below will be returned. To check for an error response, test for a 4 column table with columns "Error", "Description", "Cause" and "Resolution" containing a single row.
+
+For a list of errors applicable to all APIs, have a look at the [list of common errors](/apis/generic-errors/).
+
+| Id   | Error                       | Cause                                                              | Resolution                                                               |
+| ---- | --------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| 1001 | Emails Required             | No email addresses were supplied.                                  | Check that you have between 1 and 100 emails in the batch and try again. |
+| 1002 | Invalid Batch Size          | No more than 100 emails should be supplied in the batch.           | Check that you have less than 100 emails in the batch and try again.     |
+| 1003 | Invalid Email List Provided | You have entered one of more semi-colon or colon separated emails. | Ensure that all emails are comma separated and try the request again.    |
+
+### Example requests
+
+We offer a number of different endpoint options to cater for most needs. For increased security, please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+### Available endpoints
+
+Dataset (ADO.NET)
+Example request
+
+```
+https://api.addressy.com/EmailValidation/Batch/Validate/v1.20/dataset.ws?Key=AA11-AA11-AA11-AA11&Emails=info@google.com,info@microsoft.com,info@zxfzzz.com
+```
+
+### Sample code
+
+Our sample code snippets are designed to get you started with our APIs. Please use HTTPS or SOAP - we do not support API connections that use HTTP or a TLS protocol below version 1.2.
+
+Language
+
+```asp ASP function
+function EmailValidation_Batch_Validate_v1_20(Key, Emails)
+
+      dim strUrl
+      dim objHttp
+      dim rst
+
+      'Build the url
+      strUrl = "https://api.addressy.com/EmailValidation/Batch/Validate/v1.20/recordset.ws?"
+      strUrl = strUrl & "&Key=" & Server.UrlEncode(Key)
+      strUrl = strUrl & "&Emails=" & Server.UrlEncode(Emails)
+
+      'Make the request
+      set objHttp = Server.CreateObject("Microsoft.XMLHTTP")
+      objHttp.Open "GET", strUrl, false
+      objHttp.Send
+
+      'Create the recordset
+      set rst = Server.CreateObject("ADODB.Recordset")
+      rst.Open objHttp.ResponseStream
+
+      'Check for an error
+      if rst.Fields.Count=4 then
+         if rst.Fields(0).Name="Error" then
+           Err.Raise rst.Fields(0), "Webservice Error", rst.Fields(1)
+        end if
+      end if
+
+      'Return the recordset
+      set EmailValidation_Batch_Validate_v1_20 = rst
+
+      'FYI: The recordset returns the following columns:
+      'Status
+      'EmailAddress
+      'Account
+      'Domain
+      'IsDisposible
+      'IsSystemMailbox
+
+end function
+```
+
+## Example implementation
+
+Try our example of Address Verification in a website using our sandbox environment.
+
+See the Pen [AddressLookup](https://codepen.io/GBGLoqate/pen/MWVQrbN) by GBG Loqate ([@GBGLoqate](https://codepen.io/GBGLoqate)) on [CodePen](https://codepen.io/). Please note, you must [accept Functional Cookies](/apis/email-validation/batch-validate-v1.2/#) to view the Pen here.

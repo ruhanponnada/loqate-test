@@ -1,0 +1,171 @@
+---
+title: "Location Management Delete List Or Point"
+description: ""
+sidebarTitle: "Location Management Delete List Or Point"
+---
+
+Delete a list of locations or a particular location within that list.
+
+<Warning>
+  This endpoint requires the use of a Loqate **Management** key. Management keys
+  are used to provide access to server-side functions in place of your standard
+  API key, ensuring that were any of your keys to be scraped from a customer
+  facing website, they could not be used to edit or delete your Location Lists.
+  For information on how to create a Management key please see the [Setting Up
+  Store Finder Keys guide](/guides/store-finder/setting-up-store-finder-keys/).
+</Warning>
+
+The Delete List or Point API allows you to delete an existing list created using
+our
+[Create List endpoint](/apis/store-finder/location-management-create-list/).
+
+<Note>
+  **NOTE: any lists deleted via this endpoint are deleted permanently. We do not
+  back up location lists.**
+</Note>
+ 
+
+- [Request parameters](#request)
+- [Response fields](#response)
+- [Errors](#errors)
+
+#### Base URL
+
+```json
+https://api.addressy.com/LocationServices/LocationManagement/DeleteListOrPoint/v1.00
+```
+
+<Note>
+  Note: we don't support API connections using HTTP - all calls should use
+  HTTPS.
+</Note>
+
+#### JSON
+
+```
+https://api.addressy.com/LocationServices/LocationManagement/DeleteListOrPoint/v1.00/json4.ws?
+```
+
+<Note>
+  Note: A REST endpoint with a JSON payload is the only call style supported.
+</Note>
+
+### Request
+
+Each request to the web service requires a number of parameters, all of which
+are listed below. All requests require a key which can be generated
+in [your account](https://account.loqate.com/account/#/Setup/).
+
+<Note>
+  **Note: where potentially sensitive data is used in these parameters, remember
+  to make the request as secure as possible.**
+</Note>
+
+A listID or locationID is a required parameter for this operation. If you want
+to delete an entire list, only a listID is required. If you want to delete a
+location, both a listID and locationID are required.
+
+#### Request parameters
+
+| Parameter  | Required | Type   | Description                                                                                                                                                |
+| ---------- | -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key        | Required | String | [The Loqate Management key](/guides/store-finder/setting-up-store-finder-keys/) used to authenticate with the service. For example: `AA11-AA11-AA11-AA11`. |
+| listID     | Required | String | The unique GuID for a given list.                                                                                                                          |
+| locationID | Optional | String | The unique GuID for a given location.                                                                                                                      |
+
+#### Example Delete List request
+
+```
+POST https://api.addressy.com/LocationServices/LocationManagement/DeleteListOrPoint/v1.00/json4.ws?
+```
+
+Add your API key into the code below for a sample request:
+
+Content-Type: application/json
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "listid": "7bbcbea3-c995-4ed7-9be2-bfb25b3b2cef"
+}
+```
+
+#### Example Delete Location request
+
+```
+POST https://api.addressy.com/LocationServices/LocationManagement/DeleteListOrPoint/v1.00/json4.ws?
+```
+
+Add your API key into the code below for a sample request:
+
+Content-Type: application/json
+
+```json
+{
+  "key": "AA11-AA11-AA11-AA11",
+  "listid": "7bbcbea3-c995-4ed7-9be2-bfb25b3b2cef",
+  "locationId": "443d67b0-0c81-4ba9-9e1b-21435db6ee1e"
+}
+```
+
+### Response
+
+The response from the web service is a table with the specification below. Where
+no items are found, the response will be empty (although all endpoints specify
+the columns). If an error occurs, the response will not follow this format.
+Instead the response will be an [error table](#errors).
+
+#### Response fields
+
+| Field   | Type   | Description                                      |
+| ------- | ------ | ------------------------------------------------ |
+| message | String | A message detailing how the operation performed. |
+| Id      | String | The GuID of the list or location deleted.        |
+
+#### Example Delete List response
+
+```json
+{
+  "message": "List deleted successfully",
+  "id": "7bbcbea3-c995-4ed7-9be2-bfb25b3b2cef"
+}
+```
+
+#### Example Delete Location response
+
+```json
+{
+    "message": "Location deleted successfully",
+    "id": "443d67b0-0c81-4ba9-9e1b-21435db6ee1e
+}
+```
+
+### Errors
+
+Below are the errors which are specific to this web service. If an error occurs,
+an error table like the one below will be returned. To check for an error
+response, test for a 4-column table with columns `Number`, `Description`,
+`Cause` and `Resolution` containing a single row.
+
+Here's an example, for reference:
+
+```json
+{
+  "Number": 1010,
+  "Description": "Location Management operations required a Management Key",
+  "Cause": "Location Management operations required a Management Key",
+  "Resolution": "Ensure you are using a Management key created by adding a Store Finder service to your Loqate account"
+}
+```
+
+For a list of errors applicable to all APIs, have a look at the
+[list of common errors](/apis/generic-errors/).
+
+Number Description Cause Resolution
+
+| Number | Description                                                             | Cause                                                                                                        | Resolution                                                                                             |
+| ------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| 1001   | No List Id Suppled                                                      | The List ID is missing from the input parameters.                                                            | Please supply a ListID and try again.                                                                  |
+| 1006   | No list of that ID can be found associated with your account.           | There has either been no list uploaded with that ID or one that has had that ID previously has been deleted. | Correct ListID and try again.                                                                          |
+| 1008   | No location of that ID can be found associated with the requested list. | There is no location associated with that ID or it is not contained within the list ID provided.             | Check that the location ID is correct for the list provided.                                           |
+| 1010   | Location Management operations required a Management Key                | Location Management operations required a Management key.                                                    | Ensure you are using a Management key created by adding a Store Finder service to your Loqate account. |

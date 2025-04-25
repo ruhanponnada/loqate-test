@@ -1,0 +1,26 @@
+---
+title: "Loqate Multithreading Sample Code in Java"
+---
+
+## Overview
+
+This sample code below is provided as a reference to developers that want to use the Loqate Engine in a multithreaded environment.
+
+The LqtMultithreadTestDriver class is responsible for creating multiple threads.
+
+The LqtThreadRunner class provides an example of the Loqate Engine instance variables and method calls suggested on a per-thread basis. The processRecordSegment(…) method of the LqtThreadRunner assumes the user wants to process different segments of the input records provided. That method may be modified depending on the customer application.
+
+## Multithreading Java Source Code
+
+The sample Java source code is summarized in Table 1 below. The source code can be viewed by following the links shown in that table. The source code can also be downloaded following the link shown at the bottom of this page.
+
+| Java Package         | Java Class (source code)                                               |
+| -------------------- | ---------------------------------------------------------------------- |
+| lqtmultithreadsample | [LqtMultithreadTestDriver.java](/tutorials/examples/java-multithread/) |
+| lqtmultithreadsample | [LqtThreadRunner.java](/tutorials/examples/java-threadrunner/)         |
+
+Table 1: Sample Java Source Code for this Tutorial
+
+The same sample Java source code files needed to run this tutorial are available for download in the link below.
+
+[Download the Tutorial Source Code files here (zip)](https://support.loqate.com/wp-content/uploads/2013/04/LqtMultithreadSampleCode.zip)

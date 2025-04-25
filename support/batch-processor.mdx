@@ -1,0 +1,161 @@
+---
+title: "Command Line Batch Processor"
+sidebarTitle: "Batch Processor"
+---
+
+The command line batch processor is an application that is designed to allow UTF-8 text files to be processed without the need to integrate an API. Help information can be obtained by running 'lqtbatch -h' at the command line.
+
+When running a batch process, it is important to note that your input headers must match Loqate Address Fields. All available Loqate fields can be found on the support site [here](/field-descriptions/addfields/).
+
+### **Setting up your input file:**
+
+We will use the sample.txt (Fig1.) that comes with your Loqate installation as sample address input file for this documentation.
+
+Fig1.
+
+<Frame caption="">
+  <img src="/images/067db720-Fig1.-300x59.png" />
+</Frame>
+
+Using the sample.txt, a good header example includes valid Loqate address fields. Please see fig2 below. In this case, the input headers are: ID|Address1|Locality|AdministrativeArea|PostalCode|Country
+
+Fig2.
+
+<Frame caption="">
+  <img src="/images/5b428b44-Fig2.-300x62.png" />
+</Frame>
+
+Required Fields:
+
+- **Country** is a required field. Even if all your addresses are located in the same country, this must still be listed in each input.
+
+<Note>
+  **NOTE** Please ensure that the following characters are not in the addresses
+  you send to the Loqate engine: *~ (tilde), % (percent), and * (asterisk)*
+</Note>
+
+### **How to Run Batch:**
+
+1. Using a linux command line tool in order to run lqtbatch
+2. Ensure you are in your Loqate installation folder
+   - cd `< your loqate folder >`
+3. The below is the basic command to run lqtbatch. Please see Fig3. for description of the parameters using this example.
+   ./lqtBatch.exe –d data/ -p "V" -i sample.txt –o sampleoutput.txt –oh
+
+Fig3.
+
+|                    |                         |                                                                                                        |
+| ------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Parameter**      | **Example from script** | **Description**                                                                                        |
+| ./lqtBatch.exe     | ./lqtBatch.exe          | Invokes batch                                                                                          |
+| -p                 | -p "V"                  | Invokes the verify process.                                                                            |
+| -i `<Input File>`  | -i sample.txt           | The -i parameter is used to specify the input UTF-8 text filename containing the data to be processed. |
+| -o `<output file>` | -o sampleoutput.txt     | The -o parameter is used to specify the output UTF-8 text filename to contain the processed data.      |
+| -oh                | -oh                     | The -oh parameter is used to specify that a header line should be output to the output file.           |
+
+## Parameters
+
+### -c `<ISO>`
+
+The -c parameter is used when the country is not included in the input data file. Specifying a country ISO code will force all input data to be processed using the specified countries verification process.
+
+### -d `<Data Directory>`
+
+The -d parameter is used to specify the location of the Loqate Global Knowledge Repository. The default value is "data/", that is the 'data' subdirectory.
+
+### -fi [on|off]
+
+The -fi parameter is used to specify whether or not to output additional debug information detailing how the software has arrived at the output interpretation. The default is 'off'.
+
+### -fs [on|off]
+
+The -fs parameter is used to specify whether or not to output a separate status for each of the output fields. The default is 'on'. For a description of the resulting numbers please see the [field status descriptions](/report-codes/fieldstatus/).
+
+### -i `<Input File>`
+
+The -i parameter is used to specify the input UTF-8 text filename containing the data to be processed.
+
+### -if `<Format>`
+
+The -if parameter is used to specify the input file format. If an input format is not specified the batch processor will attempt to read the file format from the first line of the input file. Specifying the file format using the -if parameter takes the place of a header line, so for instance:
+
+-if `ID|Address1|Address2|Locality|AdministrativeArea|PostalCode|Country`
+
+would be used to specify a pipe-delimited file, containing ID, Address1, Address2, Locality, AdministrativeArea, PostalCode, and Country fields. For a list of relevant fields please refer to the [address field descriptions](/field-descriptions/addfields/).
+
+### -m
+
+The -m parameter is used to output multiple results, if applicable.
+
+### -o `<Output File>`
+
+The -o parameter is used to specify the output UTF-8 text filename to contain the processed data.
+
+### -of `<Format>`
+
+The -of parameter is used to specify the output file format using the same syntax as the -if parameter. The default value is:
+
+`ID|Organization|SubBuilding|Premise|Building|PostBox|DependentThoroughfare|Thoroughfare|DoubleDependentLocality|DependentLocality|Locality|SubAdministrativeArea|AdministrativeArea|SuperAdministrativeArea|PostalCode|Telephone|CountryName|ISO3166-2|Latitude|Longitude|GeoAccuracy|Address|AVC`
+
+That is, a tab delimited list of component and reporting fields.
+
+### -oh
+
+The -oh parameter is used to specify that a header line should be output to the output file.
+
+### -oi
+
+The -oi parameter is used to specify that the input data should be included in the output file.
+
+### -opt `<option=Value>`
+
+The -opt parameter is used to specify a [server option](/documentation/server-options/).
+
+### -rid
+
+The -rid parameter is used to specify an index is written to the output file for each output record. If specified, the field LQTRID is written to the output file, containing the result index. In combination with the unique input ID (LQTUID) this provides a unique ID for every record in the output file, irrespective of whether there are multiple outputs for a given input.
+
+### -t
+
+The -t parameter is used when the output file should only be written once processing is complete. During processing, a temporary output file will be built, which will be copied to the specified output filename once processing is complete.
+
+### -tc
+
+The -tc parameter is used to specify the number of threads to use for processing. The default is 1.
+
+### -tm
+
+By using this parameter, the processing time in microseconds for each record will be appended to the end of each row. If returning output headers, the column label will be "Timing".
+
+### -uid
+
+The -uid parameter is used to specify whether each input record should be assigned a unique ID which is written to the output file. If specified, the first field written to the output file is the LQTUID field, containing the unique ID. Please note that if multiple results are requested this ID may be repeated since it is based on the input data, not the output data.
+
+### -v
+
+Returns the Loqate library version number and threading model.
+
+### Sample Steps to Run lqtbatch:
+
+1. Use putty or linux command line tool, go to Loqate API folder
+
+2. Key in below in that path (the dot at the end is mandatory) and press enter. This is to set the environment path to that folder:
+
+`export LD_LIBRARY_PATH=.`
+
+3. Put the below into a text file, save the file into the same folder. (For this example: we will save the file as TestData_AUS.txt)
+
+Address1|Address2|Country
+35 Stirling Hwy|Crawley WA 6009|AUS
+
+4. Then run below lqtbatch command:
+
+`./lqtbatch -i ./TestData_AUS.txt -d ./data -tc 4 -p amas -oi -of ID|Organization|SubBuilding|Premise|Building|PostBox|DependentThoroughfare|Thoroughfare|DoubleDependentLocality|DependentLocality|Locality|SubAdministrativeArea|AdministrativeArea|SuperAdministrativeArea|PostalCode|Telephone|CountryName|ISO3166-2|ISO3166-3|Latitude|Longitude|GeoDistance|GeoAccuracy|DPID|DeliveryAddress|Address|Address1|Address2|Address3|Junk|AddressFormat|AVC|DPVConfirmedIndicator|ResidentialDelivery|SUITELinkFootnote|EWSFlag|DPVFootnotes|LACSStatus|LACSLinkCode|LACSLinkIndicator|FalsePositiveIndicator|AutoZoneIndicator|CarrierRoute|CheckDigit|CMRAIndicator|CongressionalDistrict|DefaultFlag|DeliveryPointBarCode|DPVFootnotes|eLOTCode|eLOTNumber|FIPSCountyCode|Footnotes|NoStatIndicator|PMBNumber|PMBType|RecordType|ReturnCode|VacantIndicator|Route|RouteNumber|RouteType|DeliveryInstallationAreaName|DeliveryInstallationType|ThoroughfarePreDirection|ThoroughfareLeadingType|ThoroughfareName|ThoroughfareType|ThoroughfareTrailingType|ThoroughfarePostDirection|ProcessedTime|Processed Time|_L -oh -uid -o output_File_YYYYMMDD_v1.txt`
+
+<Note>
+  Note (for Windows): The starting for above should be similar to below:
+  lqtbatch -i TestData_AUS.txt -d C:\Releases\2017Q4.0.9361\Data -tc 4 -p amas
+  -oi -of
+</Note>
+
+5. You should be able to get output file `output_File_YYYYMMDD_v1.txt` in the Loqate API folder

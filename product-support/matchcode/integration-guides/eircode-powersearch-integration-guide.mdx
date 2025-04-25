@@ -1,0 +1,307 @@
+---
+title: Eircode Powersearch Integration Guide
+---
+
+### About Eircode Powersearch
+
+Eircode Powersearch, also known as single-line auto-complete, is a "Google-like" search method by which the user types into a single text field and is shown a list of potential matches which is rebuilt as they continue to type. This Service has been implemented as a REST Web Service in order to make a light Service achieving very quick response times.
+
+### Eircode Powersearch Searching
+
+Eircode Powersearch will return a list of addresses matching to the information provided in the Request. This service need one input: The ADDRESS (or part of the address) to be found. The more accurate the information provided, the smaller the returned list. The way ADDRESS must be provided to the service will be detailed below.
+
+Eircode Powersearch offers two types of searches:
+
+- Eircode ECAF: Eircode Address File
+
+- Eircode ECAD: Eircode Address Database
+
+The way these two types of searches must be used will be detailed below.
+
+## Output Formatting Options
+
+Eircode Powersearch provides the possibility to format the returning address. The formatting will only apply when the Response has just one address rather than a list of addresses. In case of list of addresses, the formatting will be skipped. The formatting options can be found here:
+
+Matchcode Formatting Options
+
+The way these formatting options must be supplied to the service will be detailed below.
+
+### Using the Powersearch REST Service
+
+The Eircode Powersearch REST WebService offers its operation through the HTTP GET method so that all the data supplied to the Service must be in the URL as HTTP parameters.
+
+The REST WebService offers the possibility to get the Response in two different formats: XML or JSON. In order to specify the preferred format in the Response the Accept Header Request Parameter must be supplied:
+
+To get the Response in XML format: Accept: application/xml
+To get the Response in JSon format: Accept: application/json
+
+If the Accept Header Request Parameter is omitted, the XML format in the Response will be applied as the default format.
+
+**Authentication**
+As a REST Web Service, Eircode Powersearch uses Http Basic Authentication.
+
+Briefly, the client must send its credentials (UserID and Password). This credentials must be the result of Base64 encoding of the next string: userID:password. This Base64 encoded string must be supplied as a Header Request Parameter.
+
+Example:
+The client wants to send these credentials:
+
+- Username: userexample
+- Password: passwordexample
+  The string to send should therefore be:
+
+Authorization: Basic dXNlcmV4YW1wbGU6cGFzc3dvcmRleGFtcGxl
+
+Authorization is the Header Request Parameter name, and Basic dXNlcmV4YW1wbGU6cGFzc3dvcmRleGFtcGxl the Header Request Parameter value where dXNlcmV4YW1wbGU6cGFzc3dvcmRleGFtcGxl is userexample:passwordexample encoded in Base64.
+
+The above information must be sent within every request to the REST Web Service, so the client must be authenticated in every single request.
+
+## Eircode ECAD Address Data
+
+These are several examples of Eircode ECAD Address Data Requests and Responses:
+
+| Scenario                                                 | Notes                                                                                                                                                    |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECAD Address Search (not very accurate request) REQUEST  | Enter the address to be found in the Request Parameter address<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecad?address=21 market |
+| ECAD Address Search (not very accurate request) RESPONSE | As the Address introduced in the Request was not very accurate, the service return a list of matches.                                                    |
+
+```xml
+(XML Response)
+
+
+
+        1
+        2015-09-04T11:23:47.775+01:00
+        E017CACB-EF0B-41BB-91C6-3C28C02796AD
+
+    21 Market Hill, Ballymore, Mullingar, Westmeath, N64 8kkd, , , , , , , ,
+    21 Market Street, Dundalk, Dundalk, Louth, X27 Krtv, , , , , , , ,
+    21 Market Place, Bluepool Upper, Kanturk, Mallow, Cork, A48 266f, , , , , , ,
+```
+
+```json
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "E017CACB-EF0B-41BB-91C6-3C28C02796AD",
+      "sessionCommencement": 2015-09-04T11:23:47.775+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches":    [
+      "21 Market Hill, Ballymore, Mullingar, Westmeath, N64 8kkd, , , , , , , , ",
+      "21 Market Street, Dundalk, Dundalk, Louth, X27 Krtv, , , , , , , , ",
+      "21 Market Place, Bluepool Upper, Kanturk, Mallow, Cork, A48 266f, , , , , , , "
+   ],
+   "information": null
+}
+```
+
+| Scenario                                        | Notes                                                                                                                                                                                                    |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECAD Address Search (accurate address) REQUEST  | Enter the address to be found in the Request Parameter address<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecad?address=21 Market Hill, Ballymore, Mullingar, Westmeath, N64 8kkd |
+| ECAD Address Search (accurate address) RESPONSE | As the Address introduced is very accurate, only one match is returned.                                                                                                                                  |
+
+```xml
+(XML Response)
+
+
+
+
+        1
+        2015-06-04T13:04:15.651+01:00
+        7764B769-FF97-4FBD-BB0C-6F28F5798C6E
+
+    21 Market Hill, Ballymore, Mullingar, Westmeath, N64 8kkd, , , , , , , ,
+```
+
+```json
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "7764B769-FF97-4FBD-BB0C-6F28F5798C6E",
+      "sessionCommencement": 2015-06-04T13:04:15.651+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches": ["21 Market Hill, Ballymore, Mullingar, Westmeath, N64 8kkd, , , , , , , , "],
+   "information": null
+}
+```
+
+| Scenario                                                     | Notes                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECAD Address Search (accurate address) & Formatting REQUEST  | Enter the formatting option by using the Request Parameter format Parameter address<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecad?address=21 Market Hill, Ballymore, Mullingar, Westmeath, N64 8kkd&format=LC=3 |
+| ECAD Address Search (accurate address) & Formatting RESPONSE | According the formatting option introduced, the number of address lines must be 3                                                                                                                                                         |
+
+```xml
+(XML Response)
+
+
+
+
+        1
+        2015-06-04T13:04:15.651+01:00
+        7764B769-FF97-4FBD-BB0C-6F28F5798C6E
+
+    21 Market Hill, Ballymore Mullingar, Westmeath N64 8kkd
+```
+
+```json
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "7764B769-FF97-4FBD-BB0C-6F28F5798C6E",
+      "sessionCommencement": 2015-06-04T13:04:15.651+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches": ["21 Market Hill, Ballymore Mullingar, Westmeath N64 8kkd"],
+   "information": null
+}
+```
+
+### Eircode ECAF Address Data
+
+These are several examples of Eircode ECAF Address Data Requests and Responses:
+
+| Scenario                                                 | Notes                                                                                                                                                    |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECAF Address Search (not very accurate request) REQUEST  | Enter the address to be found in the Request Parameter address<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecaf?address=21 market |
+| ECAF Address Search (not very accurate request) RESPONSE | As the Address introduced in the Request was not very accurate, the service return a list of matches.                                                    |
+
+```xml
+(XML Response)
+
+
+
+        1
+        2015-09-04T11:23:47.775+01:00
+        E017CACB-EF0B-41BB-91C6-3C28C02796AD
+
+    97 High Meadows, Gouldavoher, Limerick, Limerick, Limerick, K27 35yf, , , , , , ,
+    97 High Park, Whitehall, Dublin 9, Dublin, V80 Dwna, , , , , , , ,
+    97 High Street, Cork, Cork, Cork, X70 2fva, , , , , , , ,
+    97 Highfield Park, Dundrum, Dublin 14, Dublin, T44 4ypc, , , , , , , ,
+    97 Highfield, Carrickmacross, Carrickmacross, Monaghan, P80 1nv9, , , , , , , ,
+```
+
+```json
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "E017CACB-EF0B-41BB-91C6-3C28C02796AD",
+      "sessionCommencement": 2015-09-04T11:23:47.775+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches":    [
+      "97 High Meadows, Gouldavoher, Limerick, Limerick, Limerick, K27 35yf, , , , , , , ",
+      "97 High Park, Whitehall, Dublin 9, Dublin, V80 Dwna, , , , , , , , ",
+      "97 High Street, Cork, Cork, Cork, X70 2fva, , , , , , , , ",
+      "97 Highfield Park, Dundrum, Dublin 14, Dublin, T44 4ypc, , , , , , , , ",
+      "97 Highfield, Carrickmacross, Carrickmacross, Monaghan, P80 1nv9, , , , , , , , "
+   ],
+   "information": null
+}
+```
+
+| Scenario                                        | Notes                                                                                                                                                                                              |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECAF Address Search (accurate address) REQUEST  | Enter the address to be found in the Request Parameter address<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecaf?address=97 High Park, Whitehall, Dublin 9, Dublin, V80 Dwna |
+| ECAF Address Search (accurate address) RESPONSE | As the Address introduced is very accurate, only one match is returned.                                                                                                                            |
+
+```xml
+(XML Response)
+
+
+
+
+        1
+        2015-06-04T13:04:15.651+01:00
+        7764B769-FF97-4FBD-BB0C-6F28F5798C6E
+
+    97 High Park, Whitehall, Dublin 9, Dublin, V80 Dwna, , , , , , , ,
+```
+
+```json
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "7764B769-FF97-4FBD-BB0C-6F28F5798C6E",
+      "sessionCommencement": 2015-06-04T13:04:15.651+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches": ["97 High Park, Whitehall, Dublin 9, Dublin, V80 Dwna, , , , , , , , "],
+   "information": null
+}
+```
+
+| Scenario                                                     | Notes                                                                                                                                                                                                                               |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECAF Address Search (accurate address) & Formatting REQUEST  | Enter the formatting option by using the Request Parameter format Parameter address<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecaf?address=97 High Park, Whitehall, Dublin 9, Dublin, V80 Dwna&format=LC=3 |
+| ECAF Address Search (accurate address) & Formatting RESPONSE | According the formatting option introduced, the number of address lines must be 3                                                                                                                                                   |
+
+````xml
+(XML Response)
+
+
+
+        1
+        2015-06-04T13:04:15.651+01:00
+        7764B769-FF97-4FBD-BB0C-6F28F5798C6E
+
+    97 High Park, Whitehall Dublin 9, Dublin V80 Dwna
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "7764B769-FF97-4FBD-BB0C-6F28F5798C6E",
+      "sessionCommencement": 2015-06-04T13:04:15.651+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches": ["97 High Park, Whitehall Dublin 9, Dublin V80 Dwna"],
+   "information": null
+}
+
+Session Management
+Eircode Address Searching provides a mechanism to ensure that the desired final address can be found within a fair time and number of transactions. Thus, all the requests needed to find an Address will be included in a Session. Sessions have a limit of either 50 transactions or 2 minutes.
+
+If the client supplies a valid SessionKey, the request will be included in that Session. If the client supplies an invalid SessionKey or no SessionKey is provided (first request), the Powersearch Service will create a new Session where the current transaction will be included.
+
+Note that an invalid SessionKey might be a wrong key or a key that represents a Session with more than 50 calls or more than 2 minutes of life.
+
+As it can be seen in the above examples, a SessionData element is returned in every Eircode Searching Response from the Service. This SessionData contains a SessionKey (to be used in next request), sessionCommencement (session commencement timestamp), and numberOfSessionsTransactions (number of Transactions already used in this Session)
+
+This is an example of how to add a SessionKey to the request:
+
+| Scenario | Notes |
+|----------|-------|
+| Including SessionKey in the Eircode (ECAD or ECAF) Address Search REQUEST | Enter the parameter sessionkey with the SessionKey (got from the last Response to the Service).<br/>https://idmp.gb.co.uk/idm-powersearch-rest/powersearch/eircode/ecad?address=21 Market&sessionkey=2432D120-1F36-4894-861D-E319C7636A22 |
+| Eircode Address Search RESPONSE | Address Search Response |
+
+```xml
+(XML Response)
+
+
+
+        1
+        2015-06-04T13:04:15.651+01:00
+        7764B769-FF97-4FBD-BB0C-6F28F5798C6E
+
+    97 High Park, Whitehall Dublin 9, Dublin V80 Dwna
+````
+
+```json
+(JSON Response)
+
+{
+   "sessionData":    {
+      "sessionKey": "7764B769-FF97-4FBD-BB0C-6F28F5798C6E",
+      "sessionCommencement": 2015-06-04T13:04:15.651+01:00,
+      "numberOfSessionTransactions": 1,
+   },
+   "matches": ["97 High Park, Whitehall Dublin 9, Dublin V80 Dwna"],
+   "information": null
+}
+```

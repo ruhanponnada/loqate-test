@@ -1,0 +1,37 @@
+---
+title: "Match Rules"
+---
+
+The syntax for a set of match rules is as follows:
+
+`<MatchRule>|<MatchRule>|…`
+
+The syntax for a match rule (`<MatchRule>`) is:
+
+`<Label>:<RuleDefinition>`
+
+Where `<Label>` is a free-text description to be associated with the particular rule. The syntax for the rule definition (`<RuleDefinition>`) is made up of a set of field searches which have the syntax:
+
+`<FieldName>,<SearchType>`
+
+where `<FieldName>` is the relevant field from the reference data and `<SearchType>` is one of:
+
+LE – Like Exact match, the input component must exactly match the reference data
+LC – Like Complete match, the input component must exactly match the initial substring from the reference data
+LA – Like Approx match, the input component must approximately (phonetically or textually) match the reference data
+CE – Contains Exact match, at least one word from the input component must exactly match at least one word from the reference data
+CA – Contains Approx match, at least one word from the input component must approximately (phonetically or textually) match at least one word from the reference data
+Field Searches may be combined using the following syntax:
+[] means an optional component – it must match if it exists both in the input data and the reference data
+() encapsulates ‘OR’ component combinations
+/ separates ‘OR’ component combinations
+e.g.
+2:(PostalCodePrimary,LE/[AdministrativeArea,LE];Locality,LE/[AdministrativeArea,LE];DependentLocality,LE);Thoroughfare,CE;[PremiseNumber,LE]
+
+which expanding the ‘OR’ components becomes:
+
+2:PostalCodePrimary,LE;Thoroughfare,CE;[PremiseNumber,LE]
+
+2:[AdministrativeArea,LE];Locality,LE;Thoroughfare,CE;[PremiseNumber,LE]
+
+2:[AdministrativeArea,LE];DependentLocality,LE;Thoroughfare,CE;[PremiseNumber,LE]

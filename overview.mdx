@@ -1,0 +1,308 @@
+---
+title: Overview
+description: "Loqate Integration Documentation"
+mode: "custom"
+---
+
+{/* Import the CSS file */}
+import Styles from '/snippets/home.css';
+
+<div className="loqate-container">
+  <h1 className="main-heading">Loqate Integration Documentation</h1>
+  
+  <div className="cta-container">
+    <a href="/loqate-basics/start-here/" className="cta-button">
+      New to Loqate? Start here! <span className="arrow-icon">→</span>
+    </a>
+  </div>
+  
+  <div className="products-section">
+
+    {/* First row - 3 cards */}
+    <div className="products-row">
+
+      {/* Address Capture */}
+      <a href="/apis/address-capture/" className="product-card">
+        <div className="product-icon address-capture-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 10C15.582 10 12 13.582 12 18C12 24.75 20 30 20 30C20 30 28 24.75 28 18C28 13.582 24.418 10 20 10ZM20 21C18.343 21 17 19.657 17 18C17 16.343 18.343 15 20 15C21.657 15 23 16.343 23 18C23 19.657 21.657 21 20 21Z" fill="#4D4DFF"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Address Capture</h2>
+          <p>Capture global addresses in real time using type-ahead address lookups</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      {/* Address Verification */}
+      <a href="/apis/address-verify/" className="product-card">
+        <div className="product-icon address-verification-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M28 14L17 25L12 20" stroke="#4D4DFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="20" cy="20" r="15" stroke="#4D4DFF" strokeWidth="2"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Address Verification</h2>
+          <p>Verify, correct and enrich address data to the highest level of precision and confidence, globally and at scale</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      {/* Store Finder */}
+      <a href="/apis/store-finder/" className="product-card">
+        <div className="product-icon store-finder-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30 20C30 25.523 25.523 30 20 30C14.477 30 10 25.523 10 20C10 14.477 14.477 10 20 10C25.523 10 30 14.477 30 20Z" stroke="#4D4DFF" strokeWidth="2"/>
+            <path d="M20 16V20L23 23" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M8 16H12M8 24H12M28 16H32M28 24H32M16 8V12M24 8V12M16 28V32M24 28V32" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Store Finder</h2>
+          <p>Leverage geocoding, mapping and distance capabilities to build geospatial applications</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+
+    {/* Second row - 3 cards */}
+    <div className="products-row">
+      {/* Email Validation */}
+      <a href="/apis/email-validation/" className="product-card">
+        <div className="product-icon email-validation-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="12" width="24" height="16" rx="2" stroke="#4D4DFF" strokeWidth="2"/>
+            <path d="M8 16L20 22L32 16" stroke="#4D4DFF" strokeWidth="2"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Email Validation</h2>
+          <p>Check and verify email addresses in real-time to ensure mailboxes are genuine and can receive mail</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      {/* Phone Validation */}
+      <a href="/apis/phone-validation/" className="product-card">
+        <div className="product-icon phone-validation-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25 10H15C13.8954 10 13 10.8954 13 12V28C13 29.1046 13.8954 30 15 30H25C26.1046 30 27 29.1046 27 28V12C27 10.8954 26.1046 10 25 10Z" stroke="#4D4DFF" strokeWidth="2"/>
+            <circle cx="20" cy="25" r="2" fill="#4D4DFF"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Phone Validation</h2>
+          <p>Confirm in real time whether a phone number is valid, identifying the country of origin and carrier</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      {/* Bank Validation */}
+      <a href="/apis/bank-validation/" className="product-card">
+        <div className="product-icon bank-validation-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="18" width="24" height="12" stroke="#4D4DFF" strokeWidth="2"/>
+            <path d="M20 10L30 17H10L20 10Z" stroke="#4D4DFF" strokeWidth="2"/>
+            <path d="M12 22V26M16 22V26M20 22V26M24 22V26M28 22V26" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Bank Validation</h2>
+          <p>Validate bank account numbers and sort codes to avoid payment errors</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+
+  </div>
+  
+    {/* Additional sections */}
+  <div className="resources-section">
+    <div className="resources-row">
+      {/* Support */}
+      <a href="/loqate-basics/" className="resource-card">
+        <div className="resource-icon basics-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <text x="10" y="27" fontSize="24" fill="#4D4DFF">123</text>
+            <path d="M28 22L32 26" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <div className="resource-content">
+          <h3>Loqate Basics</h3>
+          <p>Start here for the essentials of how to integrate with Loqate: integration options, API keys, API security and more</p>
+          <div className="btn-action">View now <span className="arrow-icon">→</span></div>
+        </div>
+      </a>
+      
+      {/* Integrations by platform */}
+      <a href="/guides/integrations-by-platform/integrations-by-platform/" className="resource-card">
+        <div className="resource-icon integration-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="8" height="8" rx="1" stroke="#4D4DFF" strokeWidth="2"/>
+            <rect x="22" y="10" width="8" height="8" rx="1" stroke="#4D4DFF" strokeWidth="2"/>
+            <rect x="10" y="22" width="8" height="8" rx="1" stroke="#4D4DFF" strokeWidth="2"/>
+            <rect x="22" y="22" width="8" height="8" rx="1" stroke="#4D4DFF" strokeWidth="2"/>
+            <path d="M14 18V22M26 18V22M18 14H22M18 26H22" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <div className="resource-content">
+          <h3>Integrations by platform</h3>
+          <p>Pre-built integrations with well-known platforms</p>
+          <div className="btn-action">View now <span className="arrow-icon">→</span></div>
+        </div>
+      </a>
+      
+      {/* Testing */}
+      <a href="/sandbox/" className="resource-card">
+        <div className="resource-icon testing-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 8V10M14 30H26M16 10H24L26 24C26 24 23 26 20 26C17 26 14 24 14 24L16 10Z" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div className="resource-content">
+          <h3>Testing</h3>
+          <p>Use test addresses to simulate different scenarios in our sandbox environment.</p>
+          <div className="btn-action">Try it now <span className="arrow-icon">→</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+  
+  {/* Customer Support Section */}
+  <div className="products-section">
+    <h2 className="section-heading">Customer Support</h2>
+    
+    {/* First row - 3 cards */}
+    <div className="products-row">
+      {/* Available Processes */}
+      <a href="/available-processes/" className="product-card">
+        <div className="product-icon integration-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 10V16M15 16H9M15 16L9 10M25 30V24M25 24H31M25 24L31 30M31 15H24M24 15V8M24 15L31 8M9 25H16M16 25V32M16 25L9 32" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Available Processes</h2>
+          <p>Learn about our available data processes and services across different regions and countries</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      {/* Data Coverage */}
+      <a href="/data-coverage/" className="product-card">
+        <div className="product-icon code-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 12L8 20L16 28M24 12L32 20L24 28" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Data Coverage</h2>
+          <p>Explore our global data coverage and learn about the quality and depth of our address data</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      {/* Tutorials */}
+      <a href="/tutorials/" className="product-card">
+        <div className="product-icon tutorials-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 8V32M28 8V32M14 14H26M14 20H26M14 26H26" stroke="#4D4DFF" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <div className="product-content">
+          <h2>Tutorials</h2>
+          <p>Step-by-step guides and examples to help you implement our features</p>
+        </div>
+        <div className="product-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+    </div>
+
+    {/* Second row - 3 cards */}
+    <div className="products-row">
+    </div>
+
+  </div>
+  
+  {/* Support Section */}
+  <div className="support-section">
+    <div className="support-row">
+      {/* FAQs */}
+      <a href="/faqs/" className="support-card">
+        <div className="support-content">
+          <h3>FAQs</h3>
+          <p>Read our Frequently Asked Questions</p>
+        </div>
+        <div className="arrow-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+      
+      {/* Need help? */}
+      <a href="https://www.loqate.com/en-gb/contact/customer-support/" className="support-card">
+        <div className="support-content">
+          <h3>Need help?</h3>
+          <p>Get in touch with our support staff</p>
+        </div>
+        <div className="arrow-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+      
+      {/* Service status */}
+      <a href="https://www.gbgstatus.com/" className="support-card">
+        <div className="support-content">
+          <h3>Service status</h3>
+          <p>See if any of our services are experiencing issues.</p>
+        </div>
+        <div className="arrow-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

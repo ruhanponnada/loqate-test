@@ -1,0 +1,514 @@
+---
+title: "Eircode Integration Guide"
+---
+
+This guide explains how to access GBGroup's web service products using their Identity Management Platform (IdM), available via SOAP web services. The document provides a general description of the available functionality along with a definition of the corresponding interfaces used to access different datasets and services.
+
+The fundamentals of integrating with the service are described here: Integration Fundamentals
+
+The next section of this document gives product specific details regarding the use of the Matchcode Eircode Web Service products via IdM.
+
+### Matchcode Eircode Web Service Product Information
+
+The introduction of Eircode in summer 2015 is the Republic of Ireland's first public database of unique identifiers for all addresses. It will assist citizens, businesses and public bodies to locate every individual address in the State.
+
+The Eircode Address Database and the Eircode Address File each contain all 2.2 million business and residential addresses in Ireland.
+
+Matchcode360 offers two versions of this data set ECAD & ECAF, which carry alternative royalty costs.
+
+- ECAF : Includes 2.2 million USP Postal Addresses with individual Eircode for each
+- ECAD : Includes the above along with Geo-code of the centroid of the address and additional address information
+
+Given that ECAF is a subset of the ECAD dataset, users should only subscribe to one of the two in any Eircode product configuration. Subscribing to both datasets will cause unexpected behaviour for the user, such as duplicate addresses being returned.
+
+The Eircode web service product is available via the Identity Management ExecuteCapture web service method.
+
+**Input Format**
+The ExecuteCapture method takes in a ExecuteCaptureRequest data structure, which contains all the information necessary to carry out the request.
+
+**Type: ExecuteCaptureRequest**
+
+| Field Name     | Type                  | Description                                                      |
+| -------------- | --------------------- | ---------------------------------------------------------------- |
+| securityHeader | SecurityHeader        | The username and authentication token used to access the system. |
+| profileRequest | ProfileRequestCapture | Details of the request                                           |
+
+The SecurityHeader structure holds security data to access products and services in the IdM Platform.
+
+The ProfileRequestCapture structure contains the criteria to identify the target product being called and the search data for the product request.
+
+Within the profileRequest element, the profileGuid element should contain the GUID value listed below:
+
+| Profile | GUID                                 |
+| ------- | ------------------------------------ |
+| EIRCODE | 6A5507FB-A79A-4008-BFC5-3E56CB851B79 |
+
+### Search Criteria
+
+The Eircode search criteria should be entered into the IdmDataSearchAddress data structure, which is located within the input details as follows:
+
+**ExecuteCapture → ProfileRequestCapture → ProfileRequestCaptureData → address**
+
+The search address object is the same that is used in the Address Lookup request, described here. In the Eircode web service, the postcode input field is used as the Eircode input.
+
+#### Additional Request Options
+
+The additional search options, used for configuring options such as casing or transliteration of output results, can be set in the IdmRequestOptions structure located in the ProfileRequestCaptureData.options property.
+
+**Additional Return Data**
+Additional data can be returned, or excluded from being returned, for each address by providing one or more values in the IdmRequestOption.relatedDataItems property.
+
+For each value provided, the corresponding additional data is returned, and the corresponding additional data for all the values not provided are not returned.
+
+The following values are supported by this service, when using the ECAF dataset:
+
+| Key Mnemonic | Description                           | Returned By Default |
+| ------------ | ------------------------------------- | ------------------- |
+| COUNTRYCODE  | Country code                          | Yes                 |
+| ECAF_ID      | Unique 10 digit identification number | Yes                 |
+
+The following values are supported by this service, when using the ECAD dataset:
+
+| Key Mnemonic     | Description                                                                                                                                                              | Returned By Default |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| COUNTRYCODE      | Country code                                                                                                                                                             | Yes                 |
+| ECAD_ID          | Unique 10 digit identification number                                                                                                                                    | Yes                 |
+| LA_ID            | Unique Identifier for Local Authority                                                                                                                                    | Yes                 |
+| DED_ID           | Unique Identifier for Electoral Divisions                                                                                                                                | Yes                 |
+| SMALL_AREA_ID    | Unique Identifier for the Small Area                                                                                                                                     | Yes                 |
+| TOWNLOAND_ID     | Unique Identifier for Townland                                                                                                                                           | Yes                 |
+| ADMIN_GAELTACHT  | A Yes/No field indicating whether or not the official Irish language version provided by The Placenames Branch replaces unofficial translations provided by GeoDirectory | Yes                 |
+| NUA              | The NUA field contains a Y value when the address is a non-unique address, and N when it is a unique address                                                             | Yes                 |
+| BUILDING_ID      | Unique 10 digit identification number for the Building                                                                                                                   | Yes                 |
+| BUILDING_TYPE_ID | The Type of Building e.g. Bungalow, Detached etc                                                                                                                         | Yes                 |
+| HOLIDAY_HOME     | A Yes/No field, indicating whether or not the building is a holiday home. NOTE: This field is provided for future proofing, no data currently available to Eircode       | Yes                 |
+| UNDER_CONS       | A Yes/No field, indicating whether or not the building is under construction                                                                                             | Yes                 |
+| BUILDING_USE     | R- Residential, C-Commercial, B-Both or U-Unknown                                                                                                                        | Yes                 |
+| BLD_VACANT       | A Yes/No field, indicating whether or not the building is vacant                                                                                                         | Yes                 |
+| ING_EAST         | Irish National Grid Easting Co-ordinate                                                                                                                                  | Yes                 |
+| ING_NORTH        | Irish National Grid Northing Co-ordinate                                                                                                                                 | Yes                 |
+| ITM_EAST         | ITM Easting Co-ordinate                                                                                                                                                  | Yes                 |
+| ITM_NORTH        | ITM Northing Co-ordinate                                                                                                                                                 | Yes                 |
+| ETRS89_LAT       | ETRS89 Latitude Co-ordinate                                                                                                                                              | Yes                 |
+| ETRS89_LONG      | ETRS89 Longitude Co-ordinate                                                                                                                                             | Yes                 |
+| ING_MIN_EAST     | Irish National Grid Minimum Easting Coordinate                                                                                                                           | Yes                 |
+| ING_MIN_NORTH    | Irish National Grid Minimum Northing Coordinate                                                                                                                          | Yes                 |
+| ING_MAX_EAST     | Irish National Grid Maximum Easting Coordinate                                                                                                                           | Yes                 |
+| ING_MAX_NORTH    | Irish National Grid Maximum Northing Coordinate                                                                                                                          | Yes                 |
+| ITM_MIN_EAST     | ITM (Irish Transverse Mercator) Minimum Easting Coordinate                                                                                                               | Yes                 |
+| ITM_MIN_NORTH    | ITM Minimum Northing Coordinate                                                                                                                                          | Yes                 |
+| ITM_MAX_EAST     | ITM Maximum Easting Coordinate                                                                                                                                           | Yes                 |
+| ITM_MAX_NORTH    | ITM Maximum Northing Coordinate                                                                                                                                          | Yes                 |
+| ETRS89_MIN_LAT   | ETRS89 (European Terrestrial Reference System) Minimum Latitude Coordinate                                                                                               | Yes                 |
+| ETRS89_MIN_LONG  | ETRS89 Minimum Longitude Coordinate                                                                                                                                      | Yes                 |
+| ETRS89_MAX_LAT   | ETRS89 Maximum Latitude Coordinate                                                                                                                                       | Yes                 |
+| ETRS89_MAX_LONG  | ETRS89 Maximum Longitude Coordinate                                                                                                                                      | Yes                 |
+| SPATIAL_ACCURACY | Describes Accuracy Level of Geo-Coordinates                                                                                                                              | Yes                 |
+| BLD_TYPE_NAME    | The full text description of the type of building                                                                                                                        | Yes                 |
+| BLD_TYPE_CODE    | The code for the type of building                                                                                                                                        | Yes                 |
+| ORGANISATION_ID  | Unique 10 digit identification number for Organisations                                                                                                                  | Yes                 |
+| ORG_VACANT       | A Yes/No field, indicating whether or not the organisation location is vacant                                                                                            | Yes                 |
+| NACE_CODE        | The NACE (Nomenclature of Economic Activities) Code for the Category. NOTE: This field is provided for future proofing, no data currently available to Eircode           | Yes                 |
+| NACE_CATEGORY    | The NACE (Nomenclature of Economic Activities) Code for the Category. NOTE: This field is provided for future proofing, no data currently available to Eircode           | Yes                 |
+
+#### Address Filters
+
+Addresses which have been found by the web service, which match a particular kind of address, can be filtered out from the search results by using the address filters functionality described here.
+
+### Output Format
+
+The results of the Eircode web service search are returned in a ProfileResponseDetails structure with a ProfileResponseDetail.responseType of 'CAPTURE'.
+
+The ProfileResponseDetails structure contains a single CaptureResponse data structure which holds an array of IdmDataAddress records containing the returned address data.
+
+**ExecuteCaptureResponse > ProfileResponse [0] > ProfileResponseDetails [0] > CaptureResponse > CaptureResponseData > IdmDataAddress [n]**
+
+In the Eircode web service, the postcode output field is used as the Eircode output.
+
+Additional data from a search may be returned in the additionalItems of the IdmDataAddress.
+
+**Output Fields** <br/>
+Apart from the standard address fields, the following additional fields are returned by the service.
+
+For all Eircode searches, the additional items of each address will contain a pair with a key of "DATASOURCE", and a value of "ECAF" or "ECAD", indicating from which dataset the address came from.
+
+**ECAF Specific** <br/>
+
+| Field   | Related Data Item Key | Location In Response                       |
+| ------- | --------------------- | ------------------------------------------ |
+| ECAF_ID | ECAF_ID               | IdmDataAddress → additionalItems → ECAF_ID |
+
+**ECAD Specific** <br/>
+
+| Field            | Related Data Item Key | Location In Response                                |
+| ---------------- | --------------------- | --------------------------------------------------- |
+| ECAD_ID          | ECAD_ID               | IdmDataAddress → additionalItems → ECAD_ID          |
+| LA_ID            | LA_ID                 | IdmDataAddress → additionalItems → LA_ID            |
+| DED_ID           | DED_ID                | IdmDataAddress → additionalItems → DED_ID           |
+| SMALL_AREA_ID    | SMALL_AREA_ID         | IdmDataAddress → additionalItems → SMALL_AREA_ID    |
+| TOWNLOAND_ID     | TOWNLOAND_ID          | IdmDataAddress → additionalItems → TOWNLOAND_ID     |
+| ADMIN_GAELTACHT  | ADMIN_GAELTACHT       | IdmDataAddress → additionalItems → ADMIN_GAELTACHT  |
+| NUA              | NUA                   | IdmDataAddress → additionalItems → NUA              |
+| BUILDING_ID      | BUILDING_ID           | IdmDataAddress → additionalItems → BUILDING_ID      |
+| BUILDING_TYPE_ID | BUILDING_TYPE_ID      | IdmDataAddress → additionalItems → BUILDING_TYPE_ID |
+| HOLIDAY_HOME     | HOLIDAY_HOME          | IdmDataAddress → additionalItems → HOLIDAY_HOME     |
+| UNDER_CONS       | UNDER_CONS            | IdmDataAddress → additionalItems → UNDER_CONS       |
+| BUILDING_USE     | BUILDING_USE          | IdmDataAddress → additionalItems → BUILDING_USE     |
+| BLD_VACANT       | BLD_VACANT            | IdmDataAddress → additionalItems → BLD_VACANT       |
+| ING_EAST         | ING_EAST              | IdmDataAddress → additionalItems → ING_EAST         |
+| ING_NORTH        | ING_NORTH             | IdmDataAddress → additionalItems → ING_NORTH        |
+| ITM_EAST         | ITM_EAST              | IdmDataAddress → additionalItems → ITM_EAST         |
+| ITM_NORTH        | ITM_NORTH             | IdmDataAddress → additionalItems → ITM_NORTH        |
+| ETRS89_LAT       | ETRS89_LAT            | IdmDataAddress → additionalItems → ETRS89_LAT       |
+| ETRS89_LONG      | ETRS89_LONG           | IdmDataAddress → additionalItems → ETRS89_LONG      |
+| ING_MIN_EAST     | ING_MIN_EAST          | IdmDataAddress → additionalItems → ING_MIN_EAST     |
+| ING_MIN_NORTH    | ING_MIN_NORTH         | IdmDataAddress → additionalItems → ING_MIN_NORTH    |
+| ING_MAX_EAST     | ING_MAX_EAST          | IdmDataAddress → additionalItems → ING_MAX_EAST     |
+| ING_MAX_NORTH    | ING_MAX_NORTH         | IdmDataAddress → additionalItems → ING_MAX_NORTH    |
+| ITM_MIN_EAST     | ITM_MIN_EAST          | IdmDataAddress → additionalItems → ITM_MIN_EAST     |
+| ITM_MIN_NORTH    | ITM_MIN_NORTH         | IdmDataAddress → additionalItems → ITM_MIN_NORTH    |
+| ITM_MAX_EAST     | ITM_MAX_EAST          | IdmDataAddress → additionalItems → ITM_MAX_EAST     |
+| ITM_MAX_NORTH    | ITM_MAX_NORTH         | IdmDataAddress → additionalItems → ITM_MAX_NORTH    |
+| ETRS89_MIN_LAT   | ETRS89_MIN_LAT        | IdmDataAddress → additionalItems → ETRS89_MIN_LAT   |
+| ETRS89_MIN_LONG  | ETRS89_MIN_LONG       | IdmDataAddress → additionalItems → ETRS89_MIN_LONG  |
+| ETRS89_MAX_LAT   | ETRS89_MAX_LAT        | IdmDataAddress → additionalItems → ETRS89_MAX_LAT   |
+| ETRS89_MAX_LONG  | ETRS89_MAX_LONG       | IdmDataAddress → additionalItems → ETRS89_MAX_LONG  |
+| SPATIAL_ACCURACY | SPATIAL_ACCURACY      | IdmDataAddress → additionalItems → SPATIAL_ACCURACY |
+| BLD_TYPE_NAME    | BLD_TYPE_NAME         | IdmDataAddress → additionalItems → BLD_TYPE_NAME    |
+| BLD_TYPE_CODE    | BLD_TYPE_CODE         | IdmDataAddress → additionalItems → BLD_TYPE_CODE    |
+| ORGANISATION_ID  | ORGANISATION_ID       | IdmDataAddress → additionalItems → ORGANISATION_ID  |
+| ORG_VACANT       | ORG_VACANT            | IdmDataAddress → additionalItems → ORG_VACANT       |
+| NACE_CODE        | NACE_CODE             | IdmDataAddress → additionalItems → NACE_CODE        |
+| NACE_CATEGORY    | NACE_CATEGORY         | IdmDataAddress → additionalItems → NACE_CATEGORY    |
+
+### Example Requests & Responses
+
+#### Example Requests
+
+```xml SOAP
+<soapenv:Envelope xmlns:soapenv=" http://schemas.xmlsoap.org/soap/envelope/"
+                    xmlns:b=" http://gbworld.gb.co.uk/idm-globalservices/messages/21a/"
+                    xmlns:head=" http://gbworld.gb.co.uk/types/header/"
+                    xmlns:req=" http://gbworld.gb.co.uk/types/core/request/"
+                    xmlns:data=" http://gbworld.gb.co.uk/types/core/data/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <b:ExecuteCaptureRequest>
+            <b:securityHeader>
+                <head:authenticationToken>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</head:authenticationToken>
+                <head:username>username@user.co.uk</head:username>
+            </b:securityHeader>
+            <b:profileRequest>
+                <req:customerReference>ref</req:customerReference>
+                <req:profileGuid>6A5507FB-A79A-4008-BFC5-3E56CB851B79</req:profileGuid>
+                <req:configurationId>1</req:configurationId>
+                <req:requestData>
+                    <req:address>
+                        <data:organisation>TIPPERARY COUNTY COUNCIL</data:organisation>
+                        <data:street>GORTATAGGART</data:street>
+                        <data:town>THURLES</data:town>
+                        <data:postCode>R50 ECRP</data:postCode>
+                        <data:locality>THURLES</data:locality>
+                        <data:department>TIPPERARY COUNTY COUNCIL FIRE AND RESCUE SERVICES</data:department>
+                        <data:building>THURLES FIRE STATION</data:building>
+                        <data:subStreet>BRITTAS ROAD</data:subStreet>
+                        <data:stateRegion>TIPPERARY</data:stateRegion>
+                        <data:countryCode>IRL</data:countryCode>
+                        <data:additionalItems tmp=" "></data:additionalItems>
+                        <data:persons tmp=" ">
+                            <data:person></data:person>
+                        </data:persons>
+                    </req:address>
+                    <req:filters tmp=" ">
+                        <data:item>
+                            <data:key/>
+                            <data:value/>
+                        </data:item>
+                    </req:filters>
+                    <req:options>
+                        <req:relatedDataItems tmp=" ">
+                        </req:relatedDataItems>
+                        <req:offset>0</req:offset>
+                        <req:maxReturn>100</req:maxReturn>
+                        <req:casing>MIXED</req:casing>
+                        <req:additionalItems tmp=" ">
+                            <data:item>
+                                <data:key/>
+                                <data:value/>
+                            </data:item>
+                        </req:additionalItems>
+                        <req:transliteration>NATIVE</req:transliteration>
+                        <req:countryCodeFormat>ISO3</req:countryCodeFormat>
+                    </req:options>
+                    <req:additionalData tmp=" ">
+                        <data:item>
+                            <data:key/>
+                            <data:value/>
+                        </data:item>
+                    </req:additionalData>
+                </req:requestData>
+            </b:profileRequest>
+        </b:ExecuteCaptureRequest>
+    </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Example Responses
+
+**SOAP**
+
+<br />
+**ECAF Subscription**
+
+```xml
+<SOAP-ENV:Envelope xmlns:SOAP-ENV=" http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <mes:ExecuteCaptureResponse xmlns:mes=" http://gbworld.gb.co.uk/idm-globalservices/messages/21a/"
+                                    xmlns:data=" http://gbworld.gb.co.uk/types/core/data/"
+                                    xmlns:head=" http://gbworld.gb.co.uk/types/header/"
+                                    xmlns:req=" http://gbworld.gb.co.uk/types/core/request/">
+            <mes:securityHeader>
+                <head:authenticationToken>12F8915E-CCE9-4FEB-B60B-D0A97CFC7C0F</head:authenticationToken>
+                <head:authenticationTime>2015-06-22T10:06:09.000+01:00</head:authenticationTime>
+                <head:sessionExpiryTime>2015-06-22T11:06:21.338+01:00</head:sessionExpiryTime>
+            </mes:securityHeader>
+            <mes:transactionGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</mes:transactionGuid>
+            <mes:profileResponse>
+                <req:profileHeader>
+                    <req:profileGuid>6A5507FB-A79A-4008-BFC5-3E56CB851B79</req:profileGuid>
+                    <req:profileName>EIRCODE</req:profileName>
+                    <req:transactionGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</req:transactionGuid>
+                    <req:transactionTimeStamp>2015-06-22T10:06:21.864+01:00</req:transactionTimeStamp>
+                    <req:profileStatus>SUCCESS</req:profileStatus>
+                </req:profileHeader>
+                <req:profileResponseDetails>
+                    <req:transactionGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</req:transactionGuid>
+                    <req:componentName>Eircode</req:componentName>
+                    <req:componentStatus>SUCCESS</req:componentStatus>
+                    <req:componentAction>VERIFY</req:componentAction>
+                    <req:responseType>CAPTURE</req:responseType>
+                    <req:notes>[]</req:notes>
+                    <req:invoice>
+                        <req:invoiceList>
+                            <req:invoiceGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</req:invoiceGuid>
+                            <req:billingInformationGuid>973B1AB8-E9CC-4FC0-8259-D6BCBCD972C2</req:billingInformationGuid>
+                            <req:billingPoints>1</req:billingPoints>
+                            <req:creditsUsed>1</req:creditsUsed>
+                            <req:dataSetInvoices>
+                                <req:dataSetCode>ECAF</req:dataSetCode>
+                                <req:billingPoints>1</req:billingPoints>
+                                <req:recordsReturned>1</req:recordsReturned>
+                                <req:dataLicenceGuid>973B1AB8-E9CC-4FC0-8259-D6BCBCD972C2</req:dataLicenceGuid>
+                            </req:dataSetInvoices>
+                        </req:invoiceList>
+                    </req:invoice>
+                    <req:captureResponse>
+                        <req:resultStatus>SINGLE</req:resultStatus>
+                        <req:recordsReturned>1</req:recordsReturned>
+                        <req:moreData>false</req:moreData>
+                        <req:totalRecordCount>1</req:totalRecordCount>
+                        <req:totalPages>1</req:totalPages>
+                        <req:matchScore>83</req:matchScore>
+                        <req:matchLevel>ORGANISATION</req:matchLevel>
+                        <req:outputStatus>PARSED</req:outputStatus>
+                        <req:fieldStatus>00533300</req:fieldStatus>
+                        <req:responseCount>1</req:responseCount>
+                        <req:response>
+                            <req:address>
+                                <data:organisation>TIPPERARY COUNTY COUNCIL</data:organisation>
+                                <data:town>THURLES</data:town>
+                                <data:postCode>R50 5WHV</data:postCode>
+                                <data:locality>THURLES</data:locality>
+                                <data:department>TIPPERARY COUNTY COUNCIL FIRE AND RESCUE SERVICES</data:department>
+                                <data:buildingName>BALLINGARRY FIRE STATION</data:buildingName>
+                                <data:stateRegion>TIPPERARY</data:stateRegion>
+                                <data:countryCode>IRL</data:countryCode>
+                                <data:formattedAddress>TIPPERARY COUNTY COUNCIL FIRE AND RESCUE SERVICES,TIPPERARY COUNTY COUNCIL,BALLINGARRY FIRE STATION THURLES,THURLES,TIPPERARY,R50 5WHV</data:formattedAddress>
+                                <data:additionalItems>
+                                    <data:item>
+                                        <data:key>DATASOURCE</data:key>
+                                        <data:value>ECAF</data:value>
+                                    </data:item>
+                                </data:additionalItems>
+                            </req:address>
+                        </req:response>
+                    </req:captureResponse>
+                </req:profileResponseDetails>
+            </mes:profileResponse>
+        </mes:ExecuteCaptureResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+**ECAD Subscription** <br/>
+
+```xml
+<SOAP-ENV:Envelope xmlns:SOAP-ENV=" http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <mes:ExecuteCaptureResponse xmlns:mes=" http://gbworld.gb.co.uk/idm-globalservices/messages/21a/"
+                                    xmlns:alu=" http://gbworld.gb.co.uk/types/core/request/alu/"
+                                    xmlns:common=" http://gbworld.gb.co.uk/types/common/"
+                                    xmlns:comp=" http://gbworld.gb.co.uk/types/component/"
+                                    xmlns:data=" http://gbworld.gb.co.uk/types/core/data/"
+                                    xmlns:datatypes=" http://gbworld.gb.co.uk/types/datatypes/"
+                                    xmlns:faults=" http://gbworld.gb.co.uk/types/faults/"
+                                    xmlns:head=" http://gbworld.gb.co.uk/types/header/"
+                                    xmlns:prop=" http://gbworld.gb.co.uk/idm-core/component/properties/"
+                                    xmlns:req=" http://gbworld.gb.co.uk/types/core/request/"
+                                    xmlns:trace=" http://gbworld.gb.co.uk/types/core/data/trace/"
+                                    xmlns:ver=" http://gbworld.gb.co.uk/types/core/request/verify/">
+            <mes:securityHeader>
+                <head:authenticationToken xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance">12F8915E-CCE9-4FEB-B60B-D0A97CFC7C0F</head:authenticationToken>
+                <head:authenticationTime xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance">2015-06-22T10:06:09.000+01:00</head:authenticationTime>
+                <head:sessionExpiryTime xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance">2015-06-22T11:06:21.338+01:00</head:sessionExpiryTime>
+            </mes:securityHeader>
+            <mes:transactionGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</mes:transactionGuid>
+            <mes:profileResponse>
+                <req:profileHeader>
+                    <req:profileGuid>6A5507FB-A79A-4008-BFC5-3E56CB851B79</req:profileGuid>
+                    <req:profileName>EIRCODE</req:profileName>
+                    <req:transactionGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</req:transactionGuid>
+                    <req:transactionTimeStamp>2015-06-22T10:06:21.864+01:00</req:transactionTimeStamp>
+                    <req:profileStatus>SUCCESS</req:profileStatus>
+                </req:profileHeader>
+                <req:profileResponseDetails>
+                    <req:transactionGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</req:transactionGuid>
+                    <req:componentName>Eircode</req:componentName>
+                    <req:componentStatus>SUCCESS</req:componentStatus>
+                    <req:componentAction>VERIFY</req:componentAction>
+                    <req:responseType>CAPTURE</req:responseType>
+                    <req:notes>[]</req:notes>
+                    <req:invoice>
+                        <req:invoiceList>
+                            <req:invoiceGuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</req:invoiceGuid>
+                            <req:billingInformationGuid>441458E5-A405-4839-96D6-91B3926586AA
+                            </req:billingInformationGuid>
+                            <req:billingPoints>1</req:billingPoints>
+                            <req:creditsUsed>1</req:creditsUsed>
+                            <req:dataSetInvoices>
+                                <req:dataSetCode>ECAD</req:dataSetCode>
+                                <req:billingPoints>1</req:billingPoints>
+                                <req:recordsReturned>2</req:recordsReturned>
+                                <req:dataLicenceGuid>441458E5-A405-4839-96D6-91B3926586AA</req:dataLicenceGuid>
+                            </req:dataSetInvoices>
+                        </req:invoiceList>
+                    </req:invoice>
+                    <req:captureResponse>
+                        <req:resultStatus>SINGLE</req:resultStatus>
+                        <req:recordsReturned>1</req:recordsReturned>
+                        <req:moreData>false</req:moreData>
+                        <req:totalRecordCount>1</req:totalRecordCount>
+                        <req:totalPages>1</req:totalPages>
+                        <req:matchScore>83</req:matchScore>
+                        <req:matchLevel>ORGANISATION</req:matchLevel>
+                        <req:outputStatus>PARSED</req:outputStatus>
+                        <req:fieldStatus>00533300</req:fieldStatus>
+                        <req:responseCount>1</req:responseCount>
+                        <req:response>
+                            <req:address>
+                                <data:organisation>TIPPERARY COUNTY COUNCIL</data:organisation>
+                                <data:town>THURLES</data:town>
+                                <data:postCode>R50 5WHV</data:postCode>
+                                <data:locality>THURLES</data:locality>
+                                <data:department>TIPPERARY COUNTY COUNCIL FIRE AND RESCUE SERVICES</data:department>
+                                <data:buildingName>BALLINGARRY FIRE STATION</data:buildingName>
+                                <data:stateRegion>TIPPERARY</data:stateRegion>
+                                <data:countryCode>IRL</data:countryCode>
+                                <data:formattedAddress>TIPPERARY COUNTY COUNCIL FIRE AND RESCUE SERVICES,TIPPERARY COUNTY COUNCIL,BALLINGARRY FIRE STATION THURLES,THURLES,TIPPERARY,R50 5WHV</data:formattedAddress>
+                                <data:additionalItems>
+                                    <data:item>
+                                        <data:key>ING_EAST</data:key>
+                                        <data:value>231163.63</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ING_NORTH</data:key>
+                                        <data:value>148377.17000000001</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ITM_EAST</data:key>
+                                        <data:value>631107.31000000006</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ITM_NORTH</data:key>
+                                        <data:value>648422.5</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ETRS89_LAT</data:key>
+                                        <data:value>52.586193000000002</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ETRS89_LONG</data:key>
+                                        <data:value>-7.540953</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>SPATIAL_ACCURACY</data:key>
+                                        <data:value>1</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>NUA</data:key>
+                                        <data:value>N</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ORG_VACANT</data:key>
+                                        <data:value>N</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>BLD_TYPE_NAME</data:key>
+                                        <data:value>SEMI-DETACHED</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>BLD_TYPE_CODE</data:key>
+                                        <data:value>SD</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>BUILDING_TYPE_ID</data:key>
+                                        <data:value>2</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>HOLIDAY_HOME</data:key>
+                                        <data:value></data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>UNDER_CONS</data:key>
+                                        <data:value>N</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>BUILDING_USE</data:key>
+                                        <data:value>C</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>BLD_VACANT</data:key>
+                                        <data:value>N</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ECAD_ID</data:key>
+                                        <data:value>1004293900</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>BUILDING_ID</data:key>
+                                        <data:value>1000740890</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>ORGANISATION_ID</data:key>
+                                        <data:value>1004293900</data:value>
+                                    </data:item>
+                                    <data:item>
+                                        <data:key>DATASOURCE</data:key>
+                                        <data:value>ECAD</data:value>
+                                    </data:item>
+                                </data:additionalItems>
+                            </req:address>
+                        </req:response>
+                    </req:captureResponse>
+                </req:profileResponseDetails>
+            </mes:profileResponse>
+        </mes:ExecuteCaptureResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+### Error Information
+
+Information on possible error codes is given here: [Error Code Information](/product-support/matchcode/general-information/error-codes/)
