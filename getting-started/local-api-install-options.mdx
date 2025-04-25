@@ -10,3 +10,93 @@ The below table displays the list of available installers and the corresponding 
 | Linux x86              | `loqate_installer_mt_linux_x86` `loqate_installer_mt_linux_x86-cpp5` `loqate_st_installer_x86` `loqate_st_installer_x86-cpp5`                                                                                                                                                                                            |
 | Linux x86_64           | `loqate_installer_mt_linux_x86_64` `loqate_installer_mt_linux_x86_64-gcc7` `loqate_st_installer_x86_64` `loqate_st_installer_x86_64-gcc7l` `loqate_installer_mt_linux_x86_64-gcc7_lfs64`                                                                                                                                 |
 | AIX                    | `loqate_installer_mt_aix61` `loqate_installer_mt_aix71` `loqate_installer_mt_aix72` `loqate_st_installer_aix61` `loqate_st_installer_aix71` `loqate_st_installer_aix72`                                                                                                                                                  |
+
+## Dependencies
+
+If using Windows, if you don’t have the correct Windows library dependency installed you may see the following error message:
+
+<Frame caption="">
+  <img src="/images/f73cc9a7-lqBatchError-300x118.png" />
+</Frame>
+
+If so, you can install the correct Visual C++ Redistributable packagefrom Microsoft via [this link](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022).
+
+## Customized Installs
+
+Each of the Installers are customizable during installation by including a settings file (default setup.ini).
+
+## Settings file options
+
+Below is a full list of options available within the settings file. All options listed below are optional.
+
+|  **Option Name**                |    **Description**                                                 |     **Installation Mode**                                                                                                  |
+| --------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| ProductName     | `<Custom name of product>`                        |                                                                                                     |
+| ProductVersion  | `<Custom version name>`                             |                                                                                                     |
+| ProductLogo     | `<Full path to custom product logo>`                | for GUI mode                                                                                        |
+| ProductIcon     | `<Full path to custom product icon>`                | for Windows install                                                                                 |
+| ShowLicense     | `<yes or no>`                                       | for custom license agreements in GUI and commandline modes                                          |
+| LicenseFile     | `<Full path to custom license agreement text file>` | for GUI and commandline modes                                                                       |
+| InstallDir      | `<Full path to the intended installation folder>`   | **Default**: <br /> **For windows**: `C:\Program Files\Loqate\` <br /> **All Others**: `/opt/loqate` |
+| Modules         | `<Modules to install>`                              | for silent mode                                                                                     |
+| Samples         | `<Samples to install>`                              | for silent mode                                                                                     |
+| SampleData      | `<yes or no>`                                       | for silent mode                                                                                     |
+
+## Here are some tips on using the settings file:
+- To create a company specific license for graphical and command line installations, add a license text file, set **LicenseFile** to the location of the file, set **ShowLicense** to yes, and it will be added to the installation.
+- Adding the path of a logo to **ProductLogo** will add a customized logo to a graphical installation
+- In Windows installations, adding the path of an icon to **ProductIcon** will add this icon to the start menu shortcuts.
+- For silent mode, **Modules** is a list of module names. Options are Java, .Net, Batch, Demo, InstallManager, Node, Central, and All. C++ will always be installed and is therefore not an option.
+- For silent mode, **Samples** is a list of sample names. Options are C++, Java, .Net, Batch, and All
+- For silent mode, **SampleData** determines whether sample US data is installed.
+
+The below table shows examples of the settings file.
+|      **Installation Mode**                           |             **Sample Setting File**                                                                                                                                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |                                                                                                                                                               
+| Linux GUI/commandline install | `ProductName=Loqate` `ProductVersion=2012Q1` `ProductLogo=/home/user/logo.png` `ShowLicense=Yes` `LicenseFile=/home/user/license.txt` `InstallDir=/opt/loqate`                                        |
+| Windows GUI install           | `ProductName=Loqate` `ProductVersion=2012Q1` `ProductLogo=C:\Users\user\logo.png` `ProductIcon=C:\Users\user\icon.ico` `ShowLicense=Yes` `LicenseFile=C:\Users\user\license.txt` `InstallDir=C:\Loqate` |
+| Linux silent install          | `InstallDir=/opt/loqate` `Modules=Java, Batch, InstallManager` `Samples=C++, Java, Batch` `SampleData=Yes`                                                                                        |
+| Windows silent install        | `InstallDir=C:\Loqate` `Modules=Java, Batch, InstallManager` `Samples=C++, Java, Batch` `SampleData=Yes`                                                                                          |
+## Graphical, Console, or Silent Installations
+
+The Windows and Linux installers can be run in a graphical or silent mode; the settings file is optional in these modes.
+
+The settings file is specified by the −−**setup-file** option. If no settings file is specified, the installer will look for a file named `setup.ini` in the same folder as the installer. If no such file exists, the installer will run with no settings file.
+
+Running in silent mode with no settings file will default to the following options to be selected:
+
+`InstallDir=C:\Program Files\Loqate for Windows, InstallDir=/opt/loqate otherwise`
+`Modules=all`
+`Samples=all`
+`SampleData=yes`
+
+**Windows x86 (default mode is graphical):** `loqate_installer_mt_win_x86_vs2005.exe`
+`loqate_installer_mt_win_x86_vs2005.exe ––setup-file \<full path of settings file>`
+`loqate_installer_mt_win_x86_vs2005.exe ––mode silent`
+`loqate_installer_mt_win_x86_vs2005.exe ––mode silent –setup-file \<full path of settings file>`
+
+**Windows x86_64(default mode is graphical):** `loqate_installer_mt_win_x64_vs2005.exe`
+`loqate_installer_mt_win_x64_vs2005.exe ––setup-file \<full path of settings file>`
+`loqate_installer_mt_win_x64_vs2005.exe ––mode silent`
+`loqate_installer_mt_win_x64_vs2005.exe ––mode silent ––setup-file \<full path of settings file>`
+
+**Linux x86(default mode is console, standard mode is graphical):** `loqate_installer_mt_linux_x86`
+`loqate_installer_mt_linux_x86 ––setup-file \<full path of settings file>`
+`loqate_installer_mt_linux_x86 ––mode standard`
+`loqate_installer_mt_linux_x86 ––mode standard ––setup-file \<full path of settings file>`
+`loqate_installer_mt_linux_x86 ––mode silent`
+`loqate_installer_mt_linux_x86 ––mode silent ––setup-file \<full path of settings file>`
+
+**Linux x86_64 (default mode is console, standard mode is graphical):** `loqate_installer_mt_linux_x86_64`
+`loqate_installer_mt_linux_x86_64 ––setup-file \<full path of settings file>`
+`loqate_installer_mt_linux_x86_64 ––mode standard`
+`loqate_installer_mt_linux_x86_64 ––mode standard ––setup-file \<full path of settings file>`
+`loqate_installer_mt_linux_x86_64 ––mode silent`
+`loqate_installer_mt_linux_x86_64 ––mode silent ––setup-file \<full path of settings file>`
+
+**AIX and Solaris (default mode is console, standard mode is graphical):** `loqate_installer\__\<operating_system>`
+`loqate_installer\__\<operating_system> ––setup-file \<full path of settings file>`
+`loqate_installer\__\<operating_system> ––mode standard`
+`loqate_installer\__\<operating_system> ––mode standard ––setup-file \<full path of settings file>`
+`loqate_installer\__\<operating_system> ––mode silent`
+`loqate_installer\__\<operating_system> ––mode silent ––setup-file \<full path of settings file>`
